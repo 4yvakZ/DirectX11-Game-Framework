@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Display.h"
+#include "DisplayWin.h"
 #include <iostream>
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
@@ -21,14 +21,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 	}
 }
 
-Display::Display():
-	Display(800, 800)
+DisplayWin::DisplayWin():
+	DisplayWin(800, 800)
 {
 }
 
-Display::Display(int width, int height):
-	width(width),
-	height(height)
+DisplayWin::DisplayWin(int ClientWidth, int ClientHeight):
+	ClientWidth(ClientWidth),
+	ClientHeight(ClientHeight)
 {
 	LPCWSTR applicationName = L"My3DApp";
 	hInstance = GetModuleHandle(nullptr);
@@ -52,13 +52,13 @@ Display::Display(int width, int height):
 	RegisterClassEx(&wc);
 
 
-	RECT windowRect = { 0, 0, static_cast<LONG>(width), static_cast<LONG>(height) };
+	RECT windowRect = { 0, 0, static_cast<LONG>(ClientWidth), static_cast<LONG>(ClientHeight) };
 	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
 	auto dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_THICKFRAME;
 
-	auto posX = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
-	auto posY = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+	auto posX = (GetSystemMetrics(SM_CXSCREEN) - ClientWidth) / 2;
+	auto posY = (GetSystemMetrics(SM_CYSCREEN) - ClientHeight) / 2;
 
 	hWnd = CreateWindowEx(WS_EX_APPWINDOW, applicationName, applicationName,
 		dwStyle,

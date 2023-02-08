@@ -8,17 +8,17 @@
 
 #include <Windows.h>
 
-class Game_API Display
+class Game_API DisplayWin
 {
 public:
 
-	Display();
+	DisplayWin();
 
-	Display(int width, int height);
+	DisplayWin(int ClientWidth, int ClientHeight);
 
-private:
-	int width;
-	int height;
+public:
+	int ClientWidth;
+	int ClientHeight;
 
 	WNDCLASSEX wc;
 

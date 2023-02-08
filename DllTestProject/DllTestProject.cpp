@@ -2,12 +2,25 @@
 //
 
 #include <iostream>
-#include "Display.h"
+#include "Game.h"
+#include "DisplayWin.h"
+#include <dxgi.h>
 
 int main()
 {
+    UINT i = 0;
+    IDXGIAdapter* pAdapter;
+    IDXGIFactory1* pFactory;
+    CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)(&pFactory));
+    while (pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_ADAPTER_DESC desc;
+        pAdapter->GetDesc(&desc);
+        std::cout << desc.Description << std::endl;
+        ++i;
+    }
     std::cout << "Hello World!\n";
-    Display display{ 800, 800 };
+    DisplayWin display{ 800, 800 };
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
