@@ -30,7 +30,6 @@ class GameComponent;
 class Game_API Game
 {
 public:
-
 	void Exit();
 
 	void RestoreTarget();
@@ -61,6 +60,7 @@ private:
 	void CreateBackBuffer();
 
 public:
+
 	static Game* Instance;
 
 	DisplayWin* Display;
@@ -78,9 +78,9 @@ public:
 	int DebugAnnotation;
 
 	std::string Name;
-	int prevTime;
+	std::chrono::time_point<std::chrono::steady_clock> PrevTime;
 	int StartTime;
-	int TotalTime;
+	float TotalTime;
 	bool ScreenResized;
 };
 

@@ -1,42 +1,17 @@
 #include "pch.h"
 #include "Game.h"
 
+Game* Game::Instance = new Game();
+
 Game::Game()
 {
-}
 
-void Game::CreateBackBuffer()
-{
-	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);	// __uuidof(ID3D11Texture2D)
-	Device->CreateRenderTargetView(backBuffer, nullptr, &RenderView);
-}
-
-void Game::Exit()
-{
-}
-
-void Game::RestoreTarget()
-{
-}
-
-void Game::Run()
-{
-}
-
-void Game::DestroyResources()
-{
-}
-
-void Game::Draw()
-{
-}
-
-void Game::EndFrame()
-{
 }
 
 void Game::Initialize()
 {
+	Display = new DisplayWin{};
+
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_1 };
 
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
@@ -74,10 +49,132 @@ void Game::Initialize()
 	{
 		// Well, that was unexpected
 	}
+
+	CreateBackBuffer();
+
+	D3D11_VIEWPORT viewport = {};
+	viewport.Width = static_cast<float>(Display->ClientWidth);
+	viewport.Height = static_cast<float>(Display->ClientHeight);
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.MinDepth = 0;
+	viewport.MaxDepth = 1.0f;
+
+	Context->RSSetViewports(1, &viewport);
+
+	for(auto& component: Components){
+		component->Initialize();
+	}
+}
+
+void Game::CreateBackBuffer()
+{
+	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);	// __uuidof(ID3D11Texture2D)
+	Device->CreateRenderTargetView(backBuffer, nullptr, &RenderView);
+}
+
+void Game::RestoreTarget()
+{
+}
+
+void Game::Run()
+{
+	Initialize();
+
+	PrepareResources();
+
+	PrevTime = std::chrono::steady_clock::now();
+	TotalTime = 0;
+	unsigned int frameCount = 0;
+
+	MSG msg;
+
+	bool isExitRequested = false;
+	while (!isExitRequested) {
+		// Handle the windows messages.
+		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		// If windows signals to end the application then exit out.
+		if (msg.message == WM_QUIT) {
+			isExitRequested = true;
+		}
+
+		auto	curTime = std::chrono::steady_clock::now();
+		float	deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - PrevTime).count() / 1000000.0f;
+		PrevTime = curTime;
+
+		TotalTime += deltaTime;
+		frameCount++;
+
+		if (TotalTime > 1.0f) {
+			float fps = frameCount / TotalTime;
+
+			TotalTime -= 1.0f;
+
+			WCHAR text[256];
+			swprintf_s(text, TEXT("FPS: %f"), fps);
+			SetWindowText(Display->hWnd, text);
+
+			frameCount = 0;
+		}
+
+		Update();
+
+		PrepareFrame();
+
+		Draw();
+
+		EndFrame();
+
+	}
+
+	DestroyResources();
+}
+
+void Game::DestroyResources()
+{
+	for (auto& component : Components) {
+		component->DestroyResources();
+	}
+}
+
+void Game::Draw()
+{
+	Context->ClearState();
+
+	D3D11_VIEWPORT viewport = {};
+	viewport.Width = static_cast<float>(Display->ClientWidth);
+	viewport.Height = static_cast<float>(Display->ClientHeight);
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.MinDepth = 0;
+	viewport.MaxDepth = 1.0f;
+
+	Context->RSSetViewports(1, &viewport);
+
+	Context->OMSetRenderTargets(1, &RenderView, nullptr);
+
+	float color[] = { TotalTime, 0.1f, 0.1f, 1.0f };
+	Context->ClearRenderTargetView(RenderView, color);
+
+	for (auto& component : Components) {
+		component->Draw();
+	}
+	
+	SwapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+}
+
+void Game::EndFrame()
+{
+	
 }
 
 void Game::PrepareFrame()
 {
+	Context->ClearState();
 }
 
 void Game::PrepareResources()
@@ -86,8 +183,19 @@ void Game::PrepareResources()
 
 void Game::Update()
 {
+	UpdateInternal();
+	for (auto& component : Components) {
+		component->Update();
+	}
 }
 
 void Game::UpdateInternal()
 {
+}
+
+void Game::Exit()
+{
+	Device->Release();
+	delete Display;
+	delete Instance;
 }

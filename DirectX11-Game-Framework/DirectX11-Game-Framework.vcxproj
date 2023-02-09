@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DisplayWin.h" />
+    <ClInclude Include="ExampleComponent.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameComponent.h" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="DisplayWin.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="ExampleComponent.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameComponent.cpp" />
     <ClCompile Include="pch.cpp">

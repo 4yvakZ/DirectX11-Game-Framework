@@ -14,15 +14,15 @@ class Game_API GameComponent
 {
 public:
 
-	virtual void Destroy() = 0;
+	virtual void DestroyResources() = 0;
 
 	virtual void Draw() = 0;
 
 	GameComponent() {};
 
-	virtual void Initialize() = 0;
+	virtual void Initialize();
 
-	virtual void Reload() = 0;
+	virtual void Reload() {};
 
 	virtual void Update() = 0;
 

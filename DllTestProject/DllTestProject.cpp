@@ -2,13 +2,14 @@
 //
 
 #include <iostream>
-#include "Game.h"
-#include "DisplayWin.h"
 #include <dxgi.h>
+
+#include "Game.h"
+#include "ExampleComponent.h"
 
 int main()
 {
-    UINT i = 0;
+    /*UINT i = 0;
     IDXGIAdapter* pAdapter;
     IDXGIFactory1* pFactory;
     CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)(&pFactory));
@@ -18,9 +19,13 @@ int main()
         pAdapter->GetDesc(&desc);
         std::cout << desc.Description << std::endl;
         ++i;
-    }
+    }*/
     std::cout << "Hello World!\n";
-    DisplayWin display{ 800, 800 };
+    Game* testGame = Game::Instance;
+    testGame->Components.push_back(new ExampleComponent);
+
+    testGame->Run();
+    testGame->Exit();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
