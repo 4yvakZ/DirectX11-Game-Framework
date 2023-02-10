@@ -6,6 +6,7 @@
 
 #include "Game.h"
 #include "ExampleComponent.h"
+#include "TriangleComponent.h"
 
 int main()
 {
@@ -22,6 +23,7 @@ int main()
     }*/
     std::cout << "Hello World!\n";
     Game* testGame = Game::Instance;
+    testGame->Components.push_back(new TriangleComponent);
     testGame->Components.push_back(new ExampleComponent);
 
     testGame->Run();

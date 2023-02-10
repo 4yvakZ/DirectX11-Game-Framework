@@ -1,18 +1,38 @@
 #include "pch.h"
-#include "ExampleComponent.h"
+#include "TriangleComponent.h"
 
-ExampleComponent::ExampleComponent():
+TriangleComponent::TriangleComponent():
 	GameComponent()
 {
 }
 
-void ExampleComponent::DestroyResources()
+void TriangleComponent::DestroyResources()
 {
 }
 
-void ExampleComponent::Initialize()
+void TriangleComponent::Draw()
 {
-	///vertexShaderByteCode initialization
+	///Setup Rasterizer stage
+	game->Context->RSSetState(rastState);
+
+	///Setup AI stage
+	UINT strides[] = { 24 };
+	UINT offsets[] = { 0 };
+
+	game->Context->IASetInputLayout(layout);
+	game->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	game->Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	game->Context->IASetVertexBuffers(0, 1, &vertices, strides, offsets);
+
+	///Set Vertex and Pixel Shaders
+	game->Context->VSSetShader(vertexShader, nullptr, 0);
+	game->Context->PSSetShader(pixelShader, nullptr, 0);
+
+	game->Context->DrawIndexed(3, 0, 0);
+}
+
+void TriangleComponent::Initialize()
+{
 	GameComponent::Initialize();
 	ID3DBlob* errorVertexCode = nullptr;
 	auto res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
@@ -59,7 +79,7 @@ void ExampleComponent::Initialize()
 		vertexShaderByteCode->GetBufferPointer(),
 		vertexShaderByteCode->GetBufferSize(),
 		nullptr, &vertexShader);
-	
+
 	///pixelShader initialization
 	game->Device->CreatePixelShader(
 		pixelShaderByteCode->GetBufferPointer(),
@@ -112,7 +132,7 @@ void ExampleComponent::Initialize()
 	game->Device->CreateBuffer(&vertexBufDesc, &vertexData, &vertices);
 
 	///indexBuffer initialization
-	int indeces[] = { 0,1,2, 1,0,3 };
+	int indeces[] = { 0,1,2 };
 	D3D11_BUFFER_DESC indexBufDesc = {};
 	indexBufDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -133,34 +153,34 @@ void ExampleComponent::Initialize()
 	rastDesc.CullMode = D3D11_CULL_NONE;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 
-	
+
 	res = game->Device->CreateRasterizerState(&rastDesc, &rastState);
 
 	///Setup Rasterizer stage
 	game->Context->RSSetState(rastState);
 }
 
-void ExampleComponent::Update()
+void TriangleComponent::Update()
 {
 }
 
-void ExampleComponent::Draw()
+void TriangleComponent::SetPoints(DirectX::XMFLOAT4 point1, DirectX::XMFLOAT4 point2, DirectX::XMFLOAT4 point3)
 {
-	///Setup Rasterizer stage
-	game->Context->RSSetState(rastState);
-	
-	///Setup AI stage
-	UINT strides[] = { 32 };
-	UINT offsets[] = { 0 };
+	points[0] = point1;
+	points[2] = point2;
+	points[4] = point3;
+}
 
-	game->Context->IASetInputLayout(layout);
-	game->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	game->Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	game->Context->IASetVertexBuffers(0, 1, &vertices, strides, offsets);
+void TriangleComponent::SetColor(DirectX::XMFLOAT4 point1Color, DirectX::XMFLOAT4 point2Color, DirectX::XMFLOAT4 point3Color)
+{
+	points[1] = point1Color;
+	points[3] = point2Color;
+	points[5] = point3Color;
+}
 
-	///Set Vertex and Pixel Shaders
-	game->Context->VSSetShader(vertexShader, nullptr, 0);
-	game->Context->PSSetShader(pixelShader, nullptr, 0);
-
-	game->Context->DrawIndexed(6, 0, 0);
+void TriangleComponent::SetColor(DirectX::XMFLOAT4 Color)
+{
+	points[1] = Color;
+	points[3] = Color;
+	points[5] = Color;
 }

@@ -145,6 +145,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameComponent.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TriangleComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DisplayWin.cpp" />
@@ -158,9 +159,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TriangleComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\MyVeryFirstShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

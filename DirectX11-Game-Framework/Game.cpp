@@ -164,6 +164,8 @@ void Game::Draw()
 		component->Draw();
 	}
 	
+	Context->OMSetRenderTargets(0, nullptr, nullptr);
+
 	SwapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
 }
 
