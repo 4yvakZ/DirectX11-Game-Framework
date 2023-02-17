@@ -17,6 +17,7 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
+#include "SimpleMath.h"
 
 #include "DisplayWin.h"
 #include "GameComponent.h"
@@ -67,16 +68,14 @@ public:
 
 	ID3D11Texture2D* backBuffer;
 	ID3D11RenderTargetView* RenderView;
-	int RenderSRV;
 
 	std::vector<GameComponent*> Components;
-
-	int DebugAnnotation;
 
 	std::string Name;
 	std::chrono::time_point<std::chrono::steady_clock> PrevTime;
 	int StartTime;
 	float TotalTime;
-	bool ScreenResized;
+
+	DirectX::SimpleMath::Rectangle rect;
 };
 
