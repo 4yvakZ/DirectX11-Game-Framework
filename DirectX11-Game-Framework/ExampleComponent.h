@@ -1,13 +1,7 @@
 #pragma once
 #include "GameComponent.h"
 
-#ifdef DIRECTX11GAMEFRAMEWORK_EXPORTS
-#define Game_API __declspec(dllexport)
-#else
-#define Game_API __declspec(dllimport)
-#endif
-
-class Game_API ExampleComponent :
+class GAMEFRAMEWORK_API ExampleComponent :
     public GameComponent
 {
 public:

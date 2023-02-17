@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "ExampleComponent.h"
 
 ExampleComponent::ExampleComponent():

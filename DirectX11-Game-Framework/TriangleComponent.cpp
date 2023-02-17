@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "TriangleComponent.h"
 
 TriangleComponent::TriangleComponent():

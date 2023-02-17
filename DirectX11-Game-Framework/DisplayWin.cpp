@@ -1,4 +1,4 @@
-#include "pch.h"
+
 #include "DisplayWin.h"
 #include <iostream>
 

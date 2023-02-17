@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Game.h"
 
 Game* Game::Instance = new Game();

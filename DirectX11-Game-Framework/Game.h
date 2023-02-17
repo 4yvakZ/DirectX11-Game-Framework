@@ -1,10 +1,6 @@
 #pragma once
 
-#ifdef DIRECTX11GAMEFRAMEWORK_EXPORTS
-#define Game_API __declspec(dllexport)
-#else
-#define Game_API __declspec(dllimport)
-#endif
+#include "framework.h"
 
 #include <wrl.h>
 #include <iostream>
@@ -27,7 +23,7 @@
 
 class GameComponent;
 
-class Game_API Game
+class GAMEFRAMEWORK_API Game
 {
 public:
 	void Exit();
