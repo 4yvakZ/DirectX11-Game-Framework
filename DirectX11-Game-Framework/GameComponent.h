@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Game.h"
-#include "RenderSystem.h"
-
-class Game;
+#include "framework.h"
 
 class GAMEFRAMEWORK_API GameComponent
 {

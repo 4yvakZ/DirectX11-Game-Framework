@@ -10,21 +10,9 @@
 
 int main()
 {
-    /*UINT i = 0;
-    IDXGIAdapter* pAdapter;
-    IDXGIFactory1* pFactory;
-    CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)(&pFactory));
-    while (pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND)
-    {
-        DXGI_ADAPTER_DESC desc;
-        pAdapter->GetDesc(&desc);
-        std::cout << desc.Description << std::endl;
-        ++i;
-    }*/
-    std::cout << "Hello World!\n";
     Game* testGame = Game::GetInstance();
     testGame->Components.push_back(new TriangleComponent);
-    testGame->Components.push_back(new ExampleComponent);
+    //testGame->Components.push_back(new ExampleComponent);
 
     testGame->Run();
     testGame->Exit();

@@ -1,22 +1,61 @@
 #include "Game.h"
 
-#include "ExampleComponent.h"
+#include "RenderComponent.h"
 
-ExampleComponent::ExampleComponent():
-	GameComponent()
+int RenderComponent::AddPoint(Vector4 coords, Color color)
 {
+	points.push_back(coords);
+	points.push_back(color);
+	return points.size() / 2 - 1;
 }
 
-void ExampleComponent::DestroyResources()
+void RenderComponent::AddIndex(int index)
 {
+	indexes.push_back(index);
 }
 
-void ExampleComponent::Initialize()
+void RenderComponent::Add2DRect(DirectX::SimpleMath::Rectangle rect, Color color)
+{
+	RenderSystem* render = Game::GetRenderSystem();
+	float width = render->viewport.width / 2;
+	float height = render->viewport.height / 2;
+	float x0 = rect.x / width;
+	float x1 = x0 + rect.width / width;
+	float y0 = rect.y / height;
+	float y1 = y0 + rect.height / height;
+	points.push_back(Vector4(x0, y0, 0, 1));
+	points.push_back(color);
+	int firstPointIndex = points.size() / 2 - 1;
+	points.push_back(Vector4(x1, y0, 0, 1));
+	points.push_back(color);
+	points.push_back(Vector4(x1, y1, 0, 1));
+	points.push_back(color);
+	points.push_back(Vector4(x0, y1, 0, 1));
+	points.push_back(color);
+
+	indexes.push_back(firstPointIndex);
+	indexes.push_back(firstPointIndex + 1);
+	indexes.push_back(firstPointIndex + 2);
+
+	indexes.push_back(firstPointIndex);
+	indexes.push_back(firstPointIndex + 2);
+	indexes.push_back(firstPointIndex + 3);
+}
+
+void RenderComponent::Add2DCircle(Vector4 centerCoord, float radius, Color color)
+{
+
+}
+
+void RenderComponent::Initialize()
 {
 	RenderSystem* render = Game::GetRenderSystem();
 
+	render->renderComponents.push_back(this);
+
 	ID3DBlob* errorVertexCode = nullptr;
-	auto res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
+	std::wstring fileName(shaderFileName.begin(), shaderFileName.end());
+	auto res = D3DCompileFromFile(fileName.c_str(),
 		nullptr /*macros*/,
 		nullptr /*include*/,
 		"VSMain",
@@ -45,7 +84,7 @@ void ExampleComponent::Initialize()
 	D3D_SHADER_MACRO Shader_Macros[] = { "TEST", "1", "TCOLOR", "float4(0.0f, 1.0f, 0.0f, 1.0f)", nullptr, nullptr };
 
 	ID3DBlob* errorPixelCode;
-	res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
+	res = D3DCompileFromFile(fileName.c_str(),
 		Shader_Macros /*macros*/,
 		nullptr /*include*/,
 		"PSMain",
@@ -60,7 +99,7 @@ void ExampleComponent::Initialize()
 		vertexShaderByteCode->GetBufferPointer(),
 		vertexShaderByteCode->GetBufferSize(),
 		nullptr, &vertexShader);
-	
+
 	///pixelShader initialization
 	render->Device->CreatePixelShader(
 		pixelShaderByteCode->GetBufferPointer(),
@@ -113,17 +152,16 @@ void ExampleComponent::Initialize()
 	render->Device->CreateBuffer(&vertexBufDesc, &vertexData, &vertices);
 
 	///indexBuffer initialization
-	int indeces[] = { 0,1,2, 1,0,3 };
 	D3D11_BUFFER_DESC indexBufDesc = {};
 	indexBufDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufDesc.CPUAccessFlags = 0;
 	indexBufDesc.MiscFlags = 0;
 	indexBufDesc.StructureByteStride = 0;
-	indexBufDesc.ByteWidth = sizeof(int) * std::size(indeces);
+	indexBufDesc.ByteWidth = sizeof(int) * std::size(indexes);
 
 	D3D11_SUBRESOURCE_DATA indexData = {};
-	indexData.pSysMem = indeces;
+	indexData.pSysMem = &indexes[0];
 	indexData.SysMemPitch = 0;
 	indexData.SysMemSlicePitch = 0;
 
@@ -134,25 +172,22 @@ void ExampleComponent::Initialize()
 	rastDesc.CullMode = D3D11_CULL_NONE;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 
-	
+
 	res = render->Device->CreateRasterizerState(&rastDesc, &rastState);
-
-	///Setup Rasterizer stage
-	render->Context->RSSetState(rastState);
 }
 
-void ExampleComponent::Update()
+void RenderComponent::Update()
 {
 }
 
-void ExampleComponent::Draw()
+void RenderComponent::Draw()
 {
-	RenderSystem* render = Game::GetRenderSystem();
+	/*RenderSystem* render = Game::GetRenderSystem();
 	///Setup Rasterizer stage
 	render->Context->RSSetState(rastState);
-	
+
 	///Setup AI stage
-	UINT strides[] = { 32 };
+	UINT strides[] = { sizeof(DirectX::XMFLOAT4) * std::size(points) };
 	UINT offsets[] = { 0 };
 
 	render->Context->IASetInputLayout(layout);
@@ -164,5 +199,5 @@ void ExampleComponent::Draw()
 	render->Context->VSSetShader(vertexShader, nullptr, 0);
 	render->Context->PSSetShader(pixelShader, nullptr, 0);
 
-	render->Context->DrawIndexed(6, 0, 0);
+	render->Context->DrawIndexed(6, 0, 0);*/
 }

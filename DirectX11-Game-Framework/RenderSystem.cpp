@@ -1,4 +1,9 @@
+#include "DisplayWin.h"
+
 #include "RenderSystem.h"
+
+#include "RenderComponent.h"
+
 
 constexpr Color backgroundColor(98.0f / 256, 98.0f / 256, 98.0f / 256);
 
@@ -51,15 +56,9 @@ RenderSystem::RenderSystem(DisplayWin *display)
 
 	CreateBackBuffer();
 
-	D3D11_VIEWPORT viewport = {};
-	viewport.Width = static_cast<float>(display->ClientWidth);
-	viewport.Height = static_cast<float>(display->ClientHeight);
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0;
-	viewport.MaxDepth = 1.0f;
+	viewport = Viewport(0.0f, 0.0f, display->ClientWidth, display->ClientHeight);
 
-	Context->RSSetViewports(1, &viewport);
+	Context->RSSetViewports(1, viewport.Get11());
 }
 
 RenderSystem::~RenderSystem()

@@ -2,12 +2,12 @@
 
 #include "framework.h"
 
-
-#include "DisplayWin.h"
-
 using namespace DirectX::SimpleMath;
 
-class GAMEFRAMEWORK_API RenderSystem
+class DisplayWin;
+class RenderComponent;
+
+class RenderSystem
 {
 
 public:
@@ -33,5 +33,9 @@ public:
 
 	ID3D11Texture2D* backBuffer;
 	ID3D11RenderTargetView* RenderView;
+
+	Viewport viewport;
+
+	std::vector <RenderComponent*> renderComponents;
 };
 

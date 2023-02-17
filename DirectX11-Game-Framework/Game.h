@@ -7,11 +7,10 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
-#include "DisplayWin.h"
 #include "RenderSystem.h"
-#include "GameComponent.h"
-
+class DisplayWin;
 class GameComponent;
+class GameObject;
 
 class GAMEFRAMEWORK_API Game
 {
@@ -39,12 +38,6 @@ protected:
 private:
 	Game();
 
-	static RenderSystem* render;
-
-	static Game* instance;
-
-	static DisplayWin* display;
-
 public:
 
 	static Game* GetInstance() {
@@ -60,14 +53,19 @@ public:
 	}
 
 	std::vector<GameComponent*> Components;
+	std::vector<GameObject*> GameObjects;
 
 	std::string Name;
 	std::chrono::time_point<std::chrono::steady_clock> PrevTime;
 	int StartTime;
 	float TotalTime;
 
-	DirectX::SimpleMath::Rectangle rect;
-
 private:
+
+	static RenderSystem* render;
+
+	static Game* instance;
+
+	static DisplayWin* display;
 };
 

@@ -1,3 +1,5 @@
+#include "Game.h"
+
 #include "TriangleComponent.h"
 
 TriangleComponent::TriangleComponent():
@@ -16,7 +18,7 @@ void TriangleComponent::Draw()
 	render->Context->RSSetState(rastState);
 
 	///Setup AI stage
-	UINT strides[] = { 24 };
+	UINT strides[] = { 32 };
 	UINT offsets[] = { 0 };
 
 	render->Context->IASetInputLayout(layout);

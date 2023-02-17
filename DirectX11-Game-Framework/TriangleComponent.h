@@ -1,6 +1,7 @@
 #pragma once
 #include "GameComponent.h"
-class Game_API TriangleComponent :
+
+class GAMEFRAMEWORK_API TriangleComponent:
     public GameComponent
 {
 public:
