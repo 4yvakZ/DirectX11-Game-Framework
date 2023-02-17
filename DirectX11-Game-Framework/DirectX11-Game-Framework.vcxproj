@@ -144,6 +144,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameComponent.h" />
+    <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="TriangleComponent.h" />
   </ItemGroup>
@@ -153,6 +154,7 @@
     <ClCompile Include="ExampleComponent.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameComponent.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="TriangleComponent.cpp" />
   </ItemGroup>

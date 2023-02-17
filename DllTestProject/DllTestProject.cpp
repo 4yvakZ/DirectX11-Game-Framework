@@ -22,7 +22,7 @@ int main()
         ++i;
     }*/
     std::cout << "Hello World!\n";
-    Game* testGame = Game::Instance;
+    Game* testGame = Game::GetInstance();
     testGame->Components.push_back(new TriangleComponent);
     testGame->Components.push_back(new ExampleComponent);
 

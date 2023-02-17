@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game.h"
+#include "RenderSystem.h"
 
 class Game;
 
@@ -12,14 +13,10 @@ public:
 
 	virtual void Draw() = 0;
 
-	GameComponent() {};
-
-	virtual void Initialize();
+	virtual void Initialize() = 0;
 
 	virtual void Reload() {};
 
 	virtual void Update() = 0;
-
-	Game* game;
 };
 

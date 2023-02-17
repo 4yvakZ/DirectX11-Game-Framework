@@ -11,28 +11,30 @@ void TriangleComponent::DestroyResources()
 
 void TriangleComponent::Draw()
 {
+	RenderSystem* render = Game::GetRenderSystem();
 	///Setup Rasterizer stage
-	game->Context->RSSetState(rastState);
+	render->Context->RSSetState(rastState);
 
 	///Setup AI stage
 	UINT strides[] = { 24 };
 	UINT offsets[] = { 0 };
 
-	game->Context->IASetInputLayout(layout);
-	game->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	game->Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	game->Context->IASetVertexBuffers(0, 1, &vertices, strides, offsets);
+	render->Context->IASetInputLayout(layout);
+	render->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	render->Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	render->Context->IASetVertexBuffers(0, 1, &vertices, strides, offsets);
 
 	///Set Vertex and Pixel Shaders
-	game->Context->VSSetShader(vertexShader, nullptr, 0);
-	game->Context->PSSetShader(pixelShader, nullptr, 0);
+	render->Context->VSSetShader(vertexShader, nullptr, 0);
+	render->Context->PSSetShader(pixelShader, nullptr, 0);
 
-	game->Context->DrawIndexed(3, 0, 0);
+	render->Context->DrawIndexed(3, 0, 0);
 }
 
 void TriangleComponent::Initialize()
 {
-	GameComponent::Initialize();
+	RenderSystem* render = Game::GetRenderSystem();
+
 	ID3DBlob* errorVertexCode = nullptr;
 	auto res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
 		nullptr /*macros*/,
@@ -74,13 +76,13 @@ void TriangleComponent::Initialize()
 		&errorPixelCode);
 
 	///vertexShader initialization
-	game->Device->CreateVertexShader(
+	render->Device->CreateVertexShader(
 		vertexShaderByteCode->GetBufferPointer(),
 		vertexShaderByteCode->GetBufferSize(),
 		nullptr, &vertexShader);
 
 	///pixelShader initialization
-	game->Device->CreatePixelShader(
+	render->Device->CreatePixelShader(
 		pixelShaderByteCode->GetBufferPointer(),
 		pixelShaderByteCode->GetBufferSize(),
 		nullptr, &pixelShader);
@@ -105,7 +107,7 @@ void TriangleComponent::Initialize()
 			0}
 	};
 
-	game->Device->CreateInputLayout(
+	render->Device->CreateInputLayout(
 		inputElements,
 		2,
 		vertexShaderByteCode->GetBufferPointer(),
@@ -128,7 +130,7 @@ void TriangleComponent::Initialize()
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
-	game->Device->CreateBuffer(&vertexBufDesc, &vertexData, &vertices);
+	render->Device->CreateBuffer(&vertexBufDesc, &vertexData, &vertices);
 
 	///indexBuffer initialization
 	int indeces[] = { 0,1,2 };
@@ -145,7 +147,7 @@ void TriangleComponent::Initialize()
 	indexData.SysMemPitch = 0;
 	indexData.SysMemSlicePitch = 0;
 
-	game->Device->CreateBuffer(&indexBufDesc, &indexData, &indexBuffer);
+	render->Device->CreateBuffer(&indexBufDesc, &indexData, &indexBuffer);
 
 	///rastState initialization
 	CD3D11_RASTERIZER_DESC rastDesc = {};
@@ -153,10 +155,10 @@ void TriangleComponent::Initialize()
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 
 
-	res = game->Device->CreateRasterizerState(&rastDesc, &rastState);
+	res = render->Device->CreateRasterizerState(&rastDesc, &rastState);
 
 	///Setup Rasterizer stage
-	game->Context->RSSetState(rastState);
+	render->Context->RSSetState(rastState);
 }
 
 void TriangleComponent::Update()
