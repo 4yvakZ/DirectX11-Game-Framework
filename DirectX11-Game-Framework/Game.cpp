@@ -16,7 +16,7 @@ Game::Game()
 
 void Game::Initialize()
 {
-	display = new DisplayWin{};
+	display = new DisplayWin{1200, 800};
 
 	render = new RenderSystem{ display };
 

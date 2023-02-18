@@ -34,8 +34,9 @@ renderComponent->AddIndex(2);*/
 	renderComponent->Add2DRect(r, Color(1, 0, 0, 1));
 
 	for (int i = 64; i > 2; i /= 2) {
-		renderComponent->Add2DCircle(Vector4(), 400, i, Color(1.f / i, 1.f / i, 1.f / i));
+		renderComponent->Add2DCircle(Vector4(), 100, i, Color(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
 	}
+	renderComponent->Add2DCircle(Vector4(-300, -300, 0, 1), 20);
 
 	for (auto component : components) {
 		component->Initialize();

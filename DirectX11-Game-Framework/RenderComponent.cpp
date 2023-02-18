@@ -9,7 +9,7 @@ RenderComponent::~RenderComponent()
 	render->RemoveRenderComponent(this);
 }
 
-int RenderComponent::AddPoint(Vector4 coords, Color color)
+int RenderComponent::AddRawPoint(Vector4 coords, Color color)
 {
 	points.push_back(coords);
 	points.push_back(color);
