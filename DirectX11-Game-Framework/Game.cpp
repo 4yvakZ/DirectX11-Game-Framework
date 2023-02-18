@@ -1,8 +1,8 @@
+#include "Game.h"
+
 #include "GameComponent.h"
 #include "RenderSystem.h"
 #include "DisplayWin.h"
-
-#include "Game.h"
 
 Game* Game::instance = new Game();
 

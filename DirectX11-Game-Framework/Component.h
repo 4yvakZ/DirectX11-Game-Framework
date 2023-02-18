@@ -1,5 +1,8 @@
 #pragma once
-class Component
+
+#include "framework.h"
+
+class GAMEFRAMEWORK_API Component
 {
 public:
 

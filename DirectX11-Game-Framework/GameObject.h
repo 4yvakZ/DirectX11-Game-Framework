@@ -1,6 +1,7 @@
 #pragma once
 #include "framework.h"
-#include "Component.h"
+
+class Component;
 
 class GAMEFRAMEWORK_API GameObject
 {

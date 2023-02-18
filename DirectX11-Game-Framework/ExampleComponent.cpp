@@ -1,6 +1,7 @@
-#include "Game.h"
-
 #include "ExampleComponent.h"
+
+#include "Game.h"
+#include "RenderSystem.h"
 
 ExampleComponent::ExampleComponent():
 	GameComponent()

@@ -7,10 +7,10 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
-#include "RenderSystem.h"
 class DisplayWin;
 class GameComponent;
 class GameObject;
+class RenderSystem;
 
 class GAMEFRAMEWORK_API Game
 {

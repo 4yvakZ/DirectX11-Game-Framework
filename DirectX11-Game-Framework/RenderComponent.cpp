@@ -1,6 +1,7 @@
-#include "Game.h"
-
 #include "RenderComponent.h"
+
+#include "Game.h"
+#include "RenderSystem.h"
 
 int RenderComponent::AddPoint(Vector4 coords, Color color)
 {

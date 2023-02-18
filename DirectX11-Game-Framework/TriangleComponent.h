@@ -1,4 +1,5 @@
 #pragma once
+
 #include "GameComponent.h"
 
 class GAMEFRAMEWORK_API TriangleComponent:

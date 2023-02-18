@@ -1,6 +1,7 @@
-#include "Game.h"
-
 #include "TriangleComponent.h"
+
+#include "Game.h"
+#include "RenderSystem.h"
 
 TriangleComponent::TriangleComponent():
 	GameComponent()

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "framework.h"
-
 #include "Component.h"
+
+using namespace DirectX::SimpleMath;
 
 class GAMEFRAMEWORK_API RenderComponent :
     public Component
