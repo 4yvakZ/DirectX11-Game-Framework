@@ -3,6 +3,12 @@
 #include "Game.h"
 #include "RenderSystem.h"
 
+RenderComponent::~RenderComponent()
+{
+	RenderSystem* render = Game::GetRenderSystem();
+	render->RemoveRenderComponent(this);
+}
+
 int RenderComponent::AddPoint(Vector4 coords, Color color)
 {
 	points.push_back(coords);
@@ -183,12 +189,12 @@ void RenderComponent::Update()
 
 void RenderComponent::Draw()
 {
-	/*RenderSystem* render = Game::GetRenderSystem();
+	RenderSystem* render = Game::GetRenderSystem();
 	///Setup Rasterizer stage
 	render->Context->RSSetState(rastState);
 
 	///Setup AI stage
-	UINT strides[] = { sizeof(DirectX::XMFLOAT4) * std::size(points) };
+	UINT strides[] = { 32 };
 	UINT offsets[] = { 0 };
 
 	render->Context->IASetInputLayout(layout);
@@ -200,5 +206,5 @@ void RenderComponent::Draw()
 	render->Context->VSSetShader(vertexShader, nullptr, 0);
 	render->Context->PSSetShader(pixelShader, nullptr, 0);
 
-	render->Context->DrawIndexed(6, 0, 0);*/
+	render->Context->DrawIndexed(indexes.size(), 0, 0);
 }

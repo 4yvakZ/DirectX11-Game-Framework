@@ -69,6 +69,9 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::Draw()
 {
+	for (auto& renderComponent : renderComponents) {
+		renderComponent->Draw();
+	}
 }
 
 void RenderSystem::EndFrame()
@@ -82,4 +85,14 @@ void RenderSystem::PrepareFrame()
 {
 	Context->OMSetRenderTargets(1, &RenderView, nullptr);
 	Context->ClearRenderTargetView(RenderView, backgroundColor);
+}
+
+void RenderSystem::RemoveRenderComponent(RenderComponent* renderComponent)
+{
+	for (size_t i = 0; i < renderComponents.size(); i++) {
+		if (renderComponents[i] == renderComponent) {
+			renderComponents.erase(renderComponents.begin() + i);
+			return;
+		}
+	}
 }

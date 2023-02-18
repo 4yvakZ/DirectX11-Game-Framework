@@ -7,11 +7,13 @@
 #include "Game.h"
 #include "ExampleComponent.h"
 #include "TriangleComponent.h"
+#include "TestGameObject.h"
 
 int main()
 {
     Game* testGame = Game::GetInstance();
-    testGame->Components.push_back(new TriangleComponent);
+    testGame->GameObjects.push_back(new TestGameObject());
+    //testGame->Components.push_back(new TriangleComponent);
     //testGame->Components.push_back(new ExampleComponent);
 
     testGame->Run();

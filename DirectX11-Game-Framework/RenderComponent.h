@@ -17,6 +17,8 @@ public:
 
     RenderComponent() = delete;
 
+    ~RenderComponent();
+
     int AddPoint(Vector4 coords, Color color = Color(1, 1, 1, 1));
     void AddIndex(int index);
 

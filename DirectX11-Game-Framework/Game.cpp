@@ -3,6 +3,7 @@
 #include "GameComponent.h"
 #include "RenderSystem.h"
 #include "DisplayWin.h"
+#include "GameObject.h"
 
 Game* Game::instance = new Game();
 
@@ -22,6 +23,10 @@ void Game::Initialize()
 
 	for(auto& component: Components){
 		component->Initialize();
+	}
+	
+	for (auto& object : GameObjects) {
+		object->Initialize();
 	}
 }
 
@@ -92,6 +97,8 @@ void Game::DestroyResources()
 void Game::Draw()
 {
 	render->PrepareFrame();
+
+	render->Draw();
 
 	for (auto& component : Components) {
 		component->Draw();
