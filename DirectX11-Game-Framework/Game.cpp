@@ -1,6 +1,5 @@
 #include "Game.h"
 
-#include "GameComponent.h"
 #include "RenderSystem.h"
 #include "DisplayWin.h"
 #include "GameObject.h"
@@ -21,10 +20,6 @@ void Game::Initialize()
 
 	render = new RenderSystem{ display };
 
-	for(auto& component: Components){
-		component->Initialize();
-	}
-	
 	for (auto& object : GameObjects) {
 		object->Initialize();
 	}
@@ -89,9 +84,7 @@ void Game::Run()
 
 void Game::DestroyResources()
 {
-	for (auto& component : Components) {
-		component->DestroyResources();
-	}
+
 }
 
 void Game::Draw()
@@ -100,12 +93,7 @@ void Game::Draw()
 
 	render->Draw();
 
-	for (auto& component : Components) {
-		component->Draw();
-	}
-
 	render->EndFrame();
-	
 }
 
 void Game::PrepareResources()
@@ -115,8 +103,9 @@ void Game::PrepareResources()
 void Game::Update()
 {
 	UpdateInternal();
-	for (auto& component : Components) {
-		component->Update();
+
+	for (auto& object : GameObjects) {
+		object->Update();
 	}
 }
 

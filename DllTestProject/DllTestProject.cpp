@@ -5,8 +5,7 @@
 #include <dxgi.h>
 
 #include "Game.h"
-#include "ExampleComponent.h"
-#include "TriangleComponent.h"
+
 #include "TestGameObject.h"
 
 int main()

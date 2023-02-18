@@ -8,7 +8,6 @@
 #pragma comment(lib, "dxguid.lib")
 
 class DisplayWin;
-class GameComponent;
 class GameObject;
 class RenderSystem;
 
@@ -52,7 +51,6 @@ public:
 		return display;
 	}
 
-	std::vector<GameComponent*> Components;
 	std::vector<GameObject*> GameObjects;
 
 	std::string Name;

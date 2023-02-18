@@ -141,30 +141,24 @@
   <ItemGroup>
     <ClInclude Include="Component.h" />
     <ClInclude Include="DisplayWin.h" />
-    <ClInclude Include="ExampleComponent.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GameComponent.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="TestGameObject.h" />
-    <ClInclude Include="TriangleComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DisplayWin.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="ExampleComponent.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameComponent.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="TestGameObject.cpp" />
-    <ClCompile Include="TriangleComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
