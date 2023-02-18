@@ -7,6 +7,12 @@ RenderComponent::~RenderComponent()
 {
 	RenderSystem* render = Game::GetRenderSystem();
 	render->RemoveRenderComponent(this);
+
+	delete layout;
+	delete pixelShader;
+	delete pixelShaderByteCode;
+	delete vertexShader;
+	delete vertexShaderByteCode;
 }
 
 int RenderComponent::AddRawPoint(Vector4 coords, Color color)

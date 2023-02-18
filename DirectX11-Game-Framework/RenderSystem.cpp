@@ -6,7 +6,7 @@
 #include "RenderComponent.h"
 
 
-constexpr Color backgroundColor(98.0f / 256, 98.0f / 256, 98.0f / 256);
+constexpr Color backgroundColor(0.2f, 0.2f, 0.2f);
 
 void RenderSystem::CreateBackBuffer()
 {
@@ -67,6 +67,13 @@ RenderSystem::~RenderSystem()
 	Device->Release();
 }
 
+void RenderSystem::PrepareFrame()
+{
+	Context->OMSetRenderTargets(1, &RenderView, nullptr);
+	Context->ClearRenderTargetView(RenderView, backgroundColor);
+}
+
+
 void RenderSystem::Draw()
 {
 	for (auto& renderComponent : renderComponents) {
@@ -80,13 +87,6 @@ void RenderSystem::EndFrame()
 
 	SwapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
 }
-
-void RenderSystem::PrepareFrame()
-{
-	Context->OMSetRenderTargets(1, &RenderView, nullptr);
-	Context->ClearRenderTargetView(RenderView, backgroundColor);
-}
-
 void RenderSystem::RemoveRenderComponent(RenderComponent* renderComponent)
 {
 	for (size_t i = 0; i < renderComponents.size(); i++) {

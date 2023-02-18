@@ -140,10 +140,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
+    <ClInclude Include="Delegates.h" />
     <ClInclude Include="DisplayWin.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="InputDevice.h" />
+    <ClInclude Include="Keys.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="SimpleMath.h" />
@@ -151,23 +154,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="DisplayWin.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="TestGameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="SimpleMath.inl" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\MyVeryFirstShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Delegates.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
