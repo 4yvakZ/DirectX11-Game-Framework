@@ -21,6 +21,21 @@ void RenderComponent::AddIndex(int index)
 	indexes.push_back(index);
 }
 
+void RenderComponent::AddTriangle(Vector4 coords0, Vector4 coords1, Vector4 coords2, Color color)
+{
+	points.push_back(coords0);
+	points.push_back(color);
+	int firstPointIndex = points.size() / 2 - 1;
+	points.push_back(coords1);
+	points.push_back(color);
+	points.push_back(coords2);
+	points.push_back(color);
+
+	indexes.push_back(firstPointIndex);
+	indexes.push_back(firstPointIndex + 1);
+	indexes.push_back(firstPointIndex + 2);
+}
+
 void RenderComponent::Add2DRect(DirectX::SimpleMath::Rectangle rect, Color color)
 {
 	RenderSystem* render = Game::GetRenderSystem();
@@ -29,7 +44,7 @@ void RenderComponent::Add2DRect(DirectX::SimpleMath::Rectangle rect, Color color
 	float x0 = rect.x / width;
 	float x1 = x0 + rect.width / width;
 	float y0 = rect.y / height;
-	float y1 = y0 + rect.height / height;
+	float y1 = y0 - rect.height / height;
 	points.push_back(Vector4(x0, y0, 0, 1));
 	points.push_back(color);
 	int firstPointIndex = points.size() / 2 - 1;
@@ -49,9 +64,40 @@ void RenderComponent::Add2DRect(DirectX::SimpleMath::Rectangle rect, Color color
 	indexes.push_back(firstPointIndex + 3);
 }
 
-void RenderComponent::Add2DCircle(Vector4 centerCoord, float radius, Color color)
+void RenderComponent::Add2DCircle(Vector4 centerCoord, float radius, int numberOfTriangles, Color color)
 {
+	RenderSystem* render = Game::GetRenderSystem();
+	float width = render->viewport.width / 2;
+	float height = render->viewport.height / 2;
+	float x0 = centerCoord.x / width;
+	float y0 = centerCoord.y / height;
+	float rx = radius / width;
+	float ry = radius / height;
 
+
+	points.push_back(Vector4(x0, y0, 0, 1));
+	points.push_back(color);
+	int centerPointIndex = points.size() / 2 - 1;
+
+	double angleStep = DirectX::XM_2PI / numberOfTriangles;
+
+	for (int i = 0; i < numberOfTriangles; i++) {
+		points.push_back(Vector4(x0 + rx * cos(i*angleStep),
+			y0 + ry * sin(i * angleStep),
+			0, 1));
+		points.push_back(color);
+	}
+	
+	for (int i = 0; i < numberOfTriangles; i++) {
+		indexes.push_back(centerPointIndex);
+		if (i == numberOfTriangles - 1) {
+			indexes.push_back(centerPointIndex + 1);
+		}
+		else {
+			indexes.push_back(centerPointIndex + 2 + i);
+		}
+		indexes.push_back(centerPointIndex + 1 + i);
+	}
 }
 
 void RenderComponent::Initialize()

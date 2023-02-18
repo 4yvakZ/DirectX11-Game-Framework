@@ -22,8 +22,11 @@ public:
     int AddPoint(Vector4 coords, Color color = Color(1, 1, 1, 1));
     void AddIndex(int index);
 
+    void AddTriangle(Vector4 coords0, Vector4 coords1,
+        Vector4 coords2, Color color = Color(1, 1, 1, 1));
+
     void Add2DRect(DirectX::SimpleMath::Rectangle rect, Color color = Color(1, 1, 1, 1));
-    void Add2DCircle(Vector4 centerCoord, float radius, Color color = Color(1, 1, 1, 1));
+    void Add2DCircle(Vector4 centerCoord, float radius, int numberOfTriangles = 8, Color color = Color(1, 1, 1, 1));
 
     // Inherited via Component
     virtual void Initialize() override;
