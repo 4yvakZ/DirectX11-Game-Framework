@@ -7,7 +7,7 @@ class GAMEFRAMEWORK_API GameObject
 {
 public:
 	virtual void Update() = 0;
-	virtual void Initialize() = 0;
+	virtual void Initialize();
 
 	~GameObject();
 

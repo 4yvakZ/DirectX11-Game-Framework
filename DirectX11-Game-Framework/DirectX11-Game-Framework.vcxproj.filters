@@ -118,9 +118,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\MyVeryFirstShader.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <Natvis Include="Delegates.natvis">
       <Filter>Header Files\Input</Filter>
     </Natvis>
@@ -129,5 +126,8 @@
     <None Include="SimpleMath.inl">
       <Filter>Header Files\Libs</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\MyVeryFirstShader.hlsl" />
   </ItemGroup>
 </Project>

@@ -1,20 +1,23 @@
-// DllTestProject.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// Pong.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #include <iostream>
 
 #include "Game.h"
 
-#include "TestGameObject.h"
+#include "Border.h"
+#include "Racket.h"
+#include "Ball.h"
 
 int main()
 {
-    Game* testGame = Game::GetInstance();
-    testGame->GameObjects.push_back(new TestGameObject());
-    //testGame->Components.push_back(new TriangleComponent);
-    //testGame->Components.push_back(new ExampleComponent);
+    Game* pongGame = Game::GetInstance();
+    pongGame->GameObjects.push_back(new Border());
+    pongGame->GameObjects.push_back(new Ball());
+    pongGame->GameObjects.push_back(new Racket());
 
-    testGame->Run();
+
+    pongGame->Run();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
