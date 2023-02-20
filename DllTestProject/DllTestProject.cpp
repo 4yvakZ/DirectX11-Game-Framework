@@ -16,7 +16,6 @@ int main()
     //testGame->Components.push_back(new ExampleComponent);
 
     testGame->Run();
-    testGame->Exit();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

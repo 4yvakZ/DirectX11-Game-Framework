@@ -8,6 +8,7 @@
 
 class GAMEFRAMEWORK_API InputDevice
 {
+	friend class Game;
 
 	std::unordered_set<Keys>* keys;
 

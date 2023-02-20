@@ -1,25 +1,9 @@
 
 #include "DisplayWin.h"
+
+#include "Game.h"
 #include <iostream>
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
-{
-	switch (umessage)
-	{
-	case WM_KEYDOWN:
-	{
-		// If a key is pressed send it to the input object so it can record that state.
-		std::cout << "Key: " << static_cast<unsigned int>(wparam) << std::endl;
-
-		if (static_cast<unsigned int>(wparam) == 27) PostQuitMessage(0);
-		return 0;
-	}
-	default:
-	{
-		return DefWindowProc(hwnd, umessage, wparam, lparam);
-	}
-	}
-}
 
 DisplayWin::DisplayWin():
 	DisplayWin(800, 800)
@@ -36,7 +20,7 @@ DisplayWin::DisplayWin(int ClientWidth, int ClientHeight):
 #pragma region Window init
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = WndProc;
+	wc.lpfnWndProc = Game::WndProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;

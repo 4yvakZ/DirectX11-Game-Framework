@@ -10,6 +10,7 @@
 class DisplayWin;
 class GameObject;
 class RenderSystem;
+class InputDevice;
 
 class GAMEFRAMEWORK_API Game
 {
@@ -19,6 +20,8 @@ public:
 	void RestoreTarget();
 
 	void Run();
+
+	static LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 
 protected:
 
@@ -51,6 +54,10 @@ public:
 		return display;
 	}
 
+	static InputDevice* GetInputDevice() {
+		return inputDevice;
+	}
+
 	std::vector<GameObject*> GameObjects;
 
 	std::string Name;
@@ -60,10 +67,14 @@ public:
 
 private:
 
+	bool isExitRequested = false;
+
 	static RenderSystem* render;
 
 	static Game* instance;
 
 	static DisplayWin* display;
+
+	static InputDevice* inputDevice;
 };
 
