@@ -12,6 +12,7 @@ TestGameObject::TestGameObject()
 
 void TestGameObject::Update()
 {
+	renderComponent->offset += Vector4(0.001, 0.001, 0, 1);
 }
 
 void TestGameObject::Initialize()

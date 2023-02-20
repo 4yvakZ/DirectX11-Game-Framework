@@ -34,6 +34,8 @@ public:
 
     void Draw();
 
+    Vector4 offset;
+
 private:
     std::string shaderFileName;
 
@@ -49,8 +51,9 @@ private:
     ID3D11VertexShader* vertexShader;
     ID3DBlob* vertexShaderByteCode;
 
-    ID3D11Buffer* vertices;
+    ID3D11Buffer* vertexBuffer;
     ID3D11Buffer* indexBuffer;
+    ID3D11Buffer* constBuffer;
 
     ID3D11RasterizerState* rastState;
 };

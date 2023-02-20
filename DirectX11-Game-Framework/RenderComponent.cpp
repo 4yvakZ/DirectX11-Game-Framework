@@ -194,7 +194,7 @@ void RenderComponent::Initialize()
 
 	//moment for points initialization
 
-	///vertices buffer initialization
+	///vertix buffer initialization
 	D3D11_BUFFER_DESC vertexBufDesc = {};
 	vertexBufDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -208,7 +208,24 @@ void RenderComponent::Initialize()
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
-	render->Device->CreateBuffer(&vertexBufDesc, &vertexData, &vertices);
+	render->Device->CreateBuffer(&vertexBufDesc, &vertexData, &vertexBuffer);
+
+	///vertices buffer initialization
+	D3D11_BUFFER_DESC constBufDesc = {};
+	constBufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	constBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	constBufDesc.MiscFlags = 0;
+	constBufDesc.StructureByteStride = 0;
+	constBufDesc.ByteWidth = sizeof(DirectX::XMFLOAT4);
+
+	D3D11_SUBRESOURCE_DATA constData = {};
+	constData.pSysMem = &offset;
+	constData.SysMemPitch = 0;
+	constData.SysMemSlicePitch = 0;
+
+	render->Device->CreateBuffer(&constBufDesc, &constData, &constBuffer);
+	render->Context->VSSetConstantBuffers(0, 0, &constBuffer);
 
 	///indexBuffer initialization
 	D3D11_BUFFER_DESC indexBufDesc = {};
@@ -252,7 +269,8 @@ void RenderComponent::Draw()
 	render->Context->IASetInputLayout(layout);
 	render->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	render->Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	render->Context->IASetVertexBuffers(0, 1, &vertices, strides, offsets);
+	render->Context->IASetVertexBuffers(0, 1, &vertexBuffer, strides, offsets);
+	
 
 	///Set Vertex and Pixel Shaders
 	render->Context->VSSetShader(vertexShader, nullptr, 0);
