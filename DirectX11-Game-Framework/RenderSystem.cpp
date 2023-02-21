@@ -6,7 +6,8 @@
 #include "RenderComponent.h"
 
 
-constexpr Color backgroundColor(0.2f, 0.2f, 0.2f);
+//constexpr Color backgroundColor(0.2f, 0.2f, 0.2f);
+constexpr Color backgroundColor(0.f, 0.f, 0.f);
 
 void RenderSystem::CreateBackBuffer()
 {

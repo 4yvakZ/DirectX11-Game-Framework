@@ -27,6 +27,9 @@
     <ClCompile Include="Racket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Counter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shaders\StripesShader.hlsl" />
@@ -44,5 +47,14 @@
     <ClInclude Include="Racket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Counter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DirectX11-Game-Framework_Pong.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="DirectX11-Game-Framework_Pong.lib" />
   </ItemGroup>
 </Project>

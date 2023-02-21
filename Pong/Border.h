@@ -10,7 +10,7 @@ class Border :
 public:
 	Border();
 	// Inherited via GameObject
-	virtual void Update() override;
+	virtual void Update(float deltaTime) override;
 	virtual void Initialize() override;
 
 private:

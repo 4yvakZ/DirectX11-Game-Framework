@@ -9,13 +9,27 @@
 #include "Racket.h"
 #include "Ball.h"
 
+
 int main()
 {
     Game* pongGame = Game::GetInstance();
     pongGame->GameObjects.push_back(new Border());
-    pongGame->GameObjects.push_back(new Ball());
-    pongGame->GameObjects.push_back(new Racket());
 
+    Ball* ball = new Ball();
+    pongGame->GameObjects.push_back(ball);
+
+    Racket* r1 = new Racket();
+    r1->rect.x = -580;
+    r1->ball = ball;
+
+    Racket* r2 = new Racket();
+    r2->rect.x = 560;
+    r2->upKey = Keys::Up;
+    r2->downKey = Keys::Down;
+    r2->ball = ball;
+
+    pongGame->GameObjects.push_back(r1);
+    pongGame->GameObjects.push_back(r2);
 
     pongGame->Run();
 }

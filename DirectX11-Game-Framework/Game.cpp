@@ -98,7 +98,7 @@ void Game::Run()
 	Initialize();
 
 	PrevTime = std::chrono::steady_clock::now();
-	TotalTime = 0;
+	totalTime = 0;
 	unsigned int frameCount = 0;
 
 	MSG msg;
@@ -116,16 +116,16 @@ void Game::Run()
 		}
 
 		auto	curTime = std::chrono::steady_clock::now();
-		float	deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - PrevTime).count() / 1000000.0f;
+		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - PrevTime).count() / 1000000.0f;
 		PrevTime = curTime;
 
-		TotalTime += deltaTime;
+		totalTime += deltaTime;
 		frameCount++;
 
-		if (TotalTime > 1.0f) {
-			float fps = frameCount / TotalTime;
+		if (totalTime > 1.0f) {
+			float fps = frameCount / totalTime;
 
-			TotalTime -= 1.0f;
+			totalTime -= 1.0f;
 
 			WCHAR text[256];
 			swprintf_s(text, TEXT("FPS: %f"), fps);
@@ -144,13 +144,14 @@ void Game::Run()
 
 void Game::DestroyResources()
 {
+	for (auto& object : GameObjects) {
+		delete object;
+	}
+	GameObjects.clear();
+	
 	delete render;
 	delete display;
 	delete inputDevice;
-	for (auto& object : GameObjects) {
-		object->Update();
-	}
-	GameObjects.clear();
 	delete instance;
 }
 
@@ -177,7 +178,7 @@ void Game::Update()
 	UpdateInternal();
 
 	for (auto& object : GameObjects) {
-		object->Update();
+		object->Update(deltaTime);
 	}
 }
 

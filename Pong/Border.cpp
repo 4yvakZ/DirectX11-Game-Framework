@@ -7,8 +7,10 @@ Border::Border() {
 	components.push_back(renderComponent);
 }
 
-void Border::Update()
+void Border::Update(float deltaTime)
 {
+
+	GameObject::Update(deltaTime);
 }
 
 void Border::Initialize()

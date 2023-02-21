@@ -210,23 +210,6 @@ void RenderComponent::Initialize()
 
 	render->Device->CreateBuffer(&vertexBufDesc, &vertexData, &vertexBuffer);
 
-	///vertices buffer initialization
-	D3D11_BUFFER_DESC constBufDesc = {};
-	constBufDesc.Usage = D3D11_USAGE_DYNAMIC;
-	constBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	constBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	constBufDesc.MiscFlags = 0;
-	constBufDesc.StructureByteStride = 0;
-	constBufDesc.ByteWidth = sizeof(DirectX::XMFLOAT4);
-
-	D3D11_SUBRESOURCE_DATA constData = {};
-	constData.pSysMem = &offset;
-	constData.SysMemPitch = 0;
-	constData.SysMemSlicePitch = 0;
-
-	render->Device->CreateBuffer(&constBufDesc, &constData, &constBuffer);
-	render->Context->VSSetConstantBuffers(0, 0, &constBuffer);
-
 	///indexBuffer initialization
 	D3D11_BUFFER_DESC indexBufDesc = {};
 	indexBufDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -243,6 +226,22 @@ void RenderComponent::Initialize()
 
 	render->Device->CreateBuffer(&indexBufDesc, &indexData, &indexBuffer);
 
+	///const buffer initialization
+	D3D11_BUFFER_DESC constBufDesc = {};
+	constBufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	constBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	constBufDesc.MiscFlags = 0;
+	constBufDesc.StructureByteStride = 0;
+	constBufDesc.ByteWidth = sizeof(DirectX::XMFLOAT4);
+
+	D3D11_SUBRESOURCE_DATA constData = {};
+	constData.pSysMem = &offset;
+	constData.SysMemPitch = 0;
+	constData.SysMemSlicePitch = 0;
+
+	render->Device->CreateBuffer(&constBufDesc, &constData, &constBuffer);
+
 	///rastState initialization
 	CD3D11_RASTERIZER_DESC rastDesc = {};
 	rastDesc.CullMode = D3D11_CULL_NONE;
@@ -252,8 +251,19 @@ void RenderComponent::Initialize()
 	res = render->Device->CreateRasterizerState(&rastDesc, &rastState);
 }
 
-void RenderComponent::Update()
-{
+void RenderComponent::Update() {
+	RenderSystem* render = Game::GetRenderSystem();
+
+	///const buffer update
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	render->Context->Map(constBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	memcpy(mappedResource.pData, &offset, sizeof(offset));
+
+	render->Context->Unmap(constBuffer, 0);
+	
 }
 
 void RenderComponent::Draw()
@@ -274,6 +284,7 @@ void RenderComponent::Draw()
 
 	///Set Vertex and Pixel Shaders
 	render->Context->VSSetShader(vertexShader, nullptr, 0);
+	render->Context->VSSetConstantBuffers(0, 1, &constBuffer);
 	render->Context->PSSetShader(pixelShader, nullptr, 0);
 
 	render->Context->DrawIndexed(indexes.size(), 0, 0);

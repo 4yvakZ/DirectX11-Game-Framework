@@ -12,7 +12,7 @@ struct PS_IN
 
 cbuffer VS_CONST_BUF : register(b0)
 {
-    float4 offset;
+    float4 offset : POSITION0;
 }
 
 PS_IN VSMain( VS_IN input )
