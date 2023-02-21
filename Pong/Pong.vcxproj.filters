@@ -52,9 +52,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DirectX11-Game-Framework_Pong.dll" />
+    <None Include="Include\DirectX11-Game-Framework_Pong.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="DirectX11-Game-Framework_Pong.lib" />
+    <Library Include="Include\DirectX11-Game-Framework_Pong.lib" />
   </ItemGroup>
 </Project>
