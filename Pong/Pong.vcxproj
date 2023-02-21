@@ -150,7 +150,6 @@
     <ClInclude Include="Border.h" />
     <ClInclude Include="Counter.h" />
     <ClInclude Include="Racket.h" />
-    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\DirectX11-Game-Framework_Pong.dll" />

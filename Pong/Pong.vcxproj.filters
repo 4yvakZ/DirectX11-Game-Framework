@@ -35,9 +35,6 @@
     <FxCompile Include="..\Shaders\StripesShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Border.h">
       <Filter>Header Files</Filter>
     </ClInclude>
