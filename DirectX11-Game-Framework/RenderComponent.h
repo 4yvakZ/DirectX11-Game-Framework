@@ -2,6 +2,17 @@
 
 #include "Component.h"
 
+#include <d3d.h>
+#include <d3d11.h>
+#include <d3dcompiler.h>
+#include <directxmath.h>
+
+#include <string>
+#include <vector>
+
+#include "SimpleMath.h"
+
+
 using namespace DirectX::SimpleMath;
 
 class GAMEFRAMEWORK_API RenderComponent :

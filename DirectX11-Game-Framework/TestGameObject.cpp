@@ -1,5 +1,7 @@
 #include "TestGameObject.h"
 
+#include <iostream>
+
 #include "Component.h"
 #include "RenderComponent.h"
 

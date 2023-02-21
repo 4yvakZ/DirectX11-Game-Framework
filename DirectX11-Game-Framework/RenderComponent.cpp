@@ -1,5 +1,7 @@
 #include "RenderComponent.h"
 
+#include <iostream>
+
 #include "Game.h"
 #include "RenderSystem.h"
 

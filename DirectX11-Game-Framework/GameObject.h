@@ -1,4 +1,7 @@
 #pragma once
+
+#include <vector>
+
 #include "framework.h"
 
 class Component;
