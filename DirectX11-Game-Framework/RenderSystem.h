@@ -1,18 +1,5 @@
 #pragma once
 
-#include <wrl.h>
-
-#include <d3d.h>
-#include <d3d11.h>
-#include <d3dcompiler.h>
-#include <directxmath.h>
-
-#include <fbxsdk.h>
-
-#include <vector>
-
-#include "SimpleMath.h"
-
 #include "framework.h"
 
 using namespace DirectX::SimpleMath;

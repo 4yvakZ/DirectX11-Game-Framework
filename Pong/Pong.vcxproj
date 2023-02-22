@@ -112,6 +112,9 @@
       <AdditionalDependencies>DirectX11-Game-Framework_Pong.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.\Include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>copy "..\Libs\DirectX11-Game-Framework_Pong.dll" "..\$(IntDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -150,9 +153,6 @@
     <ClInclude Include="Border.h" />
     <ClInclude Include="Counter.h" />
     <ClInclude Include="Racket.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Include\DirectX11-Game-Framework_Pong.dll" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Include\DirectX11-Game-Framework_Pong.lib" />

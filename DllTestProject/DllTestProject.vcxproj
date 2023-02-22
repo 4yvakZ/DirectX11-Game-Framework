@@ -132,6 +132,11 @@
   <ItemGroup>
     <ClCompile Include="DllTestProject.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DirectX11-Game-Framework\DirectX11-Game-Framework.vcxproj">
+      <Project>{27985cb7-e9d6-44cb-9e42-14102d70e81a}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

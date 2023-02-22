@@ -124,6 +124,9 @@
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.0.1\lib\vs2017\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>copy "..\Libs\libfbxsdk.dll" "..\$(IntDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -148,12 +151,14 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="Delegates.h" />
     <ClInclude Include="DisplayWin.h" />
+    <ClInclude Include="FBXImporter.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
     <ClInclude Include="RenderComponent.h" />
+    <ClInclude Include="RenderComponent2D.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="TestGameObject.h" />
@@ -163,10 +168,12 @@
     <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="DisplayWin.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FBXImporter.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
+    <ClCompile Include="RenderComponent2D.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="TestGameObject.cpp" />

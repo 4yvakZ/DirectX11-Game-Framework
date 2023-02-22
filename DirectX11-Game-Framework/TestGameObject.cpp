@@ -1,13 +1,11 @@
 #include "TestGameObject.h"
 
-#include <iostream>
-
 #include "Component.h"
-#include "RenderComponent.h"
+#include "RenderComponent2D.h"
 
 TestGameObject::TestGameObject()
 {
-	renderComponent = new RenderComponent("../Shaders/MyVeryFirstShader.hlsl");
+	renderComponent = new RenderComponent2D("../Shaders/MyVeryFirstShader.hlsl");
 	components.push_back(renderComponent);
 	
 }

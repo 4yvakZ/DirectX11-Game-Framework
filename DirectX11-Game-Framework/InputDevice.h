@@ -1,12 +1,5 @@
 #pragma once
 
-#include <d3d.h>
-#include <d3d11.h>
-#include <d3dcompiler.h>
-#include <directxmath.h>
-
-#include "SimpleMath.h"
-
 #include <unordered_set>
 #include "Keys.h"
 #include "framework.h"

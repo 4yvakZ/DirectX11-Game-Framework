@@ -1,7 +1,5 @@
 #include "Game.h"
 
-#include <iostream>
-
 #include "RenderSystem.h"
 #include "DisplayWin.h"
 #include "InputDevice.h"
@@ -81,8 +79,19 @@ Game::Game()
 
 }
 
+void Game::PrepareResources()
+{
+	display = new DisplayWin{ 1200, 800 };
+
+	render = new RenderSystem{ display };
+
+	inputDevice = new InputDevice();
+}
+
 void Game::Initialize()
 {
+	assert(display && render && inputDevice);
+
 	for (auto& object : GameObjects) {
 		object->Initialize();
 	}
@@ -144,37 +153,6 @@ void Game::Run()
 	DestroyResources();
 }
 
-void Game::DestroyResources()
-{
-	for (auto& object : GameObjects) {
-		delete object;
-	}
-	GameObjects.clear();
-	
-	delete render;
-	delete display;
-	delete inputDevice;
-	delete instance;
-}
-
-void Game::Draw()
-{
-	render->PrepareFrame();
-
-	render->Draw();
-
-	render->EndFrame();
-}
-
-void Game::PrepareResources()
-{
-	display = new DisplayWin{ 1200, 800 };
-
-	render = new RenderSystem{ display };
-
-	inputDevice = new InputDevice();
-}
-
 void Game::Update()
 {
 	UpdateInternal();
@@ -190,10 +168,30 @@ void Game::UpdateInternal()
 		std::cout << "Escape pressed\n";
 		Exit();
 	}
-	if (inputDevice->IsKeyDown(Keys::A)) {
-		std::cout << "A pressed\n";
-	}
 }
+
+void Game::Draw()
+{
+	render->PrepareFrame();
+
+	render->Draw();
+
+	render->EndFrame();
+}
+
+void Game::DestroyResources()
+{
+	for (auto& object : GameObjects) {
+		delete object;
+	}
+	GameObjects.clear();
+
+	delete render;
+	delete display;
+	delete inputDevice;
+	delete instance;
+}
+
 
 void Game::Exit()
 {

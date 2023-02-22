@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-class RenderComponent;
+class RenderComponent2D;
 
 class GAMEFRAMEWORK_API TestGameObject :
     public GameObject
@@ -16,7 +16,7 @@ public:
 
 private:
 
-    RenderComponent* renderComponent;
+    RenderComponent2D* renderComponent;
 
 };
 

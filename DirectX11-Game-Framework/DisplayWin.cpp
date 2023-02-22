@@ -2,7 +2,6 @@
 #include "DisplayWin.h"
 
 #include "Game.h"
-#include <iostream>
 
 
 DisplayWin::DisplayWin():

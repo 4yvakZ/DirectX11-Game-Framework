@@ -1,17 +1,5 @@
 #pragma once
-
 #include "Component.h"
-
-#include <d3d.h>
-#include <d3d11.h>
-#include <d3dcompiler.h>
-#include <directxmath.h>
-
-#include <string>
-#include <vector>
-
-#include "SimpleMath.h"
-
 
 using namespace DirectX::SimpleMath;
 
@@ -19,40 +7,28 @@ class GAMEFRAMEWORK_API RenderComponent :
     public Component
 {
 public:
-    RenderComponent(std::string shaderFileName) :
-        Component(),
-        shaderFileName(shaderFileName)
-    {
-
-    }
+    RenderComponent (std::string shaderFileName) :
+        shaderFileName(shaderFileName),
+        Component() {}
 
     RenderComponent() = delete;
 
-    ~RenderComponent();
-
-    int AddRawPoint(Vector4 coords, Color color = Color(1, 1, 1, 1));
-    void AddIndex(int index);
-
-    void AddTriangle(Vector4 coords0, Vector4 coords1,
-        Vector4 coords2, Color color = Color(1, 1, 1, 1));
-
-    void Add2DRect(DirectX::SimpleMath::Rectangle rect, Color color = Color(1, 1, 1, 1));
-    void Add2DCircle(Vector4 centerCoord, float radius, int numberOfTriangles = 16, Color color = Color(1, 1, 1, 1));
+    virtual void Draw() = 0;
 
     // Inherited via Component
-    virtual void Initialize() override;
-    virtual void Update() override;
+    virtual void Initialize();
+    virtual void Update() = 0;
 
-    void Draw();
 
+public:
     Vector4 offset;
 
-private:
+protected:
     std::string shaderFileName;
 
     std::vector<Vector4> points;
     std::vector<int> indexes;
-    
+
 
     ID3D11InputLayout* layout;
 
