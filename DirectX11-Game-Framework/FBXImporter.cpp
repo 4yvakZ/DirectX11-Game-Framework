@@ -94,3 +94,53 @@ void FBXImporter::GetMesh(FbxMesh* mesh)
 
 	//TODO: Mesh to buffers?
 }
+
+void FBXImporter::GetMeshData(size_t meshIndex, std::vector<Vector4>& points, std::vector<int>& indexes)
+{
+	assert(meshIndex < meshes.size());
+	FbxMesh* mesh = meshes[meshIndex];
+
+	size_t firtsPointIndex = points.size() / 2;
+
+	fbxsdk::FbxVector4* vertecis = mesh->GetControlPoints();
+	size_t nVertecis = mesh->GetControlPointsCount();
+
+	std::cout << "\nVertices:\n";
+
+	for (size_t i = 0; i < nVertecis; i++) {
+		points.push_back(
+			Vector4(vertecis[i].mData[0],
+				vertecis[i].mData[1],
+				vertecis[i].mData[2],
+				1.0f)
+		);
+
+		points.push_back(
+			Vector4(vertecis[i].mData[0],
+				vertecis[i].mData[1],
+				vertecis[i].mData[2],
+				1.0f)
+		);
+
+		//points.push_back(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+		std::cout << "\t" << i << ": " << vertecis[i].mData[0] << " " <<
+			vertecis[i].mData[1] << " " <<
+			vertecis[i].mData[2] << " " <<
+			vertecis[i].mData[3] << "\n";
+	}
+
+
+	size_t nIndexes = mesh->GetPolygonVertexCount();
+	int* meshIndexes = mesh->GetPolygonVertices();
+
+	std::cout << "\nIndexes:\n";
+
+	for (size_t i = 0; i < nIndexes; i++) {
+
+		std::cout << meshIndexes[i] << " ";
+		indexes.push_back(meshIndexes[i]);
+	}
+
+	std::cout << "\n";
+}

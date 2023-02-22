@@ -3,6 +3,7 @@
 
 #include "framework.h"
 
+using namespace DirectX::SimpleMath;
 
 class FBXImporter
 {
@@ -18,12 +19,13 @@ public:
 		return meshes.size();
 	}
 
+	void GetMeshData(size_t meshIndex, std::vector<Vector4>& points, std::vector<int>& indexes);
+
 private:
 	
 	void Initialize();
 	void GetScene(FbxNode* root = nullptr);
 	void GetMesh(FbxMesh* mesh);
-
 	
 
 public:
