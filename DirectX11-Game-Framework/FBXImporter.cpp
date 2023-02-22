@@ -15,6 +15,11 @@ void FBXImporter::LoadFBXFile(const char* file)
 {
 	assert(manager && !scene);
 
+	for (const auto& mesh : meshes) {
+		mesh->Destroy();
+	}
+	meshes.clear();
+
 	scene = FbxScene::Create(manager, "Importer Scene");
 
 	FbxImporter* importer(FbxImporter::Create(manager, "Importer"));
@@ -31,6 +36,10 @@ void FBXImporter::LoadFBXFile(const char* file)
 		std::cout << "Failed to import file " << file << std::endl;
 		return;
 	}
+
+	importer->Destroy();
+
+	GetScene();
 }
 
 void FBXImporter::GetScene(FbxNode* root)
@@ -81,6 +90,7 @@ void FBXImporter::GetMesh(FbxMesh* mesh)
 	res = mesh->RemoveBadPolygons();
 	assert(res != -1);
 
+	meshes.push_back(mesh);
+
 	//TODO: Mesh to buffers?
-	
 }

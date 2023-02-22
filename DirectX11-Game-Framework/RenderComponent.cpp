@@ -101,7 +101,7 @@ void RenderComponent::Initialize()
 	vertexBufDesc.ByteWidth = sizeof(DirectX::XMFLOAT4) * std::size(points);
 
 	D3D11_SUBRESOURCE_DATA vertexData = {};
-	vertexData.pSysMem = &points[0];
+	vertexData.pSysMem = points.data();
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
@@ -117,7 +117,7 @@ void RenderComponent::Initialize()
 	indexBufDesc.ByteWidth = sizeof(int) * std::size(indexes);
 
 	D3D11_SUBRESOURCE_DATA indexData = {};
-	indexData.pSysMem = &indexes[0];
+	indexData.pSysMem = indexes.data();
 	indexData.SysMemPitch = 0;
 	indexData.SysMemSlicePitch = 0;
 

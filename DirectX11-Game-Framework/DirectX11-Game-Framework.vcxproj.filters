@@ -87,6 +87,9 @@
     <ClInclude Include="FBXImporter.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
+    <ClInclude Include="RenderComponentFBX.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -127,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="FBXImporter.cpp">
       <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderComponentFBX.cpp">
+      <Filter>Source Files\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

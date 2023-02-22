@@ -2,6 +2,7 @@
 #include "GameObject.h"
 
 class RenderComponent2D;
+class RenderComponentFBX;
 
 class GAMEFRAMEWORK_API TestGameObject :
     public GameObject
@@ -17,6 +18,6 @@ public:
 private:
 
     RenderComponent2D* renderComponent;
-
+    RenderComponentFBX* FbxRenderComponent;
 };
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include <vector>
 
 using namespace DirectX::SimpleMath;
 
@@ -18,7 +19,6 @@ public:
     // Inherited via Component
     virtual void Initialize();
     virtual void Update() = 0;
-
 
 public:
     Vector4 offset;

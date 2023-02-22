@@ -2,18 +2,21 @@
 
 #include "Component.h"
 #include "RenderComponent2D.h"
+#include "RenderComponentFBX.h"
 
 TestGameObject::TestGameObject()
 {
 	renderComponent = new RenderComponent2D("../Shaders/MyVeryFirstShader.hlsl");
 	components.push_back(renderComponent);
-	
+
+	FbxRenderComponent = new RenderComponentFBX("../Shaders/MyVeryFirstShader.hlsl", "../FBX/sphere.fbx");
+	components.push_back(FbxRenderComponent);
 }
 
 void TestGameObject::Update(float deltaTime)
 {
 	renderComponent->offset += Vector4(0.01, 0.01, 0, 0) * deltaTime;
-	std::cout << renderComponent->offset.x << std::endl;
+	//std::cout << renderComponent->offset.x << std::endl;
 
 	GameObject::Update(deltaTime);
 }
