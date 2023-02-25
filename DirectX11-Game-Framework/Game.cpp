@@ -3,6 +3,7 @@
 #include "RenderSystem.h"
 #include "DisplayWin.h"
 #include "InputDevice.h"
+#include "Camera.h"
 
 #include "GameObject.h"
 
@@ -11,6 +12,7 @@ Game* Game::instance = new Game();
 RenderSystem* Game::render = nullptr;
 DisplayWin* Game::display = nullptr;
 InputDevice* Game::inputDevice = nullptr;
+Camera* Game::camera = nullptr;
 
 LRESULT Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
@@ -86,6 +88,8 @@ void Game::PrepareResources()
 	render = new RenderSystem{ display };
 
 	inputDevice = new InputDevice();
+
+	camera = new Camera();
 }
 
 void Game::Initialize()
@@ -168,6 +172,8 @@ void Game::UpdateInternal()
 		std::cout << "Escape pressed\n";
 		Exit();
 	}
+
+	camera->Update();
 }
 
 void Game::Draw()

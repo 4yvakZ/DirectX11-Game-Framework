@@ -113,18 +113,7 @@ void RenderComponent2D::Initialize()
 }
 
 void RenderComponent2D::Update() {
-	RenderSystem* render = Game::GetRenderSystem();
-
-	///const buffer update
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
-
-	render->Context->Map(constBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
-	memcpy(mappedResource.pData, &offset, sizeof(offset));
-
-	render->Context->Unmap(constBuffer, 0);
-	
+	UpdateConstBuffer();
 }
 
 void RenderComponent2D::Draw()

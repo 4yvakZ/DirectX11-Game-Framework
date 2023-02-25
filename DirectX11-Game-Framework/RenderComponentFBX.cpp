@@ -3,6 +3,7 @@
 #include "FBXImporter.h"
 #include "Game.h"
 #include "RenderSystem.h"
+#include "Camera.h"
 
 
 RenderComponentFBX::RenderComponentFBX(std::string shaderFileName, const char* fileName) :
@@ -42,6 +43,7 @@ void RenderComponentFBX::Initialize()
 	}
 	std::cout << "\n";
 
+	World = Matrix::Identity;
 }
 
 void RenderComponentFBX::Draw()
@@ -70,4 +72,6 @@ void RenderComponentFBX::Draw()
 
 void RenderComponentFBX::Update()
 {
+	constBufferData.worldViewPosition = Game::GetCamera()->GetWorldViewPositionMatrix(World);
+	UpdateConstBuffer();
 }

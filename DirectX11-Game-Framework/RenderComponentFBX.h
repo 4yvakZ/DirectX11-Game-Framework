@@ -16,6 +16,9 @@ public:
 	virtual void Draw() override;
 	virtual void Update() override;
 
+public:
+	Matrix World;
+
 private:
 	const char* fileName;
 };

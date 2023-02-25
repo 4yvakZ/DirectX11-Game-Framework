@@ -1,3 +1,5 @@
+#pragma pack_matrix( row_major )
+
 struct VS_IN
 {
 	float4 pos : POSITION0;
@@ -12,14 +14,15 @@ struct PS_IN
 
 cbuffer VS_CONST_BUF : register(b0)
 {
-    float4 offset : POSITION0;
+    float4 offset;
+    Matrix worldViewPos;
 }
 
 PS_IN VSMain( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
 	
-	output.pos = input.pos + offset;
+    output.pos = mul(input.pos + offset, worldViewPos);
 	output.col = input.col;
 	
 	return output;
@@ -28,8 +31,5 @@ PS_IN VSMain( VS_IN input )
 float4 PSMain( PS_IN input ) : SV_Target
 {
 	float4 col = input.col;
-#ifdef TEST
-	//if (input.pos.x > 400) col = TCOLOR;
-#endif
 	return col;
 }

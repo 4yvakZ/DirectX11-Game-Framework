@@ -6,6 +6,7 @@ class DisplayWin;
 class GameObject;
 class RenderSystem;
 class InputDevice;
+class Camera;
 
 class GAMEFRAMEWORK_API Game
 {
@@ -53,9 +54,11 @@ public:
 		return inputDevice;
 	}
 
-	std::vector<GameObject*> GameObjects;
+	static Camera* GetCamera() {
+		return camera;
+	}
 
-	
+	std::vector<GameObject*> GameObjects;
 
 private:
 
@@ -74,5 +77,7 @@ private:
 	static DisplayWin* display;
 
 	static InputDevice* inputDevice;
+
+	static Camera* camera;
 };
 

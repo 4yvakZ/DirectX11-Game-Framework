@@ -3,6 +3,23 @@
 #include "Game.h"
 #include "RenderSystem.h"
 
+RenderComponent::~RenderComponent()
+{
+	rastState->Release();
+
+	constBuffer->Release();
+	indexBuffer->Release();
+	vertexBuffer->Release();
+
+	vertexShaderByteCode->Release();
+	vertexShader->Release();
+	
+	pixelShaderByteCode->Release();
+	pixelShader->Release();
+
+	layout->Release();
+}
+
 void RenderComponent::Initialize()
 {
 	RenderSystem* render = Game::GetRenderSystem();
@@ -130,10 +147,10 @@ void RenderComponent::Initialize()
 	constBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	constBufDesc.MiscFlags = 0;
 	constBufDesc.StructureByteStride = 0;
-	constBufDesc.ByteWidth = sizeof(DirectX::XMFLOAT4);
+	constBufDesc.ByteWidth = sizeof(constBufferData);
 
 	D3D11_SUBRESOURCE_DATA constData = {};
-	constData.pSysMem = &offset;
+	constData.pSysMem = &constBufferData;
 	constData.SysMemPitch = 0;
 	constData.SysMemSlicePitch = 0;
 
@@ -143,7 +160,22 @@ void RenderComponent::Initialize()
 	CD3D11_RASTERIZER_DESC rastDesc = {};
 	rastDesc.CullMode = D3D11_CULL_NONE;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
+	//rastDesc.FillMode = D3D11_FILL_WIREFRAME;
 
 
 	res = render->Device->CreateRasterizerState(&rastDesc, &rastState);
+}
+
+void RenderComponent::UpdateConstBuffer() {
+	RenderSystem* render = Game::GetRenderSystem();
+
+	///const buffer update
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	//ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	render->Context->Map(constBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	memcpy(mappedResource.pData, &constBufferData, sizeof(constBufferData));
+
+	render->Context->Unmap(constBuffer, 0);
 }

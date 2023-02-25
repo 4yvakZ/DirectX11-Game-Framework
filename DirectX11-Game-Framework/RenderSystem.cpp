@@ -65,6 +65,10 @@ RenderSystem::RenderSystem(DisplayWin *display)
 
 RenderSystem::~RenderSystem()
 {
+	RenderView->Release();
+	backBuffer->Release();
+	SwapChain->Release();
+	Context->Release();
 	Device->Release();
 }
 

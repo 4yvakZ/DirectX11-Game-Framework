@@ -16,7 +16,7 @@ TestGameObject::TestGameObject()
 
 void TestGameObject::Update(float deltaTime)
 {
-	renderComponent->offset += Vector4(0.1, 0.1, 0, 0) * deltaTime;
+	renderComponent->constBufferData.offset += Vector4(0.1, 0.1, 0, 0) * deltaTime;
 	//std::cout << renderComponent->offset.x << std::endl;
 
 	GameObject::Update(deltaTime);

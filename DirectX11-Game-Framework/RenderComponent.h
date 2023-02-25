@@ -8,11 +8,18 @@ class GAMEFRAMEWORK_API RenderComponent :
     public Component
 {
 public:
+    struct ConstBufferData {
+        Vector4 offset;
+        Matrix worldViewPosition;
+    };
+
     RenderComponent (std::string shaderFileName) :
         shaderFileName(shaderFileName),
         Component() {}
 
     RenderComponent() = delete;
+
+    ~RenderComponent();
 
     virtual void Draw() = 0;
 
@@ -20,8 +27,11 @@ public:
     virtual void Initialize();
     virtual void Update() = 0;
 
+protected:
+    void UpdateConstBuffer();
+
 public:
-    Vector4 offset;
+    ConstBufferData constBufferData;
 
 protected:
     std::string shaderFileName;
