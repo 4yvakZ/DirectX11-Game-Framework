@@ -23,16 +23,12 @@ void RenderComponentFBX::Initialize()
 
 	RenderComponent::Initialize();
 
-	std::cout << "\nVertices:\n";
+	/*std::cout << "\nVertices:\n";
 	int i = 0;
 	for (const auto& point : points) {
 		i++;
 		if (i % 2 == 0) continue;
-		std::cout << "\n" << i / 2 << ": "
-			<< point.x << " "
-			<< point.y << " "
-			<< point.z << " "
-			<< point.w << "\n";
+		std::cout << "\n" << i / 2 << ": " << point.x << " " << point.y << " " << point.z << " " << point.w << "\n";
 	}
 
 	std::cout << "\nIndexes:\n";
@@ -41,9 +37,9 @@ void RenderComponentFBX::Initialize()
 		
 		std::cout << index << " ";
 	}
-	std::cout << "\n";
+	std::cout << "\n";*/
 
-	World = Matrix::Identity;
+	//World = Matrix::Identity;
 }
 
 void RenderComponentFBX::Draw()

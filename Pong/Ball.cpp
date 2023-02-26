@@ -3,7 +3,7 @@
 
 Ball::Ball()
 {
-	renderComponent = new RenderComponent("../Shaders/MyVeryFirstShader.hlsl");
+	renderComponent = new RenderComponent("../Shaders/SimpleShader.hlsl");
 	components.push_back(renderComponent);
 }
 

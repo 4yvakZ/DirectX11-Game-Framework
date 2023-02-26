@@ -15,6 +15,7 @@ RenderSystem* Game::render = nullptr;
 DisplayWin* Game::display = nullptr;
 InputDevice* Game::inputDevice = nullptr;
 Camera* Game::camera = nullptr;
+bool Game::isExitRequested = false;
 
 LRESULT Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
@@ -197,7 +198,6 @@ void Game::UpdateInternal()
 		wasCameraControllerKeyDown = false;
 	}
 
-
 	camera->Update(deltaTime);
 }
 
@@ -211,13 +211,11 @@ void Game::Draw()
 }
 
 void Game::DestroyResources()
-{
+{	
 	for (auto& object : GameObjects) {
 		delete object;
 	}
 	GameObjects.clear();
-
-
 
 	delete camera;
 	delete fpsCameraContrloller;

@@ -5,18 +5,21 @@
 
 RenderComponent::~RenderComponent()
 {
+	RenderSystem* render = Game::GetRenderSystem();
+	render->RemoveRenderComponent(this);
+
 	rastState->Release();
 
 	constBuffer->Release();
 	indexBuffer->Release();
 	vertexBuffer->Release();
 
-	vertexShaderByteCode->Release();
 	vertexShader->Release();
-	
-	pixelShaderByteCode->Release();
 	pixelShader->Release();
 
+	vertexShaderByteCode->Release();
+	pixelShaderByteCode->Release();
+	
 	layout->Release();
 }
 

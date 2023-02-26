@@ -3,18 +3,6 @@
 #include "Game.h"
 #include "RenderSystem.h"
 
-RenderComponent2D::~RenderComponent2D()
-{
-	RenderSystem* render = Game::GetRenderSystem();
-	render->RemoveRenderComponent(this);
-
-	delete layout;
-	delete pixelShader;
-	delete pixelShaderByteCode;
-	delete vertexShader;
-	delete vertexShaderByteCode;
-}
-
 int RenderComponent2D::AddRawPoint(Vector4 coords, Color color)
 {
 	points.push_back(coords);

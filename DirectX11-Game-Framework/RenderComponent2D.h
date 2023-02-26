@@ -16,8 +16,6 @@ public:
 
     RenderComponent2D() = delete;
 
-    ~RenderComponent2D();
-
     int AddRawPoint(Vector4 coords, Color color = Color(1, 1, 1, 1));
     void AddIndex(int index);
 

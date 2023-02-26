@@ -3,15 +3,16 @@
 #include "Component.h"
 #include "RenderComponent2D.h"
 #include "RenderComponentFBX.h"
+#include "LineRenderComponent.h"
 
 TestGameObject::TestGameObject()
 {
-	
-
-	FbxRenderComponent = new RenderComponentFBX("../Shaders/MyVeryFirstShader.hlsl", "../FBX/cube.fbx");
+	FbxRenderComponent = new RenderComponentFBX("../Shaders/MyVeryFirstShader.hlsl", "../FBX/sphere.fbx");
 	components.push_back(FbxRenderComponent);
 	renderComponent = new RenderComponent2D("../Shaders/MyVeryFirstShader.hlsl");
 	components.push_back(renderComponent);
+	gridRenderComponent = new LineRenderComponent("../Shaders/MyVeryFirstShader.hlsl");
+	components.push_back(gridRenderComponent);
 }
 
 void TestGameObject::Update(float deltaTime)
@@ -43,6 +44,11 @@ renderComponent->AddIndex(2);*/
 	//	renderComponent->Add2DCircle(Vector4(), 100, i, Color(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
 	//}
 	//renderComponent->Add2DCircle(Vector4(-300, -300, 0, 1), 20);
+
+	//gridRenderComponent->AddGrid(5, 1, Color(1, 1, 1, 1));
+	gridRenderComponent->AddLine(Vector4(0, 0, 0, 1), Vector4(1, 0, 0, 1), Color(1, 0, 0, 1));
+	gridRenderComponent->AddLine(Vector4(0, 0, 0, 1), Vector4(0, 1, 0, 1), Color(0, 1, 0, 1));
+	gridRenderComponent->AddLine(Vector4(0, 0, 0, 1), Vector4(0, 0, 1, 1), Color(0, 0, 1, 1));
 
 	GameObject::Initialize();
 }

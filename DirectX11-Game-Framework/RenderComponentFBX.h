@@ -10,14 +10,10 @@ public:
 
 	RenderComponentFBX() = delete;
 
-
 	// Inherited via RenderComponent
 	virtual void Initialize() override;
 	virtual void Draw() override;
 	virtual void Update() override;
-
-public:
-	Matrix World;
 
 private:
 	const char* fileName;

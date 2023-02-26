@@ -3,6 +3,7 @@
 
 class RenderComponent2D;
 class RenderComponentFBX;
+class LineRenderComponent;
 
 class GAMEFRAMEWORK_API TestGameObject :
     public GameObject
@@ -19,5 +20,6 @@ private:
 
     RenderComponent2D* renderComponent;
     RenderComponentFBX* FbxRenderComponent;
+    LineRenderComponent* gridRenderComponent;
 };
 

@@ -10,7 +10,7 @@ public:
 	virtual void Update(float deltaTime);
 	virtual void Initialize();
 
-	~GameObject();
+	virtual ~GameObject();
 
 protected:
 	std::vector<Component*> components;

@@ -5,6 +5,7 @@
 class GAMEFRAMEWORK_API Component
 {
 public:
+	virtual ~Component() {}
 
 	virtual void Initialize() = 0;
 

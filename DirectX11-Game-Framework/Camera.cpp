@@ -24,7 +24,7 @@ void Camera::Update(float deltaTime)
 	
 	if (isPerspectiveProjection) {
 		projection = Matrix::CreatePerspectiveFieldOfView(
-			DirectX::XM_PIDIV2,
+			fovAngle,
 			static_cast<float>(width) / height,
 			0.1f,
 			1000.0f);

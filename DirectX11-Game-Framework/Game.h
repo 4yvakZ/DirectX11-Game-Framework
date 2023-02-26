@@ -70,7 +70,7 @@ private:
 	float totalTime;
 	float deltaTime;
 
-	bool isExitRequested = false;
+	static bool isExitRequested;
 
 	static RenderSystem* render;
 
@@ -87,4 +87,5 @@ private:
 	bool wasProjectionKeyDown = false;
 	bool wasCameraControllerKeyDown = false;
 };
+
 

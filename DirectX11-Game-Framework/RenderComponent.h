@@ -19,7 +19,7 @@ public:
 
     RenderComponent() = delete;
 
-    ~RenderComponent();
+    virtual ~RenderComponent();
 
     virtual void Draw() = 0;
 
@@ -34,6 +34,7 @@ protected:
 
 public:
     ConstBufferData constBufferData;
+    Matrix World;
 
 protected:
     std::string shaderFileName;

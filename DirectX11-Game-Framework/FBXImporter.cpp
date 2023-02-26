@@ -121,8 +121,6 @@ void FBXImporter::GetMeshData(size_t meshIndex, std::vector<Vector4>& points, st
 	int* meshIndexes = mesh->GetPolygonVertices();
 
 	for (size_t i = 0; i < nIndexes; i++) {
-
-		std::cout << meshIndexes[i] << " ";
 		indexes.push_back(meshIndexes[i]);
 	}
 }

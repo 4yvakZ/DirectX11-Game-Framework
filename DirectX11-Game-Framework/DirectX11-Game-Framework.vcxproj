@@ -160,11 +160,13 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
+    <ClInclude Include="LineRenderComponent.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderComponent2D.h" />
     <ClInclude Include="RenderComponentFBX.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="SimpleMath.h" />
+    <ClInclude Include="SphereCameraController.h" />
     <ClInclude Include="TestGameObject.h" />
   </ItemGroup>
   <ItemGroup>
@@ -179,11 +181,13 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputDevice.cpp" />
+    <ClCompile Include="LineRenderComponent.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
     <ClCompile Include="RenderComponent2D.cpp" />
     <ClCompile Include="RenderComponentFBX.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
+    <ClCompile Include="SphereCameraController.cpp" />
     <ClCompile Include="TestGameObject.cpp" />
   </ItemGroup>
   <ItemGroup>

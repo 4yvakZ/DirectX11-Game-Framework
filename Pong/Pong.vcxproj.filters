@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shaders\StripesShader.hlsl" />
+    <FxCompile Include="..\Shaders\SimpleShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Border.h">

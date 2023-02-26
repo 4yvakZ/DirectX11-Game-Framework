@@ -25,10 +25,12 @@ public:
 	Matrix projection;
 
 	Vector3 position;
+	Quaternion rotation;
+
 	Vector3 target;
 	Vector3 up;
 
-	float yaw = 0.0f;
-	float pitch = 0.0f;
+	float fovAngle = DirectX::XM_PIDIV2;
+
 };
 
