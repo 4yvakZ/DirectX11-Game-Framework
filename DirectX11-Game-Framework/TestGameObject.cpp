@@ -8,7 +8,7 @@ TestGameObject::TestGameObject()
 {
 	
 
-	FbxRenderComponent = new RenderComponentFBX("../Shaders/MyVeryFirstShader.hlsl", "../FBX/sphere.fbx");
+	FbxRenderComponent = new RenderComponentFBX("../Shaders/MyVeryFirstShader.hlsl", "../FBX/cube.fbx");
 	components.push_back(FbxRenderComponent);
 	renderComponent = new RenderComponent2D("../Shaders/MyVeryFirstShader.hlsl");
 	components.push_back(renderComponent);

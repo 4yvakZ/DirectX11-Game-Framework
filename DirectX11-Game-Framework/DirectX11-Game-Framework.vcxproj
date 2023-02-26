@@ -149,10 +149,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraController.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Delegates.h" />
     <ClInclude Include="DisplayWin.h" />
     <ClInclude Include="FBXImporter.h" />
+    <ClInclude Include="FPSCameraController.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
@@ -167,11 +169,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraController.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="DisplayWin.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FBXImporter.cpp" />
+    <ClCompile Include="FPSCameraController.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputDevice.cpp" />

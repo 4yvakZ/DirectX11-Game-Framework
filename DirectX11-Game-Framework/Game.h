@@ -8,6 +8,8 @@ class RenderSystem;
 class InputDevice;
 class Camera;
 
+class FPSCameraController;
+
 class GAMEFRAMEWORK_API Game
 {
 public:
@@ -79,5 +81,10 @@ private:
 	static InputDevice* inputDevice;
 
 	static Camera* camera;
+
+	FPSCameraController* fpsCameraContrloller;
+
+	bool wasProjectionKeyDown = false;
+	bool wasCameraControllerKeyDown = false;
 };
 

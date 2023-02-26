@@ -5,6 +5,8 @@
 #include "InputDevice.h"
 #include "Camera.h"
 
+#include "FPSCameraController.h"
+
 #include "GameObject.h"
 
 Game* Game::instance = new Game();
@@ -90,6 +92,10 @@ void Game::PrepareResources()
 	inputDevice = new InputDevice();
 
 	camera = new Camera();
+
+	fpsCameraContrloller = new FPSCameraController(camera);
+
+	camera->controller = fpsCameraContrloller;
 }
 
 void Game::Initialize()
@@ -172,8 +178,27 @@ void Game::UpdateInternal()
 		std::cout << "Escape pressed\n";
 		Exit();
 	}
+	if (inputDevice->IsKeyDown(Keys::D1)) {
+		if (!wasProjectionKeyDown) {
+			wasProjectionKeyDown = true;
+			camera->isPerspectiveProjection = !camera->isPerspectiveProjection;
+		}
+	}
+	else {
+		wasProjectionKeyDown = false;
+	}
+	if (inputDevice->IsKeyDown(Keys::D2)) {
+		if (!wasCameraControllerKeyDown) {
+			wasCameraControllerKeyDown = true;
+			std::cout << "Click\n";
+		}
+	}
+	else {
+		wasCameraControllerKeyDown = false;
+	}
 
-	camera->Update();
+
+	camera->Update(deltaTime);
 }
 
 void Game::Draw()
@@ -191,6 +216,11 @@ void Game::DestroyResources()
 		delete object;
 	}
 	GameObjects.clear();
+
+
+
+	delete camera;
+	delete fpsCameraContrloller;
 
 	delete render;
 	delete display;

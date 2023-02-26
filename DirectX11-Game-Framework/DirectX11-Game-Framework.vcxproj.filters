@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Component">
       <UniqueIdentifier>{3002de45-6824-4c49-99b4-f93e40ec91e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Camera">
+      <UniqueIdentifier>{6ed45b05-2545-4b35-8a65-1297c2583ac4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Camera">
+      <UniqueIdentifier>{5e7607ba-d43a-43d2-95a1-93366ae58e61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -91,7 +97,13 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Header Files\Render</Filter>
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraController.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSCameraController.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -138,7 +150,13 @@
       <Filter>Source Files\Component</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Render</Filter>
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraController.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSCameraController.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
