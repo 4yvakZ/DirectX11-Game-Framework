@@ -161,11 +161,8 @@ void RenderComponent::Initialize()
 
 	///rastState initialization
 	CD3D11_RASTERIZER_DESC rastDesc = {};
-	//rastDesc.CullMode = D3D11_CULL_NONE;
-	//rastDesc.CullMode = D3D11_CULL_BACK;
-	rastDesc.CullMode = D3D11_CULL_FRONT;
+	rastDesc.CullMode = D3D11_CULL_NONE;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
-	//rastDesc.FillMode = D3D11_FILL_WIREFRAME;
 
 
 	res = render->Device->CreateRasterizerState(&rastDesc, &rastState);

@@ -15,7 +15,6 @@ RenderSystem* Game::render = nullptr;
 DisplayWin* Game::display = nullptr;
 InputDevice* Game::inputDevice = nullptr;
 Camera* Game::camera = nullptr;
-bool Game::isExitRequested = false;
 
 LRESULT Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {

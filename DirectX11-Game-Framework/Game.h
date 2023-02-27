@@ -70,7 +70,7 @@ private:
 	float totalTime;
 	float deltaTime;
 
-	static bool isExitRequested;
+	bool isExitRequested = false;
 
 	static RenderSystem* render;
 

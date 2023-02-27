@@ -41,7 +41,7 @@ void LineRenderComponent::AddGrid(int gridSize, float cellSize, Color color)
 		}
 	}
 
-	std::cout << "\nVertices:\n";
+	/*std::cout << "\nVertices:\n";
 	int i = 0;
 	for (const auto& point : points) {
 		i++;
@@ -58,7 +58,7 @@ void LineRenderComponent::AddGrid(int gridSize, float cellSize, Color color)
 		std::cout << index << " ";
 		i++;
 	}
-	std::cout << "\n";
+	std::cout << "\n";*/
 }
 
 void LineRenderComponent::Draw()
