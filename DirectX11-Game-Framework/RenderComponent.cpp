@@ -161,7 +161,7 @@ void RenderComponent::Initialize()
 
 	///rastState initialization
 	CD3D11_RASTERIZER_DESC rastDesc = {};
-	rastDesc.CullMode = D3D11_CULL_NONE;
+	rastDesc.CullMode = D3D11_CULL_FRONT;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 
 
@@ -180,15 +180,4 @@ void RenderComponent::UpdateConstBuffer() {
 	memcpy(mappedResource.pData, &constBufferData, sizeof(constBufferData));
 
 	render->Context->Unmap(constBuffer, 0);
-}
-
-void RenderComponent::SetRasterState(D3D11_FILL_MODE fillMode, D3D11_CULL_MODE cullMode) {
-	RenderSystem* render = Game::GetRenderSystem();
-
-	///rastState initialization
-	CD3D11_RASTERIZER_DESC rastDesc = {};
-	rastDesc.CullMode = cullMode;
-	rastDesc.FillMode = fillMode;
-
-	render->Device->CreateRasterizerState(&rastDesc, &rastState);
 }

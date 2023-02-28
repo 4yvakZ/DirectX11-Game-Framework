@@ -5,7 +5,7 @@
 
 Camera::Camera()
 {
-	position = Vector3(0.0f, 0.0f, -5.0f);
+	position = Vector3(0.0f, 2.0f, -5.0f);
 	target = Vector3(0.0f, 0.0f, 0.0f);
 	up = Vector3(0.0f, 1.0f, 0.0f);
 }
@@ -31,8 +31,8 @@ void Camera::Update(float deltaTime)
 	}
 	else {
 		projection = Matrix::CreateOrthographic(
-			width / 10,
-			height / 10,
+			width / 50,
+			height / 50,
 			0.1,
 			1000);
 	}

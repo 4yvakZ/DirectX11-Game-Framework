@@ -24,12 +24,16 @@ void Ball::Update(float deltaTime)
 	if (x + radius > 600) {
 		counter.Add1();
 		renderComponent->offset = Vector4(0, 0, 0, 0);
-		xv *= -1;
+		speed = 1.5;
+		xv = -0.7;
+		yv = 0.7;
 	}
 	if (x - radius < -600) {
 		counter.Add2();
 		renderComponent->offset = Vector4(0, 0, 0, 0);
-		xv *= -1;
+		speed = 1.5;
+		xv = 0.7;
+		yv = 0.7;
 	}
 
 	GameObject::Update(deltaTime);
@@ -47,6 +51,7 @@ void Ball::Bounce(float yVelocityDirection)
 	if (x > 0 && xv < 0 || x < 0 && xv > 0) {
 		return;
 	}
+	speed += 0.05;
 
 	yv = speed * sin(yVelocityDirection * DirectX::XM_PI / 2);
 

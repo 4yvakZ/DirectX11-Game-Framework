@@ -9,12 +9,14 @@
 
 int main()
 {
-    Game* testGame = Game::GetInstance();
+    Game* testGame = Game::GetInstance();;
     testGame->GameObjects.push_back(new TestGameObject());
     //testGame->Components.push_back(new TriangleComponent);
     //testGame->Components.push_back(new ExampleComponent);
 
     testGame->Run();
+
+    delete testGame;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

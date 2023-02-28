@@ -30,8 +30,6 @@ public:
 protected:
     void UpdateConstBuffer();
 
-    void SetRasterState(D3D11_FILL_MODE fillMode, D3D11_CULL_MODE cullMode);
-
 public:
     ConstBufferData constBufferData;
     Matrix World;

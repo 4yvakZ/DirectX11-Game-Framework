@@ -9,7 +9,7 @@
 
 #include "GameObject.h"
 
-Game* Game::instance = new Game();
+Game* Game::instance = new Game;
 
 RenderSystem* Game::render = nullptr;
 DisplayWin* Game::display = nullptr;
@@ -21,6 +21,13 @@ LRESULT Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 	{
 		switch (umessage)
 		{
+		case WM_DESTROY: 
+		case WM_CLOSE:
+		{
+			PostQuitMessage(0);
+			Game::GetInstance()->Exit();
+			return 0;
+		}
 		case WM_INPUT:
 		{
 			UINT dwSize = 0;
@@ -80,7 +87,6 @@ LRESULT Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 
 Game::Game()
 {
-
 }
 
 void Game::PrepareResources()
@@ -129,12 +135,14 @@ void Game::Run()
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+
+			// If windows signals to end the application then exit out.
+			if (msg.message == WM_QUIT) {
+				isExitRequested = true;
+			}
 		}
 
-		// If windows signals to end the application then exit out.
-		if (msg.message == WM_QUIT) {
-			isExitRequested = true;
-		}
+
 
 		auto	curTime = std::chrono::steady_clock::now();
 		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - PrevTime).count() / 1000000.0f;
@@ -219,10 +227,9 @@ void Game::DestroyResources()
 	delete camera;
 	delete fpsCameraContrloller;
 
+	delete inputDevice;
 	delete render;
 	delete display;
-	delete inputDevice;
-	delete instance;
 }
 
 

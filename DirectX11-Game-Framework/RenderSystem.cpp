@@ -69,7 +69,6 @@ RenderSystem::~RenderSystem()
 	backBuffer->Release();
 	SwapChain->Release();
 	Context->Release();
-	Device->Release();
 }
 
 void RenderSystem::PrepareFrame()

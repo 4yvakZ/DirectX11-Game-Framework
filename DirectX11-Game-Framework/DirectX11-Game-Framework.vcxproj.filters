@@ -109,7 +109,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LineRenderComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -168,7 +168,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LineRenderComponent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
