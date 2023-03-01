@@ -3,7 +3,7 @@
 
 using namespace DirectX::SimpleMath;
 
-class SphereCameraController :
+class GAMEFRAMEWORK_API SphereCameraController :
     public CameraController
 {
 public:

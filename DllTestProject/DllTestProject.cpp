@@ -6,10 +6,13 @@
 #include "Game.h"
 
 #include "TestGameObject.h"
+#include "GridGameObject.h"
 
 int main()
 {
     Game* testGame = new Game();;
+
+    testGame->GameObjects.push_back(new GridGameObject());
     testGame->GameObjects.push_back(new TestGameObject());
     //testGame->Components.push_back(new TriangleComponent);
     //testGame->Components.push_back(new ExampleComponent);

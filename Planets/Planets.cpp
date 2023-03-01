@@ -4,14 +4,37 @@
 #include <iostream>
 
 #include "Game.h"
-#include "TestGameObject.h"
+#include "GridGameObject.h"
+#include "SpaceObject.h"
+
 
 int main()
 {
     Game* testGame = new Game();;
-    testGame->GameObjects.push_back(new TestGameObject());
-    //testGame->Components.push_back(new TriangleComponent);
-    //testGame->Components.push_back(new ExampleComponent);
+
+    testGame->GameObjects.push_back(new GridGameObject());
+
+    SpaceObject* cube0 = new SpaceObject(true);
+
+    cube0->SetPosition(Vector3(1, 1, 1));
+
+    SpaceObject* sphere0 = new SpaceObject(false, cube0);
+    sphere0->SetPosition(Vector3(1, 1, 1) * 5);
+    sphere0->rotationAxis = Vector3(0, 1, 0);
+    sphere0->orbitSpeed = -0.5;
+    sphere0->rotationSpeed = -3;
+
+    SpaceObject* cube1 = new SpaceObject(true, sphere0);
+
+    cube1->SetPosition(Vector3(1, 0, 1) * 2);
+    cube1->rotationAxis = Vector3(0, 1, 0);
+    cube1->orbitAxis = Vector3(0, 1, 0);
+
+    testGame->GameObjects.push_back(cube0);
+    testGame->GameObjects.push_back(sphere0);
+    testGame->GameObjects.push_back(cube1);
+
+
 
     testGame->Run();
 

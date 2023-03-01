@@ -2,7 +2,7 @@
 
 #include "RenderComponent.h"
 
-class RenderComponentFBX :
+class GAMEFRAMEWORK_API RenderComponentFBX :
 	public RenderComponent
 {
 public:

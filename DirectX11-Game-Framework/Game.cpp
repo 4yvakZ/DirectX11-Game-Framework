@@ -85,7 +85,6 @@ LRESULT Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 	}
 }
 
-
 Game::Game()
 {
 	instance = this;
@@ -133,14 +132,17 @@ void Game::Run()
 
 	MSG msg;
 
-	while (!isExitRequested) {
+	while (!isExitRequested) 
+	{
 		// Handle the windows messages.
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) 
+		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 
 			// If windows signals to end the application then exit out.
-			if (msg.message == WM_QUIT) {
+			if (msg.message == WM_QUIT) 
+			{
 				isExitRequested = true;
 			}
 		}
@@ -154,7 +156,8 @@ void Game::Run()
 		totalTime += deltaTime;
 		frameCount++;
 
-		if (totalTime > 1.0f) {
+		if (totalTime > 1.0f) 
+		{
 			float fps = frameCount / totalTime;
 
 			totalTime -= 1.0f;
@@ -178,7 +181,8 @@ void Game::Update()
 {
 	UpdateInternal();
 
-	for (auto& object : GameObjects) {
+	for (auto& object : GameObjects) 
+	{
 		object->Update(deltaTime);
 	}
 }

@@ -158,6 +158,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GridGameObject.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
     <ClInclude Include="LineRenderComponent.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="FPSCameraController.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GridGameObject.cpp" />
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="LineRenderComponent.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
