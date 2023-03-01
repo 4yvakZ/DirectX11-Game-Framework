@@ -13,7 +13,7 @@ public:
     virtual void Update(float deltaTime) override;
     virtual void MouseEventHandler(const InputDevice::MouseMoveEventArgs& mouseData, int payload) override;
 
-    float cameraSpeed = 4.0f;
+    float cameraSpeed = 5.0f;
     float cameraRotationSpeed = 0.005f;
 
     float armLength = 5.0f;

@@ -19,7 +19,7 @@ int main()
     cube0->SetPosition(Vector3(1, 1, 1));
 
     SpaceObject* sphere0 = new SpaceObject(false, cube0);
-    sphere0->SetPosition(Vector3(1, 1, 1) * 5);
+    sphere0->SetPosition(Vector3(1, 1, 1) * 6);
     sphere0->rotationAxis = Vector3(0, 1, 0);
     sphere0->orbitSpeed = -0.5;
     sphere0->rotationSpeed = -3;
@@ -30,11 +30,25 @@ int main()
     cube1->rotationAxis = Vector3(0, 1, 0);
     cube1->orbitAxis = Vector3(0, 1, 0);
 
+
+
+    SpaceObject* cube2 = new SpaceObject(true, cube0);
+
+    cube2->SetPosition(Vector3(1, 0, 0) * 4);
+    cube2->rotationAxis = Vector3(0, 0, 1);
+    cube2->orbitAxis = Vector3(0, 1, 0);
+
+    SpaceObject* sphere1 = new SpaceObject(false, cube0);
+    sphere1->SetPosition(Vector3(1, 0, 1) * 10);
+    sphere1->rotationAxis = Vector3(0, 1, 0);
+    sphere1->orbitSpeed = -0.5;
+    sphere1->rotationSpeed = -3;
+
     testGame->GameObjects.push_back(cube0);
     testGame->GameObjects.push_back(sphere0);
     testGame->GameObjects.push_back(cube1);
-
-
+    testGame->GameObjects.push_back(cube2);
+    testGame->GameObjects.push_back(sphere1);
 
     testGame->Run();
 
