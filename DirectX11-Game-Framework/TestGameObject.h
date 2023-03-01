@@ -21,5 +21,8 @@ private:
     RenderComponent2D* renderComponent;
     RenderComponentFBX* FbxRenderComponent;
     LineRenderComponent* gridRenderComponent;
+
+    float speed = 1.0f;
+    float yaw = 0.0f;
 };
 

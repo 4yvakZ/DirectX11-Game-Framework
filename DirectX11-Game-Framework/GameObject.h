@@ -4,6 +4,8 @@
 
 class Component;
 
+using namespace DirectX::SimpleMath;
+
 class GAMEFRAMEWORK_API GameObject
 {
 public:
@@ -11,6 +13,9 @@ public:
 	virtual void Initialize();
 
 	virtual ~GameObject();
+
+	GameObject* parent = nullptr;
+	Matrix World;
 
 protected:
 	std::vector<Component*> components;
