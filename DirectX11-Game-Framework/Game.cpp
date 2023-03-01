@@ -6,10 +6,11 @@
 #include "Camera.h"
 
 #include "FPSCameraController.h"
+#include "SphereCameraController.h"
 
 #include "GameObject.h"
 
-Game* Game::instance = new Game;
+Game* Game::instance;
 
 RenderSystem* Game::render = nullptr;
 DisplayWin* Game::display = nullptr;
@@ -87,6 +88,7 @@ LRESULT Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 
 Game::Game()
 {
+	instance = this;
 }
 
 void Game::PrepareResources()
@@ -100,6 +102,7 @@ void Game::PrepareResources()
 	camera = new Camera();
 
 	fpsCameraContrloller = new FPSCameraController(camera);
+	sphereCameraController = new SphereCameraController(camera);
 
 	camera->controller = fpsCameraContrloller;
 }
@@ -182,26 +185,40 @@ void Game::Update()
 
 void Game::UpdateInternal()
 {
-	if (inputDevice->IsKeyDown(Keys::Escape)) {
+	if (inputDevice->IsKeyDown(Keys::Escape)) 
+	{
 		std::cout << "Escape pressed\n";
 		Exit();
 	}
-	if (inputDevice->IsKeyDown(Keys::D1)) {
-		if (!wasProjectionKeyDown) {
+	if (inputDevice->IsKeyDown(Keys::D1)) 
+	{
+		if (!wasProjectionKeyDown) 
+		{
 			wasProjectionKeyDown = true;
 			camera->isPerspectiveProjection = !camera->isPerspectiveProjection;
 		}
 	}
-	else {
+	else 
+	{
 		wasProjectionKeyDown = false;
 	}
-	if (inputDevice->IsKeyDown(Keys::D2)) {
-		if (!wasCameraControllerKeyDown) {
+	if (inputDevice->IsKeyDown(Keys::D2)) 
+	{
+		if (!wasCameraControllerKeyDown) 
+		{
 			wasCameraControllerKeyDown = true;
-			std::cout << "Click\n";
+			if (camera->controller == fpsCameraContrloller) 
+			{
+				camera->controller = sphereCameraController;
+			}
+			else
+			{
+				camera->controller = fpsCameraContrloller;
+			}
 		}
 	}
-	else {
+	else 
+	{
 		wasCameraControllerKeyDown = false;
 	}
 
@@ -219,7 +236,8 @@ void Game::Draw()
 
 void Game::DestroyResources()
 {	
-	for (auto& object : GameObjects) {
+	for (auto& object : GameObjects) 
+	{
 		delete object;
 	}
 	GameObjects.clear();

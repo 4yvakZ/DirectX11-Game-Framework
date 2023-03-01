@@ -17,27 +17,33 @@ void FPSCameraController::Update(float deltaTime)
 
 	//TODO: Change to smarter rotation;
 
-	Matrix rotationMatrix = Matrix::CreateFromYawPitchRoll(camera->yaw, camera->pitch, 0);
+	Matrix rotationMatrix = Matrix::CreateFromYawPitchRoll(yaw, pitch, 0);
 
 	Vector3 cameraForward = Vector3::Transform(Vector3::Forward, rotationMatrix);
 	Vector3 cameraRight = Vector3::Transform(Vector3::Right, rotationMatrix);
 
-	if (inputDevice->IsKeyDown(Keys::A)) {
+	if (inputDevice->IsKeyDown(Keys::A)) 
+	{
 		cameraPos += cameraSpeed * deltaTime * cameraRight;
 	}
-	if (inputDevice->IsKeyDown(Keys::D)) {
+	if (inputDevice->IsKeyDown(Keys::D)) 
+	{
 		cameraPos -= cameraSpeed * deltaTime * cameraRight;
 	}
-	if (inputDevice->IsKeyDown(Keys::W)) {
+	if (inputDevice->IsKeyDown(Keys::W)) 
+	{
 		cameraPos -= cameraSpeed * deltaTime * cameraForward;
 	}
-	if (inputDevice->IsKeyDown(Keys::S)) {
+	if (inputDevice->IsKeyDown(Keys::S)) 
+	{
 		cameraPos += cameraSpeed * deltaTime * cameraForward;
 	}
-	if (inputDevice->IsKeyDown(Keys::Space)) {
+	if (inputDevice->IsKeyDown(Keys::Space)) 
+	{
 		cameraPos += cameraSpeed * deltaTime * Vector3::Up;
 	}
-	if (inputDevice->IsKeyDown(Keys::LeftShift)) {
+	if (inputDevice->IsKeyDown(Keys::LeftShift)) 
+	{
 		cameraPos -= cameraSpeed * deltaTime * Vector3::Up;
 	}
 
@@ -50,14 +56,24 @@ void FPSCameraController::Update(float deltaTime)
 
 void FPSCameraController::MouseEventHandler(const InputDevice::MouseMoveEventArgs& mouseData, int payload)
 {
-	camera->yaw += -mouseData.Offset.x * cameraRotationSpeed;
-	camera->pitch += mouseData.Offset.y * cameraRotationSpeed;
+	yaw += -mouseData.Offset.x * cameraRotationSpeed;
+	pitch += mouseData.Offset.y * cameraRotationSpeed;
+	if (pitch > DirectX::XM_PIDIV2 - 0.01)
+	{
+		pitch = DirectX::XM_PIDIV2 - 0.01;
+	}
+	if (pitch < -DirectX::XM_PIDIV2 + 0.01)
+	{
+		pitch = -DirectX::XM_PIDIV2 + 0.01;
+	}
 
 	camera->fovAngle += mouseData.WheelDelta * cameraFOVSpeed;
-	if (camera->fovAngle > DirectX::XM_PI - DirectX::XM_PIDIV4) {
+	if (camera->fovAngle > DirectX::XM_PI - DirectX::XM_PIDIV4) 
+	{
 		camera->fovAngle = DirectX::XM_PI - DirectX::XM_PIDIV4;
 	}
-	if (camera->fovAngle < DirectX::XM_PIDIV4) {
+	if (camera->fovAngle < DirectX::XM_PIDIV4) 
+	{
 		camera->fovAngle = DirectX::XM_PIDIV4;
 	}
 }

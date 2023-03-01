@@ -30,9 +30,5 @@ public:
 	Vector3 up;
 
 	float fovAngle = DirectX::XM_PIDIV2;
-
-	float yaw;
-	float pitch;
-
 };
 

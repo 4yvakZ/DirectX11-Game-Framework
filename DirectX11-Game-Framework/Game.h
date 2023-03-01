@@ -9,10 +9,13 @@ class InputDevice;
 class Camera;
 
 class FPSCameraController;
+class SphereCameraController;
 
 class GAMEFRAMEWORK_API Game
 {
 public:
+	Game();
+
 	void Exit();
 
 	void RestoreTarget();
@@ -34,9 +37,6 @@ protected:
 	virtual void Update();
 
 	virtual void UpdateInternal();
-
-private:
-	Game();
 
 public:
 
@@ -83,6 +83,7 @@ private:
 	static Camera* camera;
 
 	FPSCameraController* fpsCameraContrloller;
+	SphereCameraController* sphereCameraController;
 
 	bool wasProjectionKeyDown = false;
 	bool wasCameraControllerKeyDown = false;
