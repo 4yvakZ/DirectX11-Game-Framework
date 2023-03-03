@@ -29,6 +29,8 @@ int main()
     cube1->SetPosition(Vector3(1, 0, 1) * 2);
     cube1->rotationAxis = Vector3(0, 1, 0);
     cube1->orbitAxis = Vector3(0, 1, 0);
+    cube1->orbitSpeed = -10;
+    cube1->rotationSpeed = 100;
 
 
 

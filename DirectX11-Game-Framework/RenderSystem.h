@@ -24,9 +24,11 @@ public:
 
 	void RemoveRenderComponent(RenderComponent* renderComponent);
 
-private:
+protected:
 
 	void CreateBackBuffer();
+
+	void CreateDepthBuffer();
 
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> Device;
@@ -36,8 +38,13 @@ public:
 	ID3D11Texture2D* backBuffer;
 	ID3D11RenderTargetView* RenderView;
 
+	ID3D11Texture2D* depthBuffer;
+	ID3D11DepthStencilView* DepthView;
+
 	Viewport viewport;
 
 	std::vector <RenderComponent*> renderComponents;
+
+	DisplayWin* display;
 };
 

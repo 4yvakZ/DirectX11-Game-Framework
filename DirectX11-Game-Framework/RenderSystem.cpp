@@ -15,7 +15,26 @@ void RenderSystem::CreateBackBuffer()
 	Device->CreateRenderTargetView(backBuffer, nullptr, &RenderView);
 }
 
-RenderSystem::RenderSystem(DisplayWin *display)
+void RenderSystem::CreateDepthBuffer()
+{
+	D3D11_TEXTURE2D_DESC depthTexDesc = {};
+	depthTexDesc.ArraySize = 1;
+	depthTexDesc.MipLevels = 1;
+	depthTexDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthTexDesc.CPUAccessFlags = 0;
+	depthTexDesc.MiscFlags = 0;
+	depthTexDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthTexDesc.Width = display->ClientWidth;
+	depthTexDesc.Height = display->ClientHeight;
+	depthTexDesc.SampleDesc = { 1, 0 };
+
+	Device->CreateTexture2D(&depthTexDesc, nullptr, &depthBuffer);
+	Device->CreateDepthStencilView(depthBuffer, nullptr, &DepthView);
+}
+
+RenderSystem::RenderSystem(DisplayWin *display):
+	display(display)
 {
 
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_1 };
@@ -58,23 +77,31 @@ RenderSystem::RenderSystem(DisplayWin *display)
 
 	CreateBackBuffer();
 
+	CreateDepthBuffer();
+
 	viewport = Viewport(0.0f, 0.0f, display->ClientWidth, display->ClientHeight);
 
 	Context->RSSetViewports(1, viewport.Get11());
+
+	
 }
 
 RenderSystem::~RenderSystem()
 {
 	RenderView->Release();
 	backBuffer->Release();
+	DepthView->Release();
+	depthBuffer->Release();
 	SwapChain->Release();
 	Context->Release();
 }
 
 void RenderSystem::PrepareFrame()
 {
-	Context->OMSetRenderTargets(1, &RenderView, nullptr);
+	Context->OMSetRenderTargets(1, &RenderView, DepthView);
+	//Context->OMSetRenderTargets(1, &RenderView, nullptr);
 	Context->ClearRenderTargetView(RenderView, backgroundColor);
+	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 
