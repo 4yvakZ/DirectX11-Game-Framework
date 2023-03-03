@@ -26,20 +26,34 @@ void LineRenderComponent::AddGrid(int gridSize, float cellSize, Color color)
 	int firstPointIndex = points.size() / 2;
 	int nPoints = gridSize * 2 + 1;
 	float offset = -(nPoints / 2) * cellSize;
-	for (int i = 0; i < nPoints; i++) {
-		for (int j = 0; j < nPoints; j++) {
+	for (int i = 0; i < nPoints; i++) 
+	{
+		for (int j = 0; j < nPoints; j++) 
+		{
 			points.push_back(Vector4(cellSize * i + offset, 0, cellSize * j + offset, 1));
 			points.push_back(color);
-			if (j < nPoints - 1) {
+			
+
+			if (i == nPoints / 2 && j == nPoints / 2)
+			{
+				continue;
+			}
+			if (j < nPoints - 1) 
+			{
 				indexes.push_back(firstPointIndex + i * nPoints + j);
 				indexes.push_back(firstPointIndex + i * nPoints + j + 1);
 			}
-			if (i < nPoints - 1) {
+			if (i < nPoints - 1) 
+			{
 				indexes.push_back(firstPointIndex + i * nPoints + j);
 				indexes.push_back(firstPointIndex + i * nPoints + j + nPoints);
 			}
 		}
 	}
+
+	AddLine(Vector4(0, 0, 0, 1), Vector4(cellSize, 0, 0, 1), Color(1, 0, 0, 1));
+	AddLine(Vector4(0, 0, 0, 1), Vector4(0, cellSize, 0, 1), Color(0, 1, 0, 1));
+	AddLine(Vector4(0, 0, 0, 1), Vector4(0, 0, cellSize, 1), Color(0, 0, 1, 1));
 
 	/*std::cout << "\nVertices:\n";
 	int i = 0;
