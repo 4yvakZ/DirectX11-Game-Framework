@@ -189,5 +189,6 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shaders\MyVeryFirstShader.hlsl" />
+    <FxCompile Include="..\Shaders\SimpleTextureShader.hlsl" />
   </ItemGroup>
 </Project>

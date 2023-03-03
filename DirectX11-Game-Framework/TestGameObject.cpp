@@ -17,7 +17,6 @@ void TestGameObject::Update(float deltaTime)
 {
 	yaw += speed * deltaTime;
 	FbxRenderComponent->World = Matrix::CreateFromYawPitchRoll(yaw, 0, 0);
-	//renderComponent->constBufferData.offset += Vector4(0.1, 0.1, 0, 0) * deltaTime;
 	renderComponent->constBufferData.worldViewPosition *= Matrix::CreateTranslation(Vector3(0.01, 0.01, 0));
 	//std::cout << renderComponent->offset.x << std::endl;
 

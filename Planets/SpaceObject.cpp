@@ -6,11 +6,11 @@ SpaceObject::SpaceObject(bool isCube, GameObject* parent):
 {
 	if (isCube) 
 	{
-		FbxRenderComponent = new RenderComponentFBX("../Shaders/MyVeryFirstShader.hlsl", "../FBX/cube.fbx");
+		FbxRenderComponent = new RenderComponentFBX("../Shaders/Planets.hlsl", "../FBX/cube.fbx");
 	}
 	else
 	{
-		FbxRenderComponent = new RenderComponentFBX("../Shaders/MyVeryFirstShader.hlsl", "../FBX/sphere.fbx");
+		FbxRenderComponent = new RenderComponentFBX("../Shaders/Planets.hlsl", "../FBX/sphere.fbx");
 	}
 	
 	components.push_back(FbxRenderComponent);

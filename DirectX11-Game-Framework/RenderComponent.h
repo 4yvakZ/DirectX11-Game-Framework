@@ -9,7 +9,6 @@ class GAMEFRAMEWORK_API RenderComponent :
 {
 public:
     struct ConstBufferData {
-        Vector4 offset;
         Matrix worldViewPosition;
     };
 
