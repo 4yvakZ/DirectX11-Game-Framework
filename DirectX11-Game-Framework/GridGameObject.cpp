@@ -4,7 +4,7 @@
 
 GridGameObject::GridGameObject()
 {
-	gridRenderComponent = new LineRenderComponent("../Shaders/MyVeryFirstShader.hlsl");
+	gridRenderComponent = new LineRenderComponent("../Shaders/SimpleTextureShader.hlsl");
 	components.push_back(gridRenderComponent);
 }
 

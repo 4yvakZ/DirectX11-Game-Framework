@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.h"
-#include <vector>
 
 using namespace DirectX::SimpleMath;
 
@@ -38,7 +37,6 @@ protected:
 
     std::vector<Vector4> points;
     std::vector<int> indexes;
-
 
     ID3D11InputLayout* layout;
 

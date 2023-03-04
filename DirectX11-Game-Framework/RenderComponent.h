@@ -8,8 +8,17 @@ class GAMEFRAMEWORK_API RenderComponent :
     public Component
 {
 public:
-    struct ConstBufferData {
+
+    struct ConstBufferData 
+    {
         Matrix worldViewPosition;
+    };
+
+    struct VertexData 
+    {
+        Vector3 pos;
+        Color color;
+        Vector2 uv;
     };
 
     RenderComponent (std::string shaderFileName) :
@@ -34,9 +43,12 @@ public:
     Matrix World;
 
 protected:
+
+    bool isTextured = false;
+
     std::string shaderFileName;
 
-    std::vector<Vector4> points;
+    std::vector<VertexData> points;
     std::vector<int> indexes;
 
 

@@ -57,18 +57,39 @@ void RenderComponent::Initialize()
 	}
 
 	///pixelShaderByteCode initialization
-	D3D_SHADER_MACRO Shader_Macros[] = { "TEST", "1", "TCOLOR", "float4(0.0f, 1.0f, 0.0f, 1.0f)", nullptr, nullptr };
+	
+	if (isTextured) 
+	{
+		D3D_SHADER_MACRO Shader_Macros[] = { "TEXTURE", "1", nullptr, nullptr };
 
-	ID3DBlob* errorPixelCode;
-	res = D3DCompileFromFile(fileName.c_str(),
-		Shader_Macros /*macros*/,
-		nullptr /*include*/,
-		"PSMain",
-		"ps_5_0",
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-		0,
-		&pixelShaderByteCode,
-		&errorPixelCode);
+		//D3D_SHADER_MACRO Shader_Macros[] = {nullptr, nullptr };
+
+		ID3DBlob* errorPixelCode;
+		res = D3DCompileFromFile(fileName.c_str(),
+			Shader_Macros /*macros*/,
+			nullptr /*include*/,
+			"PSMain",
+			"ps_5_0",
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+			0,
+			&pixelShaderByteCode,
+			&errorPixelCode);
+	}
+	else
+	{
+		D3D_SHADER_MACRO Shader_Macros[] = {nullptr, nullptr };
+
+		ID3DBlob* errorPixelCode;
+		res = D3DCompileFromFile(fileName.c_str(),
+			Shader_Macros /*macros*/,
+			nullptr /*include*/,
+			"PSMain",
+			"ps_5_0",
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+			0,
+			&pixelShaderByteCode,
+			&errorPixelCode);
+	}
 
 	///vertexShader initialization
 	render->Device->CreateVertexShader(
@@ -87,7 +108,7 @@ void RenderComponent::Initialize()
 		D3D11_INPUT_ELEMENT_DESC {
 			"POSITION",
 			0,
-			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32_FLOAT,
 			0,
 			0,
 			D3D11_INPUT_PER_VERTEX_DATA,
@@ -99,17 +120,23 @@ void RenderComponent::Initialize()
 			0,
 			D3D11_APPEND_ALIGNED_ELEMENT,
 			D3D11_INPUT_PER_VERTEX_DATA,
+			0},
+		D3D11_INPUT_ELEMENT_DESC {
+			"TEXCOORD",
+			0,
+			DXGI_FORMAT_R32G32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT,
+			D3D11_INPUT_PER_VERTEX_DATA,
 			0}
 	};
 
-	render->Device->CreateInputLayout(
+	res = render->Device->CreateInputLayout(
 		inputElements,
-		2,
+		std::size(inputElements),
 		vertexShaderByteCode->GetBufferPointer(),
 		vertexShaderByteCode->GetBufferSize(),
 		&layout);
-
-	//moment for points initialization
 
 	///vertix buffer initialization
 	D3D11_BUFFER_DESC vertexBufDesc = {};
@@ -118,7 +145,7 @@ void RenderComponent::Initialize()
 	vertexBufDesc.CPUAccessFlags = 0;
 	vertexBufDesc.MiscFlags = 0;
 	vertexBufDesc.StructureByteStride = 0;
-	vertexBufDesc.ByteWidth = sizeof(DirectX::XMFLOAT4) * std::size(points);
+	vertexBufDesc.ByteWidth = sizeof(VertexData) * std::size(points);
 
 	D3D11_SUBRESOURCE_DATA vertexData = {};
 	vertexData.pSysMem = points.data();
@@ -150,7 +177,7 @@ void RenderComponent::Initialize()
 	constBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	constBufDesc.MiscFlags = 0;
 	constBufDesc.StructureByteStride = 0;
-	constBufDesc.ByteWidth = sizeof(constBufferData);
+	constBufDesc.ByteWidth = sizeof(ConstBufferData);
 
 	D3D11_SUBRESOURCE_DATA constData = {};
 	constData.pSysMem = &constBufferData;
@@ -177,7 +204,7 @@ void RenderComponent::UpdateConstBuffer() {
 
 	render->Context->Map(constBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
-	memcpy(mappedResource.pData, &constBufferData, sizeof(constBufferData));
+	memcpy(mappedResource.pData, &constBufferData, sizeof(ConstBufferData));
 
 	render->Context->Unmap(constBuffer, 0);
 }

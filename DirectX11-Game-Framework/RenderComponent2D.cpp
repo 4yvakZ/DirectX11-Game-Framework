@@ -3,11 +3,10 @@
 #include "Game.h"
 #include "RenderSystem.h"
 
-int RenderComponent2D::AddRawPoint(Vector4 coords, Color color)
+int RenderComponent2D::AddRawPoint(Vector3 coords, Color color)
 {
-	points.push_back(coords);
-	points.push_back(color);
-	return points.size() / 2 - 1;
+	points.push_back(VertexData{ coords, color, Vector2::Zero });
+	return points.size() - 1;
 }
 
 void RenderComponent2D::AddIndex(int index)
@@ -15,15 +14,13 @@ void RenderComponent2D::AddIndex(int index)
 	indexes.push_back(index);
 }
 
-void RenderComponent2D::AddTriangle(Vector4 coords0, Vector4 coords1, Vector4 coords2, Color color)
+void RenderComponent2D::AddTriangle(Vector3 coords0, Vector3 coords1, Vector3 coords2, Color color)
 {
-	points.push_back(coords0);
-	points.push_back(color);
-	int firstPointIndex = points.size() / 2 - 1;
-	points.push_back(coords1);
-	points.push_back(color);
-	points.push_back(coords2);
-	points.push_back(color);
+
+	points.push_back(VertexData{ coords0, color, Vector2::Zero });
+	int firstPointIndex = points.size() - 1;
+	points.push_back(VertexData{ coords1, color, Vector2::Zero });
+	points.push_back(VertexData{ coords2, color, Vector2::Zero });
 
 	indexes.push_back(firstPointIndex);
 	indexes.push_back(firstPointIndex + 1);
@@ -39,26 +36,23 @@ void RenderComponent2D::Add2DRect(DirectX::SimpleMath::Rectangle rect, Color col
 	float x1 = x0 + rect.width / width;
 	float y0 = rect.y / height;
 	float y1 = y0 - rect.height / height;
-	points.push_back(Vector4(x0, y0, 0, 1));
-	points.push_back(color);
-	int firstPointIndex = points.size() / 2 - 1;
-	points.push_back(Vector4(x1, y0, 0, 1));
-	points.push_back(color);
-	points.push_back(Vector4(x1, y1, 0, 1));
-	points.push_back(color);
-	points.push_back(Vector4(x0, y1, 0, 1));
-	points.push_back(color);
+
+	points.push_back(VertexData{ Vector3{x0, y0, 0}, color, Vector2::Zero});
+	int firstPointIndex = points.size() - 1;
+	points.push_back(VertexData{ Vector3{x1, y0, 0}, color, Vector2::Zero });
+	points.push_back(VertexData{ Vector3{x1, y1, 0}, color, Vector2::Zero });
+	points.push_back(VertexData{ Vector3{x0, y1, 0}, color, Vector2::Zero });
 
 	indexes.push_back(firstPointIndex);
+	indexes.push_back(firstPointIndex + 2);
 	indexes.push_back(firstPointIndex + 1);
-	indexes.push_back(firstPointIndex + 2);
 
 	indexes.push_back(firstPointIndex);
-	indexes.push_back(firstPointIndex + 2);
 	indexes.push_back(firstPointIndex + 3);
+	indexes.push_back(firstPointIndex + 2);
 }
 
-void RenderComponent2D::Add2DCircle(Vector4 centerCoord, float radius, int numberOfTriangles, Color color)
+void RenderComponent2D::Add2DCircle(Vector3 centerCoord, float radius, int numberOfTriangles, Color color)
 {
 	RenderSystem* render = Game::GetRenderSystem();
 	float width = render->viewport.width / 2;
@@ -69,28 +63,29 @@ void RenderComponent2D::Add2DCircle(Vector4 centerCoord, float radius, int numbe
 	float ry = radius / height;
 
 
-	points.push_back(Vector4(x0, y0, 0, 1));
-	points.push_back(color);
-	int centerPointIndex = points.size() / 2 - 1;
+
+	points.push_back(VertexData{ Vector3{x0, y0, 0}, color, Vector2::Zero });
+	int centerPointIndex = points.size() - 1;
 
 	double angleStep = DirectX::XM_2PI / numberOfTriangles;
 
 	for (int i = 0; i < numberOfTriangles; i++) {
-		points.push_back(Vector4(x0 + rx * cos(i*angleStep),
-			y0 + ry * sin(i * angleStep),
-			0, 1));
-		points.push_back(color);
+		points.push_back(VertexData{ 
+			Vector3(x0 + rx * cos(i * angleStep),y0 + ry * sin(i * angleStep), 0),
+			color,
+			Vector2::Zero });
+		
 	}
 	
 	for (int i = 0; i < numberOfTriangles; i++) {
 		indexes.push_back(centerPointIndex);
+		indexes.push_back(centerPointIndex + 1 + i);
 		if (i == numberOfTriangles - 1) {
 			indexes.push_back(centerPointIndex + 1);
 		}
 		else {
 			indexes.push_back(centerPointIndex + 2 + i);
 		}
-		indexes.push_back(centerPointIndex + 1 + i);
 	}
 }
 
@@ -111,7 +106,7 @@ void RenderComponent2D::Draw()
 	render->Context->RSSetState(rastState);
 
 	///Setup AI stage
-	UINT strides[] = { 32 };
+	UINT strides[] = { 36 };
 	UINT offsets[] = { 0 };
 
 	render->Context->IASetInputLayout(layout);

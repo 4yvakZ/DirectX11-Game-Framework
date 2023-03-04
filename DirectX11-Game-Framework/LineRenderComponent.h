@@ -13,7 +13,7 @@ public:
     LineRenderComponent() = delete;
 
     void AddIndex(int index);
-    void AddLine(Vector4 coords0, Vector4 coords1, Color color);
+    void AddLine(Vector3 coords0, Vector3 coords1, Color color);
     void AddGrid(int gridSize, float cellSize, Color color);
 
     // Inherited via RenderComponent

@@ -9,7 +9,7 @@ class GAMEFRAMEWORK_API RenderComponentFBX :
 	public RenderComponent
 {
 public:
-	RenderComponentFBX(const std::string& shaderFileName, const std::string& fileName);
+	RenderComponentFBX(const std::string& shaderFileName, const std::string& modelFileName, const std::string& textureFileName = "");
 
 	RenderComponentFBX() = delete;
 
@@ -23,6 +23,9 @@ public:
 private:
 	void SearchNode(const aiScene *scene, aiNode *node, Matrix Transform);
 
-	const std::string fileName;
+	const std::string modelFileName;
+	const std::string textureFileName;
+
+	std::vector<aiMesh*> meshes;
 };
 

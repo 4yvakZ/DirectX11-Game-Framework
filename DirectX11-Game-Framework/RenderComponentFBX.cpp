@@ -7,8 +7,9 @@
 #include "Camera.h"
 
 
-RenderComponentFBX::RenderComponentFBX(const std::string& shaderFileName, const std::string& fileName) :
-	fileName(fileName),
+RenderComponentFBX::RenderComponentFBX(const std::string& shaderFileName, const std::string& modelFileName, const std::string& textureFileName) :
+	modelFileName(modelFileName),
+	textureFileName(textureFileName),
 	RenderComponent(shaderFileName)
 {
 
@@ -28,17 +29,17 @@ void RenderComponentFBX::Initialize()
 	// And have it read the given file with some example postprocessing
 	// Usually - if speed is not the most important aspect for you - you'll
 	// probably to request more postprocessing than we do in this example.
-	const aiScene *scene = importer.ReadFile(fileName,
+	const aiScene *scene = importer.ReadFile(modelFileName,
 		aiProcess_CalcTangentSpace |
-		aiProcess_Triangulate //|
-		//aiProcess_JoinIdenticalVertices |
-		//aiProcess_SortByPType
+		aiProcess_Triangulate |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_SortByPType
 	);
 
 	// If the import failed, report it
 	if (nullptr == scene) 
 	{
-		std::cout << "Missing file " << fileName << "\n";
+		std::cout << "Missing file " << modelFileName << "\n";
 		return;
 	}
 
@@ -46,14 +47,19 @@ void RenderComponentFBX::Initialize()
 
 	Assimp::DefaultLogger::kill();
 
+	if (textureFileName != "")
+	{
+		std::cout << "Importing texture " << textureFileName << "\n";
+	}
+
 	RenderComponent::Initialize();
 
-	std::cout << "\nVertices:\n";
+	/*std::cout << "\nVertices:\n";
 	int i = 0;
 	for (const auto& point : points) {
 		i++;
 		if (i % 2 == 0) continue;
-		std::cout << "\n" << i / 2 << ": " << point.x << " " << point.y << " " << point.z << " " << point.w << "\n";
+		std::cout << "\n" << i / 2 << ": " << point.pos.x << " " << point.pos.y << " " << point.pos.z << "\n";
 	}
 
 	std::cout << "\nIndexes:\n";
@@ -62,7 +68,7 @@ void RenderComponentFBX::Initialize()
 		
 		std::cout << index << " ";
 	}
-	std::cout << "\n";
+	std::cout << "\n";*/
 
 	//World = Matrix::Identity;
 }
@@ -74,7 +80,7 @@ void RenderComponentFBX::Draw()
 	render->Context->RSSetState(rastState);
 
 	///Setup AI stage
-	UINT strides[] = { 32 };
+	UINT strides[] = { 36 };
 	UINT offsets[] = { 0 };
 
 	render->Context->IASetInputLayout(layout);
@@ -110,14 +116,13 @@ void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, Matrix t
 
 			for (size_t i = 0; i < nVertecis; i++) 
 			{
-				Vector4 point = Vector4(vertecis[i].x,
+				Vector3 point = Vector3(vertecis[i].x,
 					vertecis[i].y,
-					vertecis[i].z,
-					1.0f);
+					vertecis[i].z);
 
-				points.push_back(point);
-				points.push_back(point);
-				//points.push_back(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+				Vector2 UV = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+
+				points.push_back(VertexData{point, Color(point), UV});
 			}
 
 			size_t nFaces = mesh->mNumFaces;
@@ -128,6 +133,8 @@ void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, Matrix t
 				indexes.push_back(meshFaces[i].mIndices[1]); 
 				indexes.push_back(meshFaces[i].mIndices[2]);
 			}
+
+			meshes.push_back(mesh);
 		}
 	}
 

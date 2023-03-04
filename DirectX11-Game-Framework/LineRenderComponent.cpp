@@ -8,13 +8,11 @@ inline void LineRenderComponent::AddIndex(int index)
     indexes.push_back(index);
 }
 
-void LineRenderComponent::AddLine(Vector4 coords0, Vector4 coords1, Color color)
+void LineRenderComponent::AddLine(Vector3 coords0, Vector3 coords1, Color color)
 {
-	points.push_back(coords0);
-	points.push_back(color);
-	int firstPointIndex = points.size() / 2 - 1;
-	points.push_back(coords1);
-	points.push_back(color);
+	points.push_back(VertexData{ coords0, color, Vector2::Zero });
+	int firstPointIndex = points.size() - 1;
+	points.push_back(VertexData{ coords1, color, Vector2::Zero });
 
 	indexes.push_back(firstPointIndex);
 	indexes.push_back(firstPointIndex + 1);
@@ -23,15 +21,18 @@ void LineRenderComponent::AddLine(Vector4 coords0, Vector4 coords1, Color color)
 void LineRenderComponent::AddGrid(int gridSize, float cellSize, Color color)
 {
 
-	int firstPointIndex = points.size() / 2;
+	int firstPointIndex = points.size();
 	int nPoints = gridSize * 2 + 1;
 	float offset = -(nPoints / 2) * cellSize;
 	for (int i = 0; i < nPoints; i++) 
 	{
 		for (int j = 0; j < nPoints; j++) 
 		{
-			points.push_back(Vector4(cellSize * i + offset, 0, cellSize * j + offset, 1));
-			points.push_back(color);
+
+			points.push_back(VertexData{ 
+				Vector3(cellSize * i + offset, 0, cellSize * j + offset),
+				color,
+				Vector2::Zero });
 			
 
 			if (i == nPoints / 2 && j == nPoints / 2)
@@ -51,9 +52,9 @@ void LineRenderComponent::AddGrid(int gridSize, float cellSize, Color color)
 		}
 	}
 
-	AddLine(Vector4(0, 0, 0, 1), Vector4(cellSize, 0, 0, 1), Color(1, 0, 0, 1));
-	AddLine(Vector4(0, 0, 0, 1), Vector4(0, cellSize, 0, 1), Color(0, 1, 0, 1));
-	AddLine(Vector4(0, 0, 0, 1), Vector4(0, 0, cellSize, 1), Color(0, 0, 1, 1));
+	AddLine(Vector3(0, 0, 0), Vector3(cellSize, 0, 0), Color(1, 0, 0, 1));
+	AddLine(Vector3(0, 0, 0), Vector3(0, cellSize, 0), Color(0, 1, 0, 1));
+	AddLine(Vector3(0, 0, 0), Vector3(0, 0, cellSize), Color(0, 0, 1, 1));
 
 	/*std::cout << "\nVertices:\n";
 	int i = 0;
@@ -82,7 +83,7 @@ void LineRenderComponent::Draw()
 	render->Context->RSSetState(rastState);
 
 	///Setup AI stage
-	UINT strides[] = { 32 };
+	UINT strides[] = { 36 };
 	UINT offsets[] = { 0 };
 
 	render->Context->IASetInputLayout(layout);
