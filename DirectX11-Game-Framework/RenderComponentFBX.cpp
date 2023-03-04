@@ -1,29 +1,54 @@
 #include "RenderComponentFBX.h"
 
-#include "FBXImporter.h"
+#include <assimp/DefaultLogger.hpp>
+
 #include "Game.h"
 #include "RenderSystem.h"
 #include "Camera.h"
 
 
-RenderComponentFBX::RenderComponentFBX(std::string shaderFileName, const char* fileName) :
+RenderComponentFBX::RenderComponentFBX(const std::string& shaderFileName, const std::string& fileName) :
 	fileName(fileName),
 	RenderComponent(shaderFileName)
 {
-	
+
+}
+
+RenderComponentFBX::~RenderComponentFBX()
+{
 }
 
 void RenderComponentFBX::Initialize()
 {
-	FBXImporter importer;
-	importer.LoadFBXFile(fileName);
-	//std::cout << importer.GetMeshesCount() << "\n";
-	
-	importer.GetMeshData(0, points, indexes);
+	// Create an instance of the Importer class
+	Assimp::Importer importer;
+
+	Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
+
+	// And have it read the given file with some example postprocessing
+	// Usually - if speed is not the most important aspect for you - you'll
+	// probably to request more postprocessing than we do in this example.
+	const aiScene *scene = importer.ReadFile(fileName,
+		aiProcess_CalcTangentSpace |
+		aiProcess_Triangulate //|
+		//aiProcess_JoinIdenticalVertices |
+		//aiProcess_SortByPType
+	);
+
+	// If the import failed, report it
+	if (nullptr == scene) 
+	{
+		std::cout << "Missing file " << fileName << "\n";
+		return;
+	}
+
+	SearchNode(scene, scene->mRootNode, Matrix::Identity);
+
+	Assimp::DefaultLogger::kill();
 
 	RenderComponent::Initialize();
 
-	/*std::cout << "\nVertices:\n";
+	std::cout << "\nVertices:\n";
 	int i = 0;
 	for (const auto& point : points) {
 		i++;
@@ -37,7 +62,7 @@ void RenderComponentFBX::Initialize()
 		
 		std::cout << index << " ";
 	}
-	std::cout << "\n";*/
+	std::cout << "\n";
 
 	//World = Matrix::Identity;
 }
@@ -71,3 +96,45 @@ void RenderComponentFBX::Update()
 	constBufferData.worldViewPosition = Game::GetCamera()->GetWorldViewPositionMatrix(World);
 	UpdateConstBuffer();
 }
+
+void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, Matrix transform)
+{
+	if (node->mNumMeshes > 0) 
+	{
+		for (size_t i = 0; i < node->mNumMeshes; i++)
+		{
+			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+
+			size_t nVertecis = mesh->mNumVertices;
+			aiVector3D* vertecis = mesh->mVertices;
+
+			for (size_t i = 0; i < nVertecis; i++) 
+			{
+				Vector4 point = Vector4(vertecis[i].x,
+					vertecis[i].y,
+					vertecis[i].z,
+					1.0f);
+
+				points.push_back(point);
+				points.push_back(point);
+				//points.push_back(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+
+			size_t nFaces = mesh->mNumFaces;
+			aiFace* meshFaces = mesh->mFaces;
+			for (size_t i = 0; i < nFaces; i++) 
+			{
+				indexes.push_back(meshFaces[i].mIndices[0]); 
+				indexes.push_back(meshFaces[i].mIndices[1]); 
+				indexes.push_back(meshFaces[i].mIndices[2]);
+			}
+		}
+	}
+
+	// continue for all child nodes
+	for (size_t i = 0; i < node->mNumChildren; i++)
+	{
+		SearchNode(scene, node->mChildren[i], transform);
+	}
+}
+

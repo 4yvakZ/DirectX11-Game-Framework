@@ -1,14 +1,19 @@
 #pragma once
-
 #include "RenderComponent.h"
+
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags  
 
 class GAMEFRAMEWORK_API RenderComponentFBX :
 	public RenderComponent
 {
 public:
-	RenderComponentFBX(std::string shaderFileName, const char* fileName);
+	RenderComponentFBX(const std::string& shaderFileName, const std::string& fileName);
 
 	RenderComponentFBX() = delete;
+
+	~RenderComponentFBX();
 
 	// Inherited via RenderComponent
 	virtual void Initialize() override;
@@ -16,6 +21,8 @@ public:
 	virtual void Update() override;
 
 private:
-	const char* fileName;
+	void SearchNode(const aiScene *scene, aiNode *node, Matrix Transform);
+
+	const std::string fileName;
 };
 
