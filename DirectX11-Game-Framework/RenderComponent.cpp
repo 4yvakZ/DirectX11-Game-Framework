@@ -58,7 +58,7 @@ void RenderComponent::Initialize()
 
 	///pixelShaderByteCode initialization
 	
-	if (isTextured) 
+	if (textureView) 
 	{
 		D3D_SHADER_MACRO Shader_Macros[] = { "TEXTURE", "1", nullptr, nullptr };
 
@@ -74,6 +74,19 @@ void RenderComponent::Initialize()
 			0,
 			&pixelShaderByteCode,
 			&errorPixelCode);
+
+		///samplerState initialization
+		D3D11_SAMPLER_DESC sampDesc;
+		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		sampDesc.MaxLOD = INT_MAX;
+		sampDesc.MipLODBias = 0;
+		sampDesc.MaxAnisotropy = 16;
+
+		res = render->Device->CreateSamplerState(&sampDesc, &samplerState);
 	}
 	else
 	{

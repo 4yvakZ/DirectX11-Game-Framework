@@ -24,7 +24,7 @@ private:
 	void SearchNode(const aiScene *scene, aiNode *node, Matrix Transform);
 
 	const std::string modelFileName;
-	const std::string textureFileName;
+	std::string textureFileName;
 
 	std::vector<aiMesh*> meshes;
 };

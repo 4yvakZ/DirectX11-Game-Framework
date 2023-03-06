@@ -44,8 +44,6 @@ public:
 
 protected:
 
-    bool isTextured = false;
-
     std::string shaderFileName;
 
     std::vector<VertexData> points;
@@ -65,5 +63,8 @@ protected:
     ID3D11Buffer* constBuffer;
 
     ID3D11RasterizerState* rastState;
+
+    ID3D11ShaderResourceView* textureView = nullptr;
+    ID3D11SamplerState* samplerState;
 };
 

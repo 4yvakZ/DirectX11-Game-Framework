@@ -1,6 +1,7 @@
 #include "RenderComponentFBX.h"
 
 #include <assimp/DefaultLogger.hpp>
+#include "DirectXTex.h"
 
 #include "Game.h"
 #include "RenderSystem.h"
@@ -47,9 +48,53 @@ void RenderComponentFBX::Initialize()
 
 	Assimp::DefaultLogger::kill();
 
-	if (textureFileName != "")
+	if (textureFileName == "")
 	{
-		std::cout << "Importing texture " << textureFileName << "\n";
+		if (scene->HasTextures()) 
+		{
+			std::string folderPath = modelFileName;
+
+			while (folderPath.length() > 0 && folderPath.back() != '\\' && folderPath.back() != '/')
+			{
+				folderPath.pop_back();
+			}
+			textureFileName = folderPath + scene->mTextures[0]->mFilename.C_Str();
+		}
+	}
+
+	std::cout << "Importing texture " << textureFileName << "\n";
+
+	std::wstring fileName(textureFileName.begin(), textureFileName.end());
+	DirectX::ScratchImage image;
+	HRESULT hr;
+	if (_wcsicmp(fileName.c_str(), L".dds") == 0)
+	{
+		hr = LoadFromDDSFile(fileName.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+	}
+	else if (_wcsicmp(fileName.c_str(), L".tga") == 0)
+	{
+		hr = LoadFromTGAFile(fileName.c_str(), nullptr, image);
+	}
+	else if (_wcsicmp(fileName.c_str(), L".hdr") == 0)
+	{
+		hr = LoadFromHDRFile(fileName.c_str(), nullptr, image);
+	}
+	else
+	{
+		hr = LoadFromWICFile(fileName.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, image);
+	}
+
+	RenderSystem* render = Game::GetRenderSystem();
+
+	if (SUCCEEDED(hr))
+	{
+		hr = CreateShaderResourceView(render->Device.Get(),
+			image.GetImages(), image.GetImageCount(),
+			image.GetMetadata(), &textureView);
+	} 
+	else
+	{
+		std::cout << "Missing texture " << textureFileName << "\n";
 	}
 
 	RenderComponent::Initialize();
@@ -89,10 +134,13 @@ void RenderComponentFBX::Draw()
 	render->Context->IASetVertexBuffers(0, 1, &vertexBuffer, strides, offsets);
 
 
-	///Set Vertex and Pixel Shaders
+	///Set Vertex and Pixel Resources
 	render->Context->VSSetShader(vertexShader, nullptr, 0);
 	render->Context->VSSetConstantBuffers(0, 1, &constBuffer);
+
 	render->Context->PSSetShader(pixelShader, nullptr, 0);
+	render->Context->PSSetShaderResources(0, 1, &textureView);
+	render->Context->PSSetSamplers(0, 1, &samplerState);
 
 	render->Context->DrawIndexed(indexes.size(), 0, 0);
 }
