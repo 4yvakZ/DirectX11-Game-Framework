@@ -21,7 +21,7 @@ public:
 	virtual void Update() override;
 
 private:
-	void SearchNode(const aiScene *scene, aiNode *node, Matrix Transform);
+	void SearchNode(const aiScene *scene, aiNode *node, aiMatrix4x4 Transform);
 
 	const std::string modelFileName;
 	std::string textureFileName;

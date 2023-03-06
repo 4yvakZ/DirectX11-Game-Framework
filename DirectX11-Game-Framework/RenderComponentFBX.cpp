@@ -44,7 +44,7 @@ void RenderComponentFBX::Initialize()
 		return;
 	}
 
-	SearchNode(scene, scene->mRootNode, Matrix::Identity);
+	SearchNode(scene, scene->mRootNode, aiMatrix4x4() * 0.05);
 
 	std::cout << "Imported " << meshes.size() << " meshes\n";
 
@@ -154,29 +154,29 @@ void RenderComponentFBX::Update()
 	UpdateConstBuffer();
 }
 
-void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, Matrix transform)
+void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, aiMatrix4x4 transform)
 {
+
+	transform *= node->mTransformation;
+
 	if (node->mNumMeshes > 0) 
 	{
 		for (size_t i = 0; i < node->mNumMeshes; i++)
 		{
+			std::cout << node->mMeshes[i] << "\n";
+
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
 			size_t nVertecis = mesh->mNumVertices;
 			aiVector3D* vertecis = mesh->mVertices;
-			aiMatrix4x4 transform;
-			//if (node == scene->mRootNode)
-			//{
-				//transform = node->mTransformation;
-			//}
+			size_t firstPointIndex = points.size();
 			
 			for (size_t i = 0; i < nVertecis; i++) 
 			{
 				aiVector3D vertex = vertecis[i];
-				//if (node == scene->mRootNode)
-				//{
-					//vertex *= transform;
-				//}
+
+				vertex *= transform;
+
 				Vector3 point = Vector3(vertex.x,
 					vertex.y,
 					vertex.z);
@@ -186,13 +186,14 @@ void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, Matrix t
 				points.push_back(VertexData{point, Color(point), UV});
 			}
 
+
 			size_t nFaces = mesh->mNumFaces;
 			aiFace* meshFaces = mesh->mFaces;
 			for (size_t i = 0; i < nFaces; i++) 
 			{
-				indexes.push_back(meshFaces[i].mIndices[0]); 
-				indexes.push_back(meshFaces[i].mIndices[1]); 
-				indexes.push_back(meshFaces[i].mIndices[2]);
+				indexes.push_back(meshFaces[i].mIndices[0] + firstPointIndex);
+				indexes.push_back(meshFaces[i].mIndices[1] + firstPointIndex);
+				indexes.push_back(meshFaces[i].mIndices[2] + firstPointIndex);
 			}
 
 			meshes.push_back(mesh);

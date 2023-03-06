@@ -7,7 +7,7 @@
 
 TestGameObject::TestGameObject()
 {
-	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/GiftBox.fbx");
+	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/WinterMug.fbx", "../FBX/WinterMug.png");
 	components.push_back(FbxRenderComponent);
 	renderComponent = new RenderComponent2D("../Shaders/SimpleTextureShader.hlsl");
 	components.push_back(renderComponent);
@@ -16,7 +16,7 @@ TestGameObject::TestGameObject()
 void TestGameObject::Update(float deltaTime)
 {
 	yaw += speed * deltaTime;
-	FbxRenderComponent->World = Matrix::CreateFromYawPitchRoll(yaw, 0, 0);
+	//FbxRenderComponent->World = Matrix::CreateFromYawPitchRoll(yaw, 0, 0);
 	renderComponent->constBufferData.worldViewPosition *= Matrix::CreateTranslation(Vector3(0.001, 0.001, 0));
 	//std::cout << renderComponent->offset.x << std::endl;
 
