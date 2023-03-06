@@ -46,10 +46,13 @@ void RenderComponentFBX::Initialize()
 
 	SearchNode(scene, scene->mRootNode, Matrix::Identity);
 
+	std::cout << "Imported " << meshes.size() << " meshes\n";
+
 	Assimp::DefaultLogger::kill();
 
 	if (textureFileName == "")
 	{
+		std::cout << scene->mNumTextures << "\n";
 		if (scene->HasTextures()) 
 		{
 			std::string folderPath = modelFileName;
@@ -161,12 +164,22 @@ void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, Matrix t
 
 			size_t nVertecis = mesh->mNumVertices;
 			aiVector3D* vertecis = mesh->mVertices;
-
+			aiMatrix4x4 transform;
+			//if (node == scene->mRootNode)
+			//{
+				//transform = node->mTransformation;
+			//}
+			
 			for (size_t i = 0; i < nVertecis; i++) 
 			{
-				Vector3 point = Vector3(vertecis[i].x,
-					vertecis[i].y,
-					vertecis[i].z);
+				aiVector3D vertex = vertecis[i];
+				//if (node == scene->mRootNode)
+				//{
+					//vertex *= transform;
+				//}
+				Vector3 point = Vector3(vertex.x,
+					vertex.y,
+					vertex.z);
 
 				Vector2 UV = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 

@@ -7,7 +7,7 @@
 
 TestGameObject::TestGameObject()
 {
-	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/cube.fbx");
+	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/GiftBox.fbx");
 	components.push_back(FbxRenderComponent);
 	renderComponent = new RenderComponent2D("../Shaders/SimpleTextureShader.hlsl");
 	components.push_back(renderComponent);
