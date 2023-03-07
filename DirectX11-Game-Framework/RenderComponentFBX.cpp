@@ -44,7 +44,7 @@ void RenderComponentFBX::Initialize()
 		return;
 	}
 
-	SearchNode(scene, scene->mRootNode, aiMatrix4x4() * 0.05);
+	SearchNode(scene, scene->mRootNode, aiMatrix4x4() * 0.01 * scale);
 
 	std::cout << "Imported " << meshes.size() << " meshes\n";
 
@@ -156,13 +156,13 @@ void RenderComponentFBX::Update()
 
 void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, aiMatrix4x4 transform)
 {
-
 	transform *= node->mTransformation;
 
 	if (node->mNumMeshes > 0) 
 	{
 		for (size_t i = 0; i < node->mNumMeshes; i++)
 		{
+			
 			std::cout << node->mMeshes[i] << "\n";
 
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -179,7 +179,7 @@ void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, aiMatrix
 
 				Vector3 point = Vector3(vertex.x,
 					vertex.y,
-					vertex.z);
+					vertex.z) + offset;
 
 				Vector2 UV = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 

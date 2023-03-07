@@ -5,6 +5,8 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags  
 
+
+
 class GAMEFRAMEWORK_API RenderComponentFBX :
 	public RenderComponent
 {
@@ -23,6 +25,11 @@ public:
 private:
 	void SearchNode(const aiScene *scene, aiNode *node, aiMatrix4x4 Transform);
 
+public:
+	Vector3 offset = Vector3(0, 0, 0);
+	float scale = 1;
+
+private:
 	const std::string modelFileName;
 	std::string textureFileName;
 

@@ -103,7 +103,7 @@ void Game::PrepareResources()
 	fpsCameraContrloller = new FPSCameraController(camera);
 	sphereCameraController = new SphereCameraController(camera);
 
-	camera->controller = fpsCameraContrloller;
+	camera->controller = sphereCameraController;
 }
 
 void Game::Initialize()
@@ -211,12 +211,22 @@ void Game::UpdateInternal()
 		if (!wasCameraControllerKeyDown) 
 		{
 			wasCameraControllerKeyDown = true;
-			if (camera->controller == fpsCameraContrloller) 
+			if (camera->controller == fpsCameraContrloller)
 			{
+				sphereCameraController->yaw = fpsCameraContrloller->yaw; 
+				sphereCameraController->pitch = fpsCameraContrloller->pitch;
+
+				sphereCameraController->armPosition = camera->position;
+
 				camera->controller = sphereCameraController;
 			}
 			else
 			{
+				fpsCameraContrloller->yaw = sphereCameraController->yaw;
+				fpsCameraContrloller->pitch = sphereCameraController->pitch;
+
+				camera->position = sphereCameraController->armPosition;
+
 				camera->controller = fpsCameraContrloller;
 			}
 		}

@@ -41,3 +41,30 @@ void Camera::Update(float deltaTime)
 Matrix Camera::GetWorldViewPositionMatrix(Matrix World) {
 	return World * view * projection;
 }
+
+Vector3 Camera::GetForwardVector()
+{
+	if (controller)
+	{
+		return controller->GetForwardVector();
+	}
+	return Vector3::Forward;
+}
+
+Vector3 Camera::GetRightVector()
+{
+	if (controller)
+	{
+		return controller->GetRightVector();
+	}
+	return Vector3::Right;
+}
+
+Vector3 Camera::GetUpVector()
+{
+	if (controller)
+	{
+		return controller->GetUpVector();
+	}
+	return Vector3::Up;
+}
