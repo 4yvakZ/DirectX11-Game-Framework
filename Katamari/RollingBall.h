@@ -14,10 +14,16 @@ public:
     virtual void Update(float deltaTime);
     virtual void Initialize();
 
-    float rotationSpeed = 3;
+    void IncreaseRadius(float additionalRadius);
+
+   
 
 private:
+
+    float rotationSpeed = 3;
     RenderComponentFBX* FbxRenderComponent;
     float radius;
+    float radiusIncreaseSpeed = 0.5;
+    float targetRadius;
 };
 

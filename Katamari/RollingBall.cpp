@@ -7,6 +7,7 @@
 
 RollingBall::RollingBall(float radius, GameObject* parent) :
 	radius(radius),
+	targetRadius(radius),
 	GameObject(parent)
 {
 	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/tennis_Ball/tennis_Ball.fbx", "../FBX/tennis_Ball/tennis ball_DefaultMaterial_BaseColor.png");
@@ -66,6 +67,17 @@ void RollingBall::Update(float deltaTime)
 
 		SetRotation(GetRotation() * rotator);
 	}
+
+	if (radius < targetRadius) {
+		float radiusAddition = radiusIncreaseSpeed * deltaTime;
+		if (radius + radiusAddition > targetRadius) {
+			radiusAddition = targetRadius - radius;
+		}
+
+		deltaPos += Vector3(0, radiusAddition, 0);
+		radius += radiusAddition;
+		//std::cout << radius << "\n";
+	}
 	
 	SetPosition(GetPosition() + deltaPos);
 	FbxRenderComponent->World = GetWorld();
@@ -78,4 +90,9 @@ void RollingBall::Initialize()
 	Camera* camera = Game::GetCamera();
 	camera->targetObject = this;
 	GameObject::Initialize();
+}
+
+void RollingBall::IncreaseRadius(float additionalRadius)
+{
+	targetRadius += additionalRadius;
 }

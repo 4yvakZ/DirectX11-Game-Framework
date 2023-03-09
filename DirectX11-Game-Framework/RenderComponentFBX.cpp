@@ -46,13 +46,11 @@ void RenderComponentFBX::Initialize()
 
 	SearchNode(scene, scene->mRootNode, aiMatrix4x4() * 0.01 * scale);
 
-	std::cout << "Imported " << meshes.size() << " meshes\n";
-
 	Assimp::DefaultLogger::kill();
 
 	if (textureFileName == "")
 	{
-		std::cout << scene->mNumTextures << "\n";
+		//std::cout << scene->mNumTextures << "\n";
 		if (scene->HasTextures()) 
 		{
 			std::string folderPath = modelFileName;
@@ -64,8 +62,6 @@ void RenderComponentFBX::Initialize()
 			textureFileName = folderPath + scene->mTextures[0]->mFilename.C_Str();
 		}
 	}
-
-	std::cout << "Importing texture " << textureFileName << "\n";
 
 	std::wstring fileName(textureFileName.begin(), textureFileName.end());
 	DirectX::ScratchImage image;
@@ -162,9 +158,6 @@ void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, aiMatrix
 	{
 		for (size_t i = 0; i < node->mNumMeshes; i++)
 		{
-			
-			std::cout << node->mMeshes[i] << "\n";
-
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
 			size_t nVertecis = mesh->mNumVertices;

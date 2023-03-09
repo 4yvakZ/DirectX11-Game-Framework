@@ -7,17 +7,45 @@
 #include "GridGameObject.h"
 #include "RollingBall.h"
 #include "PlaneObject.h"
+#include "StickyObject.h"
 
 
 int main()
 {
     Game* testGame = new Game();
-    RollingBall* ball = new RollingBall(0.4);
-
+    RollingBall* ball = new RollingBall(0.425);
 
     //testGame->GameObjects.push_back(new GridGameObject());
     testGame->GameObjects.push_back(ball);
     testGame->GameObjects.push_back(new PlaneObject());
+
+    StickyObject* cube = new StickyObject("../FBX/cube.fbx");
+    cube->SetPosition(Vector3(5, 1, 5));
+    cube->SetScale(1);
+    testGame->GameObjects.push_back(cube);
+
+    StickyObject* sphere = new StickyObject("../FBX/sphere.fbx");
+    sphere->SetPosition(Vector3(-5, 0.6, -5));
+    sphere->SetScale(0.6);
+    testGame->GameObjects.push_back(sphere);
+
+    StickyObject* guitar = new StickyObject("../FBX/guitar/guitar.fbx", "../FBX/guitar/TD_Checker.png");
+    guitar->SetPosition(Vector3(5, 0, -5));
+    guitar->SetScale(4);
+    guitar->SetCenterPoint(Vector3(0, 0.3f, 0));
+    testGame->GameObjects.push_back(guitar);
+
+    StickyObject* pillBottle = new StickyObject("../FBX/pill_bottle/pill_bottle.fbx", "../FBX/pill_bottle/TD_Checker.png");
+    pillBottle->SetPosition(Vector3(-5, 0, 5));
+    pillBottle->SetScale(4);
+    pillBottle->SetCenterPoint(Vector3(0, 0.06f, 0));
+    testGame->GameObjects.push_back(pillBottle);
+
+    StickyObject* mug = new StickyObject("../FBX/Winter_Mug/Winter_Mug.fbx", "../FBX/Winter_Mug/Winter_Mug.png");
+    mug->SetPosition(Vector3(0, 0, 5));
+    mug->SetScale(12);
+    mug->SetCenterPoint(Vector3(0, 0.05f, 0));
+    testGame->GameObjects.push_back(mug);
 
     testGame->Run();
 

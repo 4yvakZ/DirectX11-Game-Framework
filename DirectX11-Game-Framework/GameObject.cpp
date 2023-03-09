@@ -30,44 +30,62 @@ GameObject::~GameObject()
 }
 
 
-void GameObject::SetWorld(const Vector3& newPosition, const Quaternion& newRotation)
+void GameObject::SetWorld(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
 {
-	rotation = newRotation;
-	position = newPosition;
+	transform.rotation = rotation;
+	transform.position = position;
+	transform.scale = scale;
 	UpdateWorld();
 }
 
 Matrix GameObject::GetWorld() const
 {
-	return world;
+	return transform.world;
 }
 
-void GameObject::SetRotation(const Quaternion& newRotation)
+void GameObject::SetRotation(const Quaternion& rotation)
 {
-	rotation = newRotation;
+	transform.rotation = rotation;
 	UpdateWorld();
 }
 
 Quaternion GameObject::GetRotation() const
 {
-	return rotation;
+	return transform.rotation;
 }
 
-void GameObject::SetPosition(const Vector3& newPosition)
+void GameObject::SetPosition(const Vector3& position)
 {
-	position = newPosition;
+	transform.position = position;
 	UpdateWorld();
 }
 
 Vector3 GameObject::GetPosition() const
 {
-	return position;
+	return transform.position;
+}
+
+void GameObject::SetScale(const Vector3& scale)
+{
+	transform.scale = scale;
+	UpdateWorld();
+}
+
+void GameObject::SetScale(float scale)
+{
+	transform.scale = Vector3(scale, scale, scale);
+	UpdateWorld();
+}
+
+Vector3 GameObject::GetScale() const
+{
+	return transform.scale;
 }
 
 void GameObject::UpdateWorld()
 {
-	world = Matrix::CreateFromQuaternion(rotation) * Matrix::CreateTranslation(position);
+	transform.world = Matrix::CreateScale(transform.scale) * Matrix::CreateFromQuaternion(transform.rotation) * Matrix::CreateTranslation(transform.position);
 	if (parent) {
-		world *= parent->GetWorld();
+		transform.world *= parent->GetWorld();
 	}
 }

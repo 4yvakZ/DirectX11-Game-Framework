@@ -169,6 +169,7 @@
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="SphereCameraController.h" />
     <ClInclude Include="TestGameObject.h" />
+    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />

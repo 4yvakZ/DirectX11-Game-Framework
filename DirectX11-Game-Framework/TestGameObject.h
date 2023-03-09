@@ -13,8 +13,9 @@ public:
 
     // Inherited via GameObject
     virtual void Update(float deltaTime) override;
-
     virtual void Initialize() override;
+
+
 
 private:
 
