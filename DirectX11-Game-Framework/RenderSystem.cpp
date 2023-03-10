@@ -33,10 +33,33 @@ void RenderSystem::CreateDepthBuffer()
 	Device->CreateDepthStencilView(depthBuffer, nullptr, &DepthView);
 }
 
+void RenderSystem::CreateLightBuffer()
+{
+	
+	lightData.direction = Vector4(-1, -1, -1, 0);
+	lightData.direction.Normalize();
+	///const buffer initialization
+	D3D11_BUFFER_DESC lightBufDesc = {};
+	lightBufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	lightBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	lightBufDesc.MiscFlags = 0;
+	lightBufDesc.StructureByteStride = 0;
+	lightBufDesc.ByteWidth = sizeof(LightData);
+
+	D3D11_SUBRESOURCE_DATA lightBufData = {};
+	lightBufData.pSysMem = &lightData;
+	lightBufData.SysMemPitch = 0;
+	lightBufData.SysMemSlicePitch = 0;
+
+	Device->CreateBuffer(&lightBufDesc, &lightBufData, &lightBuffer);
+	Context->PSSetConstantBuffers(2, 0, &lightBuffer);
+	
+}
+
 RenderSystem::RenderSystem(DisplayWin *display):
 	display(display)
 {
-
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_1 };
 
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
@@ -83,11 +106,12 @@ RenderSystem::RenderSystem(DisplayWin *display):
 
 	Context->RSSetViewports(1, viewport.Get11());
 
-	
+	CreateLightBuffer();
 }
 
 RenderSystem::~RenderSystem()
 {
+	lightBuffer->Release();
 	RenderView->Release();
 	backBuffer->Release();
 	DepthView->Release();
@@ -125,4 +149,12 @@ void RenderSystem::RemoveRenderComponent(RenderComponent* renderComponent)
 			return;
 		}
 	}
+}
+
+void RenderSystem::UpdateLightData(LightData newLightData)
+{
+	lightData = newLightData;
+	lightData.direction.Normalize();
+
+	Context->UpdateSubresource(lightBuffer, 0, nullptr, &lightData, 0, 0);
 }

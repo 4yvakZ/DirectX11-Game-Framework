@@ -10,9 +10,9 @@ inline void LineRenderComponent::AddIndex(int index)
 
 void LineRenderComponent::AddLine(Vector3 coords0, Vector3 coords1, Color color)
 {
-	points.push_back(VertexData{ coords0, color, Vector2::Zero });
+	points.push_back(VertexData{ coords0, color});
 	int firstPointIndex = points.size() - 1;
-	points.push_back(VertexData{ coords1, color, Vector2::Zero });
+	points.push_back(VertexData{ coords1, color });
 
 	indexes.push_back(firstPointIndex);
 	indexes.push_back(firstPointIndex + 1);
@@ -30,9 +30,7 @@ void LineRenderComponent::AddGrid(int gridSize, float cellSize, Color color)
 		{
 
 			points.push_back(VertexData{ 
-				Vector3(cellSize * i + offset, 0, cellSize * j + offset),
-				color,
-				Vector2::Zero });
+				Vector3(cellSize * i + offset, 0, cellSize * j + offset), color });
 			
 
 			if (i == nPoints / 2 && j == nPoints / 2)
@@ -83,7 +81,7 @@ void LineRenderComponent::Draw()
 	render->Context->RSSetState(rastState);
 
 	///Setup AI stage
-	UINT strides[] = { 36 };
+	UINT strides[] = { 48 };
 	UINT offsets[] = { 0 };
 
 	render->Context->IASetInputLayout(layout);
@@ -96,6 +94,8 @@ void LineRenderComponent::Draw()
 	render->Context->VSSetShader(vertexShader, nullptr, 0);
 	render->Context->VSSetConstantBuffers(0, 1, &constBuffer);
 	render->Context->PSSetShader(pixelShader, nullptr, 0);
+	render->Context->PSSetConstantBuffers(0, 1, &constBuffer);
+	render->Context->PSSetConstantBuffers(1, 1, &materialBuffer);
 
 	render->Context->DrawIndexed(indexes.size(), 0, 0);
 }
@@ -103,5 +103,6 @@ void LineRenderComponent::Draw()
 void LineRenderComponent::Update()
 {
 	constBufferData.worldViewPosition = Game::GetCamera()->GetWorldViewPositionMatrix(World);
+	constBufferData.world = World;
 	UpdateConstBuffer();
 }

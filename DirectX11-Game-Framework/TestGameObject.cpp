@@ -7,9 +7,8 @@
 
 TestGameObject::TestGameObject()
 {
-	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/plane.fbx", "../FBX/PNG/Green/texture_08.png");
+	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/sphere.fbx", "../FBX/PNG/Light/texture_07.png");
 	components.push_back(FbxRenderComponent);
-	FbxRenderComponent->scale = 5;
 	renderComponent = new RenderComponent2D("../Shaders/SimpleTextureShader.hlsl");
 	components.push_back(renderComponent);
 }

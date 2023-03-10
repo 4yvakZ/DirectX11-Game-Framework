@@ -5,7 +5,7 @@
 
 int RenderComponent2D::AddRawPoint(Vector3 coords, Color color)
 {
-	points.push_back(VertexData{ coords, color, Vector2::Zero });
+	points.push_back(VertexData{ coords, color });
 	return points.size() - 1;
 }
 
@@ -17,10 +17,10 @@ void RenderComponent2D::AddIndex(int index)
 void RenderComponent2D::AddTriangle(Vector3 coords0, Vector3 coords1, Vector3 coords2, Color color)
 {
 
-	points.push_back(VertexData{ coords0, color, Vector2::Zero });
+	points.push_back(VertexData{ coords0, color });
 	int firstPointIndex = points.size() - 1;
-	points.push_back(VertexData{ coords1, color, Vector2::Zero });
-	points.push_back(VertexData{ coords2, color, Vector2::Zero });
+	points.push_back(VertexData{ coords1, color });
+	points.push_back(VertexData{ coords2, color });
 
 	indexes.push_back(firstPointIndex);
 	indexes.push_back(firstPointIndex + 1);
@@ -37,11 +37,11 @@ void RenderComponent2D::Add2DRect(DirectX::SimpleMath::Rectangle rect, Color col
 	float y0 = rect.y / height;
 	float y1 = y0 - rect.height / height;
 
-	points.push_back(VertexData{ Vector3{x0, y0, 0}, color, Vector2::Zero});
+	points.push_back(VertexData{ Vector3{x0, y0, 0}, color});
 	int firstPointIndex = points.size() - 1;
-	points.push_back(VertexData{ Vector3{x1, y0, 0}, color, Vector2::Zero });
-	points.push_back(VertexData{ Vector3{x1, y1, 0}, color, Vector2::Zero });
-	points.push_back(VertexData{ Vector3{x0, y1, 0}, color, Vector2::Zero });
+	points.push_back(VertexData{ Vector3{x1, y0, 0}, color });
+	points.push_back(VertexData{ Vector3{x1, y1, 0}, color });
+	points.push_back(VertexData{ Vector3{x0, y1, 0}, color });
 
 	indexes.push_back(firstPointIndex);
 	indexes.push_back(firstPointIndex + 2);
@@ -64,7 +64,7 @@ void RenderComponent2D::Add2DCircle(Vector3 centerCoord, float radius, int numbe
 
 
 
-	points.push_back(VertexData{ Vector3{x0, y0, 0}, color, Vector2::Zero });
+	points.push_back(VertexData{ Vector3{x0, y0, 0}, color });
 	int centerPointIndex = points.size() - 1;
 
 	double angleStep = DirectX::XM_2PI / numberOfTriangles;
@@ -72,8 +72,7 @@ void RenderComponent2D::Add2DCircle(Vector3 centerCoord, float radius, int numbe
 	for (int i = 0; i < numberOfTriangles; i++) {
 		points.push_back(VertexData{ 
 			Vector3(x0 + rx * cos(i * angleStep),y0 + ry * sin(i * angleStep), 0),
-			color,
-			Vector2::Zero });
+			color });
 		
 	}
 	
@@ -106,7 +105,7 @@ void RenderComponent2D::Draw()
 	render->Context->RSSetState(rastState);
 
 	///Setup AI stage
-	UINT strides[] = { 36 };
+	UINT strides[] = { 48 };
 	UINT offsets[] = { 0 };
 
 	render->Context->IASetInputLayout(layout);
@@ -119,6 +118,8 @@ void RenderComponent2D::Draw()
 	render->Context->VSSetShader(vertexShader, nullptr, 0);
 	render->Context->VSSetConstantBuffers(0, 1, &constBuffer);
 	render->Context->PSSetShader(pixelShader, nullptr, 0);
+	render->Context->PSSetConstantBuffers(0, 1, &constBuffer);
+	render->Context->PSSetConstantBuffers(1, 1, &materialBuffer);
 
 	render->Context->DrawIndexed(indexes.size(), 0, 0);
 }

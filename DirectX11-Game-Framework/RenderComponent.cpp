@@ -10,6 +10,7 @@ RenderComponent::~RenderComponent()
 
 	rastState->Release();
 
+	materialBuffer->Release();
 	constBuffer->Release();
 	indexBuffer->Release();
 	vertexBuffer->Release();
@@ -141,6 +142,14 @@ void RenderComponent::Initialize()
 			0,
 			D3D11_APPEND_ALIGNED_ELEMENT,
 			D3D11_INPUT_PER_VERTEX_DATA,
+			0},
+		D3D11_INPUT_ELEMENT_DESC {
+			"NORMAL",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT,
+			D3D11_INPUT_PER_VERTEX_DATA,
 			0}
 	};
 
@@ -198,6 +207,22 @@ void RenderComponent::Initialize()
 	constData.SysMemSlicePitch = 0;
 
 	render->Device->CreateBuffer(&constBufDesc, &constData, &constBuffer);
+
+	///material const buffer initialization
+	D3D11_BUFFER_DESC materialBufDesc = {};
+	materialBufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	materialBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	materialBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	materialBufDesc.MiscFlags = 0;
+	materialBufDesc.StructureByteStride = 0;
+	materialBufDesc.ByteWidth = sizeof(MaterialBufferData);
+
+	D3D11_SUBRESOURCE_DATA materialData = {};
+	materialData.pSysMem = &materialBufferData;
+	materialData.SysMemPitch = 0;
+	materialData.SysMemSlicePitch = 0;
+
+	render->Device->CreateBuffer(&materialBufDesc, &materialData, &materialBuffer);
 
 	///rastState initialization
 	CD3D11_RASTERIZER_DESC rastDesc = {};

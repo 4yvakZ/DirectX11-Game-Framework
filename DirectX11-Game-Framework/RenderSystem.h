@@ -11,6 +11,14 @@ class RenderSystem
 {
 
 public:
+
+
+	struct LightData 
+	{
+		Vector4 direction;
+		Vector4 intensity{ 1.0f, 1.0f, 1.0f, 1.0f};
+	};
+
 	RenderSystem(DisplayWin* display);
 	RenderSystem() = delete;
 
@@ -24,11 +32,15 @@ public:
 
 	void RemoveRenderComponent(RenderComponent* renderComponent);
 
+	void UpdateLightData(LightData newLightData);
+
 protected:
 
 	void CreateBackBuffer();
 
 	void CreateDepthBuffer();
+
+	void CreateLightBuffer();
 
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> Device;
@@ -46,5 +58,9 @@ public:
 	std::vector <RenderComponent*> renderComponents;
 
 	DisplayWin* display;
+
+private:
+	LightData lightData;
+	ID3D11Buffer* lightBuffer;
 };
 

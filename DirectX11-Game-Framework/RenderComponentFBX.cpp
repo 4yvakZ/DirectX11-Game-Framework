@@ -124,7 +124,7 @@ void RenderComponentFBX::Draw()
 	render->Context->RSSetState(rastState);
 
 	///Setup AI stage
-	UINT strides[] = { 36 };
+	UINT strides[] = { 48 };
 	UINT offsets[] = { 0 };
 
 	render->Context->IASetInputLayout(layout);
@@ -140,6 +140,8 @@ void RenderComponentFBX::Draw()
 	render->Context->PSSetShader(pixelShader, nullptr, 0);
 	render->Context->PSSetShaderResources(0, 1, &textureView);
 	render->Context->PSSetSamplers(0, 1, &samplerState);
+	render->Context->PSSetConstantBuffers(0, 1, &constBuffer);
+	render->Context->PSSetConstantBuffers(1, 1, &materialBuffer);
 
 	render->Context->DrawIndexed(indexes.size(), 0, 0);
 }
@@ -147,6 +149,7 @@ void RenderComponentFBX::Draw()
 void RenderComponentFBX::Update()
 {
 	constBufferData.worldViewPosition = Game::GetCamera()->GetWorldViewPositionMatrix(World);
+	constBufferData.world = World;
 	UpdateConstBuffer();
 }
 
@@ -176,7 +179,9 @@ void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, aiMatrix
 
 				Vector2 UV = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
-				points.push_back(VertexData{point, Color(point), UV});
+				Vector3 normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+
+				points.push_back(VertexData{point, UV, normal});
 			}
 
 
