@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include <DirectXCollision.h>
 
 class RenderComponentFBX;
 using namespace DirectX::SimpleMath;
@@ -16,14 +17,17 @@ public:
 
     void IncreaseRadius(float additionalRadius);
 
-   
+private:
+    void UpdateCollision();
+    void UpdatePosition(float deltaTime);
 
 private:
-
-    float rotationSpeed = 3;
+    float rotationSpeed = 5;
     RenderComponentFBX* FbxRenderComponent;
     float radius;
     float radiusIncreaseSpeed = 0.5;
     float targetRadius;
+
+    DirectX::BoundingSphere boundingSphere;
 };
 

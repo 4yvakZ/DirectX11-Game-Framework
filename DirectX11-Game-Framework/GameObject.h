@@ -20,19 +20,26 @@ public:
 	GameObject* parent = nullptr;
 
 	virtual void SetWorld(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
-	virtual Matrix GetWorld() const;
+	
+	virtual Matrix GetWorld();
 	
 	virtual void SetRotation(const Quaternion &rotation);
 	virtual Quaternion GetRotation() const;
 	virtual void SetPosition(const Vector3& position);
 	virtual Vector3 GetPosition() const;
-	virtual void SetScale(const Vector3& scale);
 	void SetScale(float scale);
 	virtual Vector3 GetScale() const;
 
 protected:
-	std::vector<Component*> components;
 	virtual void UpdateWorld();
+
+private:
+	//Cursed functions
+	virtual void SetScale(const Vector3& scale);
+	virtual void SetWorld(Matrix newWorld);
+
+protected:
+	std::vector<Component*> components;
 	
 private:
 	Transform transform;

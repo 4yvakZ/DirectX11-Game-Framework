@@ -38,8 +38,20 @@ void GameObject::SetWorld(const Vector3& position, const Quaternion& rotation, c
 	UpdateWorld();
 }
 
-Matrix GameObject::GetWorld() const
+void GameObject::SetWorld(Matrix newWorld)
 {
+	if (parent) {
+		auto pWorld = parent->GetWorld();
+		pWorld.Invert();
+		newWorld *= pWorld;
+	}
+	newWorld.Decompose(transform.scale, transform.rotation, transform.position);
+	UpdateWorld();
+}
+
+Matrix GameObject::GetWorld()
+{
+	UpdateWorld();
 	return transform.world;
 }
 
@@ -84,7 +96,7 @@ Vector3 GameObject::GetScale() const
 
 void GameObject::UpdateWorld()
 {
-	transform.world = Matrix::CreateScale(transform.scale) * Matrix::CreateFromQuaternion(transform.rotation) * Matrix::CreateTranslation(transform.position);
+	transform.world = Matrix::CreateFromQuaternion(transform.rotation) * Matrix::CreateScale(transform.scale) * Matrix::CreateTranslation(transform.position);
 	if (parent) {
 		transform.world *= parent->GetWorld();
 	}

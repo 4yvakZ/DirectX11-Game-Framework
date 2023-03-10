@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "InputDevice.h"
 #include "Camera.h"
+#include "StickyObject.h"
 
 RollingBall::RollingBall(float radius, GameObject* parent) :
 	radius(radius),
@@ -11,9 +12,9 @@ RollingBall::RollingBall(float radius, GameObject* parent) :
 	GameObject(parent)
 {
 	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/tennis_Ball/tennis_Ball.fbx", "../FBX/tennis_Ball/tennis ball_DefaultMaterial_BaseColor.png");
-	FbxRenderComponent->offset = Vector3(0, -radius, 0);
+	FbxRenderComponent->offset = Vector3(0, -0.425, 0);
 	components.push_back(FbxRenderComponent);
-	SetPosition(Vector3(0, radius, 0));
+	boundingSphere = DirectX::BoundingSphere(Vector3(0, radius, 0), radius * 1.1f);
 }
 
 RollingBall::~RollingBall()
@@ -21,6 +22,49 @@ RollingBall::~RollingBall()
 }
 
 void RollingBall::Update(float deltaTime)
+{
+	UpdatePosition(deltaTime);
+	UpdateCollision();
+	GameObject::Update(deltaTime);
+}
+
+void RollingBall::Initialize()
+{
+	Camera* camera = Game::GetCamera();
+	camera->targetObject = this;
+	GameObject::Initialize();
+}
+
+void RollingBall::IncreaseRadius(float additionalRadius)
+{
+	targetRadius += additionalRadius;
+}
+
+void RollingBall::UpdateCollision()
+{
+	Game* game = Game::GetInstance();
+	for (auto& object : game->GameObjects) 
+	{
+		if (auto stickyObject = dynamic_cast<StickyObject*>(object)) 
+		{
+			if (stickyObject->radius > radius)
+			{
+				continue;
+			}
+			Vector3 centerPoint = stickyObject->GetCenterPoint();
+			auto res = boundingSphere.Contains(centerPoint);
+			if (res) 
+			{
+				if (stickyObject->Attach(this)) 
+				{
+					targetRadius += 0.2;
+				}
+			}
+		}
+	}
+}
+
+void RollingBall::UpdatePosition(float deltaTime)
 {
 	Camera* camera = Game::GetCamera();
 	Vector3 deltaPos(0, 0, 0);
@@ -58,7 +102,7 @@ void RollingBall::Update(float deltaTime)
 		Quaternion rotator;
 		if (rotationAxis.x != 1 && rotationAxis.z != 1)
 		{
-			 rotator = Quaternion::CreateFromAxisAngle(rotationAxis, deltaTime * rotationSpeed * sqrt(2));
+			rotator = Quaternion::CreateFromAxisAngle(rotationAxis, deltaTime * rotationSpeed * sqrt(2));
 		}
 		else
 		{
@@ -77,22 +121,10 @@ void RollingBall::Update(float deltaTime)
 		deltaPos += Vector3(0, radiusAddition, 0);
 		radius += radiusAddition;
 		//std::cout << radius << "\n";
+		boundingSphere.Radius = radius * 1.1f;
 	}
-	
+
 	SetPosition(GetPosition() + deltaPos);
+	boundingSphere.Center = GetPosition();
 	FbxRenderComponent->World = GetWorld();
-
-	GameObject::Update(deltaTime);
-}
-
-void RollingBall::Initialize()
-{
-	Camera* camera = Game::GetCamera();
-	camera->targetObject = this;
-	GameObject::Initialize();
-}
-
-void RollingBall::IncreaseRadius(float additionalRadius)
-{
-	targetRadius += additionalRadius;
 }

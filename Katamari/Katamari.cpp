@@ -13,7 +13,12 @@
 int main()
 {
     Game* testGame = new Game();
-    RollingBall* ball = new RollingBall(0.425);
+
+    float ballR = 0.425;
+    float ballScale = 0.8;
+    RollingBall* ball = new RollingBall(ballR * ballScale);
+    ball->SetPosition(Vector3(0, ballR * ballScale, 0));
+    ball->SetScale(ballScale);
 
     //testGame->GameObjects.push_back(new GridGameObject());
     testGame->GameObjects.push_back(ball);
@@ -22,29 +27,34 @@ int main()
     StickyObject* cube = new StickyObject("../FBX/cube.fbx");
     cube->SetPosition(Vector3(5, 1, 5));
     cube->SetScale(1);
+    cube->radius = 1.1;
     testGame->GameObjects.push_back(cube);
 
     StickyObject* sphere = new StickyObject("../FBX/sphere.fbx");
-    sphere->SetPosition(Vector3(-5, 0.6, -5));
-    sphere->SetScale(0.6);
+    sphere->SetPosition(Vector3(-5, 0.7, -5));
+    sphere->SetScale(0.7);
+    sphere->radius = 0.7;
     testGame->GameObjects.push_back(sphere);
 
     StickyObject* guitar = new StickyObject("../FBX/guitar/guitar.fbx", "../FBX/guitar/TD_Checker.png");
     guitar->SetPosition(Vector3(5, 0, -5));
     guitar->SetScale(4);
-    guitar->SetCenterPoint(Vector3(0, 0.3f, 0));
+    guitar->SetCenterPoint(Vector3(0, 0.08f, 0));
+    guitar->radius = 0.9;
     testGame->GameObjects.push_back(guitar);
 
     StickyObject* pillBottle = new StickyObject("../FBX/pill_bottle/pill_bottle.fbx", "../FBX/pill_bottle/TD_Checker.png");
     pillBottle->SetPosition(Vector3(-5, 0, 5));
     pillBottle->SetScale(4);
-    pillBottle->SetCenterPoint(Vector3(0, 0.06f, 0));
+    pillBottle->SetCenterPoint(Vector3(0, 0.02f, 0));
+    pillBottle->radius = 0.3;
     testGame->GameObjects.push_back(pillBottle);
 
     StickyObject* mug = new StickyObject("../FBX/Winter_Mug/Winter_Mug.fbx", "../FBX/Winter_Mug/Winter_Mug.png");
     mug->SetPosition(Vector3(0, 0, 5));
     mug->SetScale(12);
-    mug->SetCenterPoint(Vector3(0, 0.05f, 0));
+    mug->radius = 0.5;
+    mug->SetCenterPoint(Vector3(0, 0.004f, 0));
     testGame->GameObjects.push_back(mug);
 
     testGame->Run();

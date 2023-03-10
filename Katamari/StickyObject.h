@@ -14,8 +14,9 @@ public:
     virtual void Update(float deltaTime);
     virtual void Initialize();
 
-    void Attach(GameObject* gameObject);
+    bool Attach(GameObject* gameObject);
     void SetCenterPoint(Vector3 newCenterPoint);
+    Vector3 GetCenterPoint();
 
 public:
     float radius;
