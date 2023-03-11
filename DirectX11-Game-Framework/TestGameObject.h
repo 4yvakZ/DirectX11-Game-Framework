@@ -23,6 +23,5 @@ private:
     RenderComponentFBX* FbxRenderComponent;
 
     float speed = 1.0f;
-    float yaw = 0.0f;
 };
 

@@ -6,8 +6,8 @@
 #include "RenderComponent.h"
 
 
-constexpr Color backgroundColor(0.2f, 0.2f, 0.2f);
-//constexpr Color backgroundColor(0.f, 0.f, 0.f);
+//constexpr Color backgroundColor(0.2f, 0.2f, 0.2f);
+constexpr Color backgroundColor(0.f, 0.f, 0.f);
 
 void RenderSystem::CreateBackBuffer()
 {
@@ -36,7 +36,7 @@ void RenderSystem::CreateDepthBuffer()
 void RenderSystem::CreateLightBuffer()
 {
 	
-	lightData.direction = Vector4(-1, -1, -1, 0);
+	lightData.direction = Vector4(-1, -4, -1, 0);
 	lightData.direction.Normalize();
 	///const buffer initialization
 	D3D11_BUFFER_DESC lightBufDesc = {};
@@ -52,9 +52,8 @@ void RenderSystem::CreateLightBuffer()
 	lightBufData.SysMemPitch = 0;
 	lightBufData.SysMemSlicePitch = 0;
 
-	Device->CreateBuffer(&lightBufDesc, &lightBufData, &lightBuffer);
-	Context->PSSetConstantBuffers(2, 0, &lightBuffer);
-	
+	Device->CreateBuffer(&lightBufDesc, &lightBufData, &lightBuffer);	
+	Context->PSSetConstantBuffers(2, 1, &lightBuffer);
 }
 
 RenderSystem::RenderSystem(DisplayWin *display):

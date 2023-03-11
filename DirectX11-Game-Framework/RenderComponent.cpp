@@ -61,7 +61,7 @@ void RenderComponent::Initialize()
 	
 	if (textureView) 
 	{
-		D3D_SHADER_MACRO Shader_Macros[] = { "TEXTURE", "1", nullptr, nullptr };
+		D3D_SHADER_MACRO Shader_Macros[] = {nullptr, nullptr };
 
 		//D3D_SHADER_MACRO Shader_Macros[] = {nullptr, nullptr };
 
@@ -91,7 +91,7 @@ void RenderComponent::Initialize()
 	}
 	else
 	{
-		D3D_SHADER_MACRO Shader_Macros[] = {nullptr, nullptr };
+		D3D_SHADER_MACRO Shader_Macros[] = { "PLAIN", "1",nullptr, nullptr };
 
 		ID3DBlob* errorPixelCode;
 		res = D3DCompileFromFile(fileName.c_str(),

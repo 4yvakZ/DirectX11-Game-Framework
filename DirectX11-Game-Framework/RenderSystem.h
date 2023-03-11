@@ -59,7 +59,6 @@ public:
 
 	DisplayWin* display;
 
-private:
 	LightData lightData;
 	ID3D11Buffer* lightBuffer;
 };

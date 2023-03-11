@@ -3,11 +3,12 @@
 #include "Component.h"
 #include "RenderComponent2D.h"
 #include "RenderComponentFBX.h"
-#include "LineRenderComponent.h"
 
 TestGameObject::TestGameObject()
 {
-	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/sphere.fbx", "../FBX/PNG/Light/texture_07.png");
+	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/guitar/guitar.fbx", "../FBX/guitar/TD_Checker.png");
+	SetScale(4);
+	//FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/cube.fbx");
 	components.push_back(FbxRenderComponent);
 	renderComponent = new RenderComponent2D("../Shaders/SimpleTextureShader.hlsl");
 	components.push_back(renderComponent);
@@ -15,8 +16,10 @@ TestGameObject::TestGameObject()
 
 void TestGameObject::Update(float deltaTime)
 {
-	yaw += speed * deltaTime;
-    FbxRenderComponent->World = Matrix::CreateFromYawPitchRoll(yaw, 0, 0);
+	SetRotation(GetRotation() 
+		//* Quaternion::CreateFromAxisAngle(Vector3::Right, speed * deltaTime)
+		* Quaternion::CreateFromAxisAngle(Vector3::Up, speed * deltaTime));
+    FbxRenderComponent->World = GetWorld();
 	renderComponent->constBufferData.worldViewPosition *= Matrix::CreateTranslation(Vector3(0.001, 0.001, 0));
 	//std::cout << renderComponent->offset.x << std::endl;
 
