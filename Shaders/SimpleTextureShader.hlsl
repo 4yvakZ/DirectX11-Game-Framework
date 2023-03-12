@@ -23,8 +23,8 @@ struct PS_IN
 cbuffer OBJECT_CONST_BUF : register(b0)
 {
     Matrix worldViewPos;
-    float4 cameraPos;
     Matrix world;
+    float4 cameraPos;
 }
 
 struct MaterialData
@@ -57,7 +57,7 @@ PS_IN VSMain( VS_IN input )
     output.pos = mul(float4(input.pos.xyz, 1.0f), worldViewPos);
     output.color = input.color;
     output.uv = input.uv;
-    output.normal = mul(float4(input.normal, 0.0f), world);
+    output.normal = mul(float4(input.normal, 1.0f), world);
     output.view = normalize(cameraPos.xyz - mul(float4(input.pos.xyz, 1.0f), world).xyz);
 	return output;
 }
@@ -72,17 +72,20 @@ float4 PSMain( PS_IN input ) : SV_Target
     color = input.color;
 #else
     color = DiffuseMap.Sample(Sampler, input.uv.xy);
-
     
     float3 diffuse = material.diffuse.xyz * max(0, dot(-light.direction.xyz, input.normal));
+    //diffuse = float3(0, 0, 0);
+    
     float3 ambient = material.ambient.xyz ;
+    
     float3 reflection = normalize(reflect(light.direction.xyz, input.normal));
-    
     float3 specular = material.specularAlpha.xyz * pow(max(0, dot(reflection, input.view)), material.specularAlpha.aaa);
+    specular = float3(0, 0, 0);
     
-    float3 lighting = light.intensity * (diffuse + specular + ambient);
+    float3 lighting = light.intensity.xyz * saturate(diffuse + specular + ambient);
     
-    color = float4(lighting, color.a) * color;
+    color = float4(lighting, color.a);
+    //color = float4(lighting, color.a) * color;
  #endif   
     return color;
 }

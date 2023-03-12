@@ -148,10 +148,10 @@ void RenderComponentFBX::Draw()
 
 void RenderComponentFBX::Update()
 {
+	constBufferData.world = World;
 	constBufferData.worldViewPosition = Game::GetCamera()->GetWorldViewPositionMatrix(World);
 	auto camPos = Game::GetCamera()->position;
 	constBufferData.cameraPos = Vector4(camPos.x, camPos.y, camPos.z, 1);
-	constBufferData.world = World;
 	UpdateConstBuffer();
 }
 

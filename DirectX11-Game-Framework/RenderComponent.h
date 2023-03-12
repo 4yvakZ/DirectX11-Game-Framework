@@ -12,13 +12,13 @@ public:
     struct ConstBufferData 
     {
         Matrix worldViewPosition;
-        Vector4 cameraPos;
         Matrix world;
+        Vector4 cameraPos;
     };
 
     struct MaterialBufferData
     {
-        Vector4 ambient = Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+        Vector4 ambient = Vector4(0.2f, 0.2f, 0.2f, 0.0f);
         Vector4 diffuse = Vector4(0.5f, 0.5f, 0.5f, 0.0f);
         Vector4 specularAlpha = Vector4(0.7f, 0.7f, 0.7f, 10.0f);
     };
