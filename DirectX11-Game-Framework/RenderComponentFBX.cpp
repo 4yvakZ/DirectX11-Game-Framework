@@ -181,7 +181,7 @@ void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, aiMatrix
 
 				Vector2 UV = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
-				Vector3 normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+				Vector3 normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].z, -mesh->mNormals[i].y);
 
 				points.push_back(VertexData{point, UV, normal});
 			}

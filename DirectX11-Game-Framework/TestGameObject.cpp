@@ -7,10 +7,10 @@
 TestGameObject::TestGameObject()
 {
 	//FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/guitar/guitar.fbx", "../FBX/guitar/TD_Checker.png");
-	//FbxRenderComponent = new RenderComponentFBX("../FBX/Winter_Mug/Winter_Mug.fbx", "../FBX/Winter_Mug/Winter_Mug.png");
-	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/pill_bottle/pill_bottle.fbx", "../FBX/pill_bottle/TD_Checker.png");
-	SetScale(4);
-	//FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/cube.fbx");
+	//FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl","../FBX/Winter_Mug/Winter_Mug.fbx", "../FBX/Winter_Mug/Winter_Mug.png");
+	//FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/pill_bottle/pill_bottle.fbx", "../FBX/pill_bottle/TD_Checker.png");
+	//SetScale(4);
+	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/sphere.fbx");
 	components.push_back(FbxRenderComponent);
 	renderComponent = new RenderComponent2D("../Shaders/SimpleTextureShader.hlsl");
 	components.push_back(renderComponent);
@@ -19,7 +19,7 @@ TestGameObject::TestGameObject()
 void TestGameObject::Update(float deltaTime)
 {
 	SetRotation(GetRotation() * Quaternion::CreateFromAxisAngle(Vector3::Up, speed * deltaTime));
-	SetPosition(GetPosition() + speed * Vector3(0.05, 0.05, 0) * deltaTime);
+	//SetPosition(GetPosition() + speed * Vector3(0.05, 0.05, 0) * deltaTime);
     FbxRenderComponent->World = GetWorld();
 	renderComponent->constBufferData.worldViewPosition *= Matrix::CreateTranslation(Vector3(0.001, 0.001, 0));
 	//std::cout << renderComponent->offset.x << std::endl;

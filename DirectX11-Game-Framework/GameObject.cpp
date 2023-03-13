@@ -96,7 +96,7 @@ Vector3 GameObject::GetScale() const
 
 void GameObject::UpdateWorld()
 {
-	transform.world = Matrix::CreateFromQuaternion(transform.rotation) * Matrix::CreateScale(transform.scale) * Matrix::CreateTranslation(transform.position);
+	transform.world = Matrix::CreateScale(transform.scale) * Matrix::CreateFromQuaternion(transform.rotation) * Matrix::CreateTranslation(transform.position);
 	if (parent) {
 		transform.world *= parent->GetWorld();
 	}

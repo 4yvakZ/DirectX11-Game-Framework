@@ -54,38 +54,45 @@ PS_IN VSMain( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
     
+    
+    output.view = input.pos;
     output.pos = mul(float4(input.pos.xyz, 1.0f), worldViewPos);
     output.color = input.color;
     output.uv = input.uv;
-    output.normal = mul(float4(input.normal, 1.0f), world);
-    output.view = normalize(cameraPos.xyz - mul(float4(input.pos.xyz, 1.0f), world).xyz);
+    output.normal = mul(float4(input.normal, 0.0f), world);
 	return output;
 }
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
-    float4 color;
+    float3 normal = normalize(input.normal);
+    //return float4(normal, 1);
     
-    input.normal = normalize(input.normal);
+    float3 viewDir = normalize(cameraPos.xyz - mul(float4(input.view.xyz, 1.0f), world).xyz);
+    
+    float4 color;   
 
 #if PLAIN
     color = input.color;
 #else
     color = DiffuseMap.Sample(Sampler, input.uv.xy);
+       
     
-    float3 diffuse = material.diffuse.xyz * max(0, dot(-light.direction.xyz, input.normal));
+    float3 diffuse = material.diffuse.xyz * max(0, dot(-light.direction.xyz, normal));
     //diffuse = float3(0, 0, 0);
     
     float3 ambient = material.ambient.xyz ;
+    //ambient = float3(0, 0, 0);
     
-    float3 reflection = normalize(reflect(light.direction.xyz, input.normal));
-    float3 specular = material.specularAlpha.xyz * pow(max(0, dot(reflection, input.view)), material.specularAlpha.aaa);
-    specular = float3(0, 0, 0);
+    float3 reflection = normalize(reflect(light.direction.xyz, normal));
+    float3 specular = material.specularAlpha.xyz * pow(max(0, dot(reflection, viewDir)), material.specularAlpha.aaa);
+    //specular = float3(0, 0, 0);
     
     float3 lighting = light.intensity.xyz * saturate(diffuse + specular + ambient);
     
-    color = float4(lighting, color.a);
-    //color = float4(lighting, color.a) * color;
+    color = float4(lighting, 1) * color;
+    
+    
  #endif   
     return color;
 }
