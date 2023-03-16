@@ -28,6 +28,7 @@ private:
 public:
 	Vector3 offset = Vector3(0, 0, 0);
 	float scale = 1;
+	bool isZUp = true;
 
 private:
 	const std::string modelFileName;

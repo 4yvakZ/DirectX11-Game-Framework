@@ -20,9 +20,9 @@ public:
 
 public:
     float radius;
+    RenderComponentFBX* FbxRenderComponent;
 
 private:
-    RenderComponentFBX* FbxRenderComponent;
     LineRenderComponent* lineRenderer;
     Vector3 centerPoint;
 };

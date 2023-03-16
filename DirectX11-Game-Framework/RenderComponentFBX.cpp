@@ -180,8 +180,15 @@ void RenderComponentFBX::SearchNode(const aiScene* scene, aiNode* node, aiMatrix
 					vertex.z) + offset;
 
 				Vector2 UV = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-
-				Vector3 normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].z, -mesh->mNormals[i].y);
+				Vector3 normal;
+				if (isZUp)
+				{
+					normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].z, -mesh->mNormals[i].y);
+				}
+				else
+				{
+					normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+				}
 
 				points.push_back(VertexData{point, UV, normal});
 			}

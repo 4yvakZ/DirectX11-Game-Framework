@@ -8,6 +8,7 @@
 #include "RollingBall.h"
 #include "PlaneObject.h"
 #include "StickyObject.h"
+#include "RenderComponentFBX.h"
 
 
 int main()
@@ -37,6 +38,7 @@ int main()
     testGame->GameObjects.push_back(sphere);
 
     StickyObject* guitar = new StickyObject("../FBX/guitar/guitar.fbx", "../FBX/guitar/TD_Checker.png");
+    guitar->FbxRenderComponent->isZUp = false;
     guitar->SetPosition(Vector3(5, 0, -5));
     guitar->SetScale(4);
     guitar->SetCenterPoint(Vector3(0, 0.08f, 0));

@@ -6,17 +6,16 @@ using namespace DirectX::SimpleMath;
 
 class DisplayWin;
 class RenderComponent;
+class DirectionalLight;
 
-class RenderSystem
+class GAMEFRAMEWORK_API RenderSystem
 {
 
 public:
-
-
-	struct LightData 
+	struct LightData
 	{
 		Vector4 direction;
-		Vector4 intensity{ 1.5f, 1.5f, 1.5f, 0.0f};
+		Vector4 intensity{ 1.5f, 1.5f, 1.5f, 0.0f };
 	};
 
 	RenderSystem(DisplayWin* display);
@@ -61,5 +60,6 @@ public:
 
 	LightData lightData;
 	ID3D11Buffer* lightBuffer;
+
 };
 

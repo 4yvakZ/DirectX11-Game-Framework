@@ -13,6 +13,7 @@ RollingBall::RollingBall(float radius, GameObject* parent) :
 {
 	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/tennis_Ball/tennis_Ball.fbx", "../FBX/tennis_Ball/tennis ball_DefaultMaterial_BaseColor.png");
 	FbxRenderComponent->offset = Vector3(0, -0.425, 0);
+	FbxRenderComponent->isZUp = false;
 	components.push_back(FbxRenderComponent);
 	boundingSphere = DirectX::BoundingSphere(Vector3(0, radius, 0), radius * 1.1f);
 }
