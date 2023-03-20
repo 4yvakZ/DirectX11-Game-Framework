@@ -194,6 +194,7 @@ void Game::UpdateInternal()
 		std::cout << "Escape pressed\n";
 		Exit();
 	}
+
 	if (inputDevice->IsKeyDown(Keys::D1)) 
 	{
 		if (!wasProjectionKeyDown) 
@@ -206,6 +207,7 @@ void Game::UpdateInternal()
 	{
 		wasProjectionKeyDown = false;
 	}
+
 	if (inputDevice->IsKeyDown(Keys::D2)) 
 	{
 		if (!wasCameraControllerKeyDown) 

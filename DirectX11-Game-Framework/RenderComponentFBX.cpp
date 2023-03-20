@@ -25,7 +25,7 @@ void RenderComponentFBX::Initialize()
 	// Create an instance of the Importer class
 	Assimp::Importer importer;
 
-	Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
+	//Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
 
 	// And have it read the given file with some example postprocessing
 	// Usually - if speed is not the most important aspect for you - you'll
@@ -46,7 +46,7 @@ void RenderComponentFBX::Initialize()
 
 	SearchNode(scene, scene->mRootNode, aiMatrix4x4() * 0.01 * scale);
 
-	Assimp::DefaultLogger::kill();
+	// Assimp::DefaultLogger::kill();
 
 	if (textureFileName == "")
 	{
@@ -142,6 +142,24 @@ void RenderComponentFBX::Draw()
 	render->Context->PSSetSamplers(0, 1, &samplerState);
 	render->Context->PSSetConstantBuffers(0, 1, &constBuffer);
 	render->Context->PSSetConstantBuffers(1, 1, &materialBuffer);
+
+	render->Context->DrawIndexed(indexes.size(), 0, 0);
+}
+
+void RenderComponentFBX::DrawShadows()
+{
+	RenderSystem* render = Game::GetRenderSystem();
+
+	///Setup AI stage
+	UINT strides[] = { 48 };
+	UINT offsets[] = { 0 };
+
+	render->Context->IASetInputLayout(layout);
+	render->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	render->Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	render->Context->IASetVertexBuffers(0, 1, &vertexBuffer, strides, offsets);
+
+	render->Context->VSSetConstantBuffers(0, 1, &constBuffer);
 
 	render->Context->DrawIndexed(indexes.size(), 0, 0);
 }

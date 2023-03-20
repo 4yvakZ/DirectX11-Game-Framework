@@ -4,6 +4,8 @@
 
 #include "DisplayWin.h"
 #include "RenderComponent.h"
+#include "ShadowMap.h"
+#include "RenderComponentFBX.h"
 
 
 //constexpr Color backgroundColor(0.2f, 0.2f, 0.2f);
@@ -29,15 +31,28 @@ void RenderSystem::CreateDepthBuffer()
 	depthTexDesc.Height = display->ClientHeight;
 	depthTexDesc.SampleDesc = { 1, 0 };
 
+
 	Device->CreateTexture2D(&depthTexDesc, nullptr, &depthBuffer);
 	Device->CreateDepthStencilView(depthBuffer, nullptr, &DepthView);
 }
 
 void RenderSystem::CreateLightBuffer()
 {
-	
 	lightData.direction = Vector4(-1, -4, -1, 0);
 	lightData.direction.Normalize();
+	Vector3 eye = -Vector3(lightData.direction.x, lightData.direction.y, lightData.direction.z);
+	eye.Normalize();
+	eye *= 1024 /100;
+	Vector3 target = eye + lightData.direction;
+	
+	lightData.view = Matrix::CreateLookAt(eye, target, Vector3::Up);
+	lightData.projection = Matrix::CreateOrthographic(
+
+		1024 / 100,
+		1024 /100,
+		0.1,
+		1000);
+
 	///const buffer initialization
 	D3D11_BUFFER_DESC lightBufDesc = {};
 	lightBufDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -54,6 +69,12 @@ void RenderSystem::CreateLightBuffer()
 
 	Device->CreateBuffer(&lightBufDesc, &lightBufData, &lightBuffer);	
 	Context->PSSetConstantBuffers(2, 1, &lightBuffer);
+	Context->VSSetConstantBuffers(2, 1, &lightBuffer);
+}
+
+void RenderSystem::CreateShadowMap()
+{
+	shadowMap = new ShadowMap(Device, 1024);
 }
 
 RenderSystem::RenderSystem(DisplayWin *display):
@@ -99,17 +120,19 @@ RenderSystem::RenderSystem(DisplayWin *display):
 
 	CreateBackBuffer();
 
+	CreateShadowMap();
+
 	CreateDepthBuffer();
 
 	viewport = Viewport(0.0f, 0.0f, display->ClientWidth, display->ClientHeight);
 
-	Context->RSSetViewports(1, viewport.Get11());
-
 	CreateLightBuffer();
+
 }
 
 RenderSystem::~RenderSystem()
 {
+	delete shadowMap;
 	lightBuffer->Release();
 	RenderView->Release();
 	backBuffer->Release();
@@ -121,9 +144,21 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::PrepareFrame()
 {
+	Context->ClearRenderTargetView(RenderView, backgroundColor);	
+	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	shadowMap->Render(Context);
+	for (auto& renderComponent : renderComponents) {
+		if (auto fbx = dynamic_cast<RenderComponentFBX*>(renderComponent))
+		{
+			fbx->DrawShadows();
+		}
+	}
+
+	Context->RSSetViewports(1, viewport.Get11());
 	Context->OMSetRenderTargets(1, &RenderView, DepthView);
-	Context->ClearRenderTargetView(RenderView, backgroundColor);
-	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	shadowMap->Bind(Context);
 }
 
 

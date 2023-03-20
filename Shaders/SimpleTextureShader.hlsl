@@ -1,7 +1,10 @@
 #pragma pack_matrix( row_major )
 
 Texture2D DiffuseMap : register(t0);
+Texture2D ShadowMap : register(t1);
+
 SamplerState Sampler : register(s0);
+SamplerComparisonState ShadowSampler : register(s1);
 
 struct VS_IN
 {
@@ -17,7 +20,8 @@ struct PS_IN
     float4 color : COLOR0;
     float2 uv : TEXCOORD0;
     float3 normal : NORMAL0;
-    float3 view : POSITION1;
+    float3 viewPos : POSITION1;
+    float3 lightSpacePos : POSITION2;
 };
 
 cbuffer OBJECT_CONST_BUF : register(b0)
@@ -43,6 +47,8 @@ struct LightData
 {
     float4 direction;
     float4 intensity;
+    Matrix view;
+    Matrix projection;
 };
 
 cbuffer LIGHT_CONST_BUF : register(b2)
@@ -55,20 +61,33 @@ PS_IN VSMain( VS_IN input )
 	PS_IN output = (PS_IN)0;
     
     
-    output.view = input.pos;
+    output.viewPos = input.pos;
     output.pos = mul(float4(input.pos.xyz, 1.0f), worldViewPos);
     output.color = input.color;
     output.uv = input.uv;
     output.normal = mul(float4(input.normal, 0.0f), world);
+    
+    float4 modelLightPos = mul(float4(input.pos.xyz, 1.0f), world);
+    modelLightPos = mul(modelLightPos, light.view);
+    modelLightPos = mul(modelLightPos, light.projection);
+    output.lightSpacePos = modelLightPos.xyz;
+    
 	return output;
 }
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
+    float2 shadowTexCoords;
+    shadowTexCoords.x = 0.5f + (input.lightSpacePos.x * 0.5f);
+    shadowTexCoords.y = 0.5f - (input.lightSpacePos.y * 0.5f);
+    float pixelDepth = input.lightSpacePos.z;
+    
+    float shadow = ShadowMap.SampleCmpLevelZero(ShadowSampler, shadowTexCoords, pixelDepth);
+    //return shadow;
     float3 normal = normalize(input.normal);
     //return float4(normal, 1);
     
-    float3 viewDir = normalize(cameraPos.xyz - mul(float4(input.view.xyz, 1.0f), world).xyz);
+    float3 viewDir = normalize(cameraPos.xyz - mul(float4(input.viewPos.xyz, 1.0f), world).xyz);
     
     float4 color;   
 
@@ -78,14 +97,14 @@ float4 PSMain( PS_IN input ) : SV_Target
     color = DiffuseMap.Sample(Sampler, input.uv.xy);
        
     
-    float3 diffuse = material.diffuse.xyz * max(0, dot(-light.direction.xyz, normal));
+    float3 diffuse = shadow * material.diffuse.xyz * max(0, dot(-light.direction.xyz, normal));
     //diffuse = float3(0, 0, 0);
     
     float3 ambient = material.ambient.xyz ;
     //ambient = float3(0, 0, 0);
     
     float3 reflection = normalize(reflect(light.direction.xyz, normal));
-    float3 specular = material.specularAlpha.xyz * pow(max(0, dot(reflection, viewDir)), material.specularAlpha.aaa);
+    float3 specular =shadow * material.specularAlpha.xyz * pow(max(0, dot(reflection, viewDir)), material.specularAlpha.aaa);
     //specular = float3(0, 0, 0);
     
     float3 lighting = light.intensity.xyz * saturate(diffuse + specular + ambient);

@@ -63,8 +63,6 @@ void RenderComponent::Initialize()
 	{
 		D3D_SHADER_MACRO Shader_Macros[] = {nullptr, nullptr };
 
-		//D3D_SHADER_MACRO Shader_Macros[] = {nullptr, nullptr };
-
 		ID3DBlob* errorPixelCode;
 		res = D3DCompileFromFile(fileName.c_str(),
 			Shader_Macros /*macros*/,

@@ -20,6 +20,7 @@ public:
 	// Inherited via RenderComponent
 	virtual void Initialize() override;
 	virtual void Draw() override;
+	void DrawShadows();
 	virtual void Update() override;
 
 private:

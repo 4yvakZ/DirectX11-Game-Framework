@@ -167,6 +167,7 @@
     <ClInclude Include="RenderComponent2D.h" />
     <ClInclude Include="RenderComponentFBX.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="SphereCameraController.h" />
     <ClInclude Include="TestGameObject.h" />
@@ -190,6 +191,7 @@
     <ClCompile Include="RenderComponent2D.cpp" />
     <ClCompile Include="RenderComponentFBX.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="SphereCameraController.cpp" />
     <ClCompile Include="TestGameObject.cpp" />
@@ -202,6 +204,9 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shaders\MyVeryFirstShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\SimpleShadowMapShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Shaders\SimpleTextureShader.hlsl">

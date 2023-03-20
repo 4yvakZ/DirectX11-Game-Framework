@@ -6,7 +6,7 @@ using namespace DirectX::SimpleMath;
 
 class DisplayWin;
 class RenderComponent;
-class DirectionalLight;
+class ShadowMap;
 
 class GAMEFRAMEWORK_API RenderSystem
 {
@@ -16,6 +16,8 @@ public:
 	{
 		Vector4 direction;
 		Vector4 intensity{ 1.5f, 1.5f, 1.5f, 0.0f };
+		Matrix view;
+		Matrix projection;
 	};
 
 	RenderSystem(DisplayWin* display);
@@ -41,6 +43,8 @@ protected:
 
 	void CreateLightBuffer();
 
+	void CreateShadowMap();
+
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> Device;
 	ID3D11DeviceContext* Context;
@@ -52,6 +56,8 @@ public:
 	ID3D11Texture2D* depthBuffer;
 	ID3D11DepthStencilView* DepthView;
 
+	ShadowMap* shadowMap;
+
 	Viewport viewport;
 
 	std::vector <RenderComponent*> renderComponents;
@@ -60,6 +66,5 @@ public:
 
 	LightData lightData;
 	ID3D11Buffer* lightBuffer;
-
 };
 
