@@ -7,7 +7,8 @@ using namespace DirectX::SimpleMath;
 class GAMEFRAMEWORK_API ShadowMap
 {
 	struct CascadeData {
-		Matrix viewProjection;
+		Matrix viewProjection[4];
+		float distances[4];
 	};
 public:
 
@@ -27,6 +28,9 @@ public:
 	ID3D11VertexShader* vertexShader;
 	ID3DBlob* vertexShaderByteCode;
 
+	ID3D11GeometryShader* geometryShader;
+	ID3DBlob* geometryShaderByteCode;
+
 	ID3D11RasterizerState* rastState;
 
 	ID3D11DepthStencilView* DepthView;
@@ -39,5 +43,7 @@ public:
 
 	CascadeData cascadeData;
 	ID3D11Buffer* cascadeBuffer;
+
+	Vector4 lightDir;
 };
 

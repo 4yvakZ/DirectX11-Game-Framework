@@ -94,11 +94,12 @@ void Game::PrepareResources()
 {
 	display = new DisplayWin{ 1200, 800 };
 
+	camera = new Camera();
+
 	render = new RenderSystem{ display };
 
 	inputDevice = new InputDevice();
 
-	camera = new Camera();
 
 	fpsCameraContrloller = new FPSCameraController(camera);
 	sphereCameraController = new SphereCameraController(camera);

@@ -27,7 +27,7 @@ void Camera::Update(float deltaTime)
 			fovAngle,
 			static_cast<float>(width) / height,
 			0.1f,
-			1000.0f);
+			100.0f);
 	}
 	else {
 		projection = Matrix::CreateOrthographic(

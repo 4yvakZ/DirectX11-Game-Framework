@@ -62,7 +62,7 @@ void RenderSystem::CreateLightBuffer()
 
 void RenderSystem::CreateShadowMap()
 {
-	shadowMap = new ShadowMap(Device, Context, 1024, lightData.direction);
+	shadowMap = new ShadowMap(Device, Context, 2048, lightData.direction);
 }
 
 RenderSystem::RenderSystem(DisplayWin *display):

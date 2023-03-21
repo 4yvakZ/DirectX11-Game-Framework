@@ -1,27 +1,11 @@
 #include "ShadowMap.h"
+#include "Game.h"
+#include "Camera.h"
 
 
-ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, ID3D11DeviceContext* Context, int width, Vector4 lightDir)
+ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, ID3D11DeviceContext* Context, int width, Vector4 lightDir):
+	lightDir(lightDir)
 {
-	Vector3 eye = -Vector3(lightDir.x, lightDir.y, lightDir.z);
-	eye.Normalize();
-	eye *= width / 100;
-	Vector3 target = eye + lightDir;
-
-	Matrix view = Matrix::CreateLookAt(eye, target, Vector3::Up);
-	Matrix projection = Matrix::CreateOrthographic(
-
-		width / 100,
-		width / 100,
-		0.1,
-		1000);
-
-	cascadeData.viewProjection = view * projection;
-
-	auto coners = GetFrustrumCornersWorldSpace(view * projection);
-
-
-
 	///const buffer initialization
 	D3D11_BUFFER_DESC cascadeBufDesc = {};
 	cascadeBufDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -39,7 +23,8 @@ ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, ID3D11DeviceCo
 	Device->CreateBuffer(&cascadeBufDesc, &cascadeBufData, &cascadeBuffer);
 	
 	Context->PSSetConstantBuffers(3, 1, &cascadeBuffer);
-	Context->VSSetConstantBuffers(3, 1, &cascadeBuffer);
+	//Context->VSSetConstantBuffers(3, 1, &cascadeBuffer);
+	Context->GSSetConstantBuffers(3, 1, &cascadeBuffer);
 
 	CreateShaderResources(width, Device);
 }
@@ -47,7 +32,7 @@ ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, ID3D11DeviceCo
 void ShadowMap::CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11Device>& Device)
 {
 	D3D11_TEXTURE2D_DESC shadowMapDesc = {};
-	shadowMapDesc.ArraySize = 1;
+	shadowMapDesc.ArraySize = 4;
 	shadowMapDesc.MipLevels = 1;
 	shadowMapDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	shadowMapDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
@@ -64,13 +49,19 @@ void ShadowMap::CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11De
 	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	shaderResourceViewDesc.Texture2DArray.MipLevels = 1;
+	shaderResourceViewDesc.Texture2DArray.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2DArray.FirstArraySlice = 0;
+	shaderResourceViewDesc.Texture2DArray.ArraySize = 4;
+	
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
 	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDesc.Texture2D.MipSlice = 0;
+	depthStencilViewDesc.Texture2DArray.MipSlice = 0;
+	depthStencilViewDesc.Texture2DArray.FirstArraySlice = 0;
+	depthStencilViewDesc.Texture2DArray.ArraySize = 4;
 
 	Device->CreateShaderResourceView(shadowMap, &shaderResourceViewDesc, &ShadowView);
 	Device->CreateDepthStencilView(shadowMap, &depthStencilViewDesc, &DepthView);
@@ -126,6 +117,22 @@ void ShadowMap::CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11De
 		vertexShaderByteCode->GetBufferSize(),
 		nullptr, &vertexShader);
 
+	res = D3DCompileFromFile(L"../Shaders/SimpleShadowMapShader.hlsl",
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"GSMain",
+		"gs_5_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		&geometryShaderByteCode,
+		&errorVertexCode);
+
+	Device->CreateGeometryShader(
+		geometryShaderByteCode->GetBufferPointer(),
+		geometryShaderByteCode->GetBufferSize(),
+		nullptr, &geometryShader);
+
+
 	///rastState initialization
 	CD3D11_RASTERIZER_DESC rastDesc = {};
 	rastDesc.CullMode = D3D11_CULL_FRONT;
@@ -151,10 +158,11 @@ std::vector<Vector4> ShadowMap::GetFrustrumCornersWorldSpace(const Matrix& viewP
 			for (size_t z = 0; z < 2; z++)
 			{
 				const Vector4 pt = Vector4::Transform(
-					Vector4(2.0f*x -1.0f,
+					Vector4(2.0f * x -1.0f,
 						2.0f * y - 1.0f, 
-						2.0f * z - 1.0f, 
+						z, 
 						1.0f), inv);
+				frustrumCorners.push_back(pt / pt.w);
 			}
 		}
 	}
@@ -174,6 +182,60 @@ ShadowMap::~ShadowMap()
 
 void ShadowMap::Render(ID3D11DeviceContext* Context)
 {
+	Camera* camera = Game::GetCamera();
+
+	auto corners = GetFrustrumCornersWorldSpace(camera->view * camera->projection);
+
+	Vector3 center = Vector3::Zero;
+	for (const auto& v : corners)
+	{
+		center += Vector3(v.x, v.y, v.z);
+	}
+	center /= corners.size();
+
+	auto view = Matrix::CreateLookAt(center, center + lightDir, Vector3::Up);
+
+	float minX = std::numeric_limits<float>::max();
+	float maxX = std::numeric_limits<float>::lowest();
+	float minY = std::numeric_limits<float>::max();
+	float maxY = std::numeric_limits<float>::lowest();
+	float minZ = std::numeric_limits<float>::max();
+	float maxZ = std::numeric_limits<float>::lowest();
+	for (const auto& v : corners)
+	{
+		const auto trf = Vector4::Transform(v, view);
+		minX = std::min(minX, trf.x);
+		maxX = std::max(maxX, trf.x);
+		minY = std::min(minY, trf.y);
+		maxY = std::max(maxY, trf.y);
+		minZ = std::min(minZ, trf.z);
+		maxZ = std::max(maxZ, trf.z);
+	}
+
+	constexpr float zMult = 2.0f;
+
+	for (size_t i = 1; i < 4; i++)
+	{	
+		cascadeData.viewProjection[i] = view * Matrix::CreateOrthographicOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
+		/*std::cout << minX << " " << maxX << " "
+			<< minY << " " << maxY << " "
+			<< minZ << " " << maxZ << "\n";*/
+		cascadeData.distances[i] = maxZ;
+		minZ = (minZ < 0) ? minZ * zMult : minZ / zMult;
+		maxZ = (maxZ < 0) ? maxZ / zMult : maxZ * zMult;
+	}
+	
+	///const buffer update
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	auto res = Context->Map(cascadeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	memcpy(mappedResource.pData, &cascadeData, sizeof(CascadeData));
+
+	Context->Unmap(cascadeBuffer, 0);
+
+
 	ID3D11ShaderResourceView* nullsrv[] = { nullptr };
 	Context->PSSetShaderResources(1, 1, nullsrv);
 
@@ -186,10 +248,12 @@ void ShadowMap::Render(ID3D11DeviceContext* Context)
 	Context->RSSetViewports(1, viewport.Get11());
 	Context->VSSetShader(vertexShader, nullptr, 0);
 	Context->PSSetShader(nullptr, nullptr, 0);
+	Context->GSSetShader(geometryShader, nullptr, 0);
 }
 
 void ShadowMap::Bind(ID3D11DeviceContext* Context)
 {
 	Context->PSSetShaderResources(1, 1, &ShadowView);
 	Context->PSSetSamplers(1, 1, &samplerState);
+	Context->GSSetShader(nullptr, nullptr, 0);
 }
