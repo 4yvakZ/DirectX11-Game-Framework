@@ -1,7 +1,50 @@
 #include "ShadowMap.h"
 
 
-ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, int width)
+ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, ID3D11DeviceContext* Context, int width, Vector4 lightDir)
+{
+	Vector3 eye = -Vector3(lightDir.x, lightDir.y, lightDir.z);
+	eye.Normalize();
+	eye *= width / 100;
+	Vector3 target = eye + lightDir;
+
+	Matrix view = Matrix::CreateLookAt(eye, target, Vector3::Up);
+	Matrix projection = Matrix::CreateOrthographic(
+
+		width / 100,
+		width / 100,
+		0.1,
+		1000);
+
+	cascadeData.viewProjection = view * projection;
+
+	auto coners = GetFrustrumCornersWorldSpace(view * projection);
+
+
+
+	///const buffer initialization
+	D3D11_BUFFER_DESC cascadeBufDesc = {};
+	cascadeBufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cascadeBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cascadeBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cascadeBufDesc.MiscFlags = 0;
+	cascadeBufDesc.StructureByteStride = 0;
+	cascadeBufDesc.ByteWidth = sizeof(CascadeData);
+
+	D3D11_SUBRESOURCE_DATA cascadeBufData = {};
+	cascadeBufData.pSysMem = &cascadeData;
+	cascadeBufData.SysMemPitch = 0;
+	cascadeBufData.SysMemSlicePitch = 0;
+
+	Device->CreateBuffer(&cascadeBufDesc, &cascadeBufData, &cascadeBuffer);
+	
+	Context->PSSetConstantBuffers(3, 1, &cascadeBuffer);
+	Context->VSSetConstantBuffers(3, 1, &cascadeBuffer);
+
+	CreateShaderResources(width, Device);
+}
+
+void ShadowMap::CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11Device>& Device)
 {
 	D3D11_TEXTURE2D_DESC shadowMapDesc = {};
 	shadowMapDesc.ArraySize = 1;
@@ -31,8 +74,6 @@ ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, int width)
 
 	Device->CreateShaderResourceView(shadowMap, &shaderResourceViewDesc, &ShadowView);
 	Device->CreateDepthStencilView(shadowMap, &depthStencilViewDesc, &DepthView);
-	
-
 
 	D3D11_SAMPLER_DESC comparisonSamplerDesc;
 	ZeroMemory(&comparisonSamplerDesc, sizeof(D3D11_SAMPLER_DESC));
@@ -49,7 +90,7 @@ ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, int width)
 	comparisonSamplerDesc.MaxAnisotropy = 0;
 	comparisonSamplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 	comparisonSamplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
-	
+
 	Device->CreateSamplerState(&comparisonSamplerDesc, &samplerState);
 
 	viewport = Viewport(0.0f, 0.0f, width, width);
@@ -97,6 +138,30 @@ ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, int width)
 	Device->CreateRasterizerState(&rastDesc, &rastState);
 }
 
+std::vector<Vector4> ShadowMap::GetFrustrumCornersWorldSpace(const Matrix& viewProjection)
+{
+	const auto inv = viewProjection.Invert();
+
+	std::vector<Vector4> frustrumCorners;
+	frustrumCorners.reserve(8);
+	for (size_t x = 0; x < 2; x++)
+	{
+		for (size_t y = 0; y < 2; y++)
+		{
+			for (size_t z = 0; z < 2; z++)
+			{
+				const Vector4 pt = Vector4::Transform(
+					Vector4(2.0f*x -1.0f,
+						2.0f * y - 1.0f, 
+						2.0f * z - 1.0f, 
+						1.0f), inv);
+			}
+		}
+	}
+
+	return frustrumCorners;
+}
+
 ShadowMap::~ShadowMap()
 {
 	DepthView->Release();
@@ -117,6 +182,7 @@ void ShadowMap::Render(ID3D11DeviceContext* Context)
 	Context->OMSetRenderTargets(0, nullptr, DepthView);
 	
 	Context->RSSetState(rastState);
+
 	Context->RSSetViewports(1, viewport.Get11());
 	Context->VSSetShader(vertexShader, nullptr, 0);
 	Context->PSSetShader(nullptr, nullptr, 0);

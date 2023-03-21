@@ -40,18 +40,6 @@ void RenderSystem::CreateLightBuffer()
 {
 	lightData.direction = Vector4(-1, -4, -1, 0);
 	lightData.direction.Normalize();
-	Vector3 eye = -Vector3(lightData.direction.x, lightData.direction.y, lightData.direction.z);
-	eye.Normalize();
-	eye *= 1024 /100;
-	Vector3 target = eye + lightData.direction;
-	
-	lightData.view = Matrix::CreateLookAt(eye, target, Vector3::Up);
-	lightData.projection = Matrix::CreateOrthographic(
-
-		1024 / 100,
-		1024 /100,
-		0.1,
-		1000);
 
 	///const buffer initialization
 	D3D11_BUFFER_DESC lightBufDesc = {};
@@ -74,7 +62,7 @@ void RenderSystem::CreateLightBuffer()
 
 void RenderSystem::CreateShadowMap()
 {
-	shadowMap = new ShadowMap(Device, 1024);
+	shadowMap = new ShadowMap(Device, Context, 1024, lightData.direction);
 }
 
 RenderSystem::RenderSystem(DisplayWin *display):
@@ -120,14 +108,13 @@ RenderSystem::RenderSystem(DisplayWin *display):
 
 	CreateBackBuffer();
 
-	CreateShadowMap();
-
 	CreateDepthBuffer();
 
 	viewport = Viewport(0.0f, 0.0f, display->ClientWidth, display->ClientHeight);
 
 	CreateLightBuffer();
 
+	CreateShadowMap();
 }
 
 RenderSystem::~RenderSystem()

@@ -47,13 +47,21 @@ struct LightData
 {
     float4 direction;
     float4 intensity;
-    Matrix view;
-    Matrix projection;
 };
 
 cbuffer LIGHT_CONST_BUF : register(b2)
 {
     LightData light;
+}
+
+struct CascadeData
+{
+    Matrix viewProjection;
+};
+
+cbuffer CASCADE_CONST_BUF : register(b3)
+{
+    CascadeData cascade;
 }
 
 PS_IN VSMain( VS_IN input )
@@ -68,8 +76,7 @@ PS_IN VSMain( VS_IN input )
     output.normal = mul(float4(input.normal, 0.0f), world);
     
     float4 modelLightPos = mul(float4(input.pos.xyz, 1.0f), world);
-    modelLightPos = mul(modelLightPos, light.view);
-    modelLightPos = mul(modelLightPos, light.projection);
+    modelLightPos = mul(modelLightPos, cascade.viewProjection);
     output.lightSpacePos = modelLightPos.xyz;
     
 	return output;
@@ -82,8 +89,24 @@ float4 PSMain( PS_IN input ) : SV_Target
     shadowTexCoords.y = 0.5f - (input.lightSpacePos.y * 0.5f);
     float pixelDepth = input.lightSpacePos.z;
     
-    float shadow = ShadowMap.SampleCmpLevelZero(ShadowSampler, shadowTexCoords, pixelDepth);
+    float shadow = 0;
+    
+    uint width, height;
+    ShadowMap.GetDimensions(width, height);
+    float2 pixelSize = float2(1.0f / width, 1.0f / height);
+    for (int x = -2; x < 3; x++)
+    {
+        for (int y = -2; y < 3; y++)
+        {
+            float2 pixel = float2(x, y) * pixelSize + shadowTexCoords;
+            shadow += ShadowMap.SampleCmpLevelZero(ShadowSampler, pixel, pixelDepth);
+        }
+    }
+    
+    shadow /= 25;
+    
     //return shadow;
+    
     float3 normal = normalize(input.normal);
     //return float4(normal, 1);
     
@@ -97,17 +120,17 @@ float4 PSMain( PS_IN input ) : SV_Target
     color = DiffuseMap.Sample(Sampler, input.uv.xy);
        
     
-    float3 diffuse = shadow * material.diffuse.xyz * max(0, dot(-light.direction.xyz, normal));
+    float3 diffuse = material.diffuse.xyz * max(0, dot(-light.direction.xyz, normal));
     //diffuse = float3(0, 0, 0);
     
     float3 ambient = material.ambient.xyz ;
     //ambient = float3(0, 0, 0);
     
     float3 reflection = normalize(reflect(light.direction.xyz, normal));
-    float3 specular =shadow * material.specularAlpha.xyz * pow(max(0, dot(reflection, viewDir)), material.specularAlpha.aaa);
+    float3 specular = material.specularAlpha.xyz * pow(max(0, dot(reflection, viewDir)), material.specularAlpha.aaa);
     //specular = float3(0, 0, 0);
     
-    float3 lighting = light.intensity.xyz * saturate(diffuse + specular + ambient);
+    float3 lighting = light.intensity.xyz * saturate(shadow * (diffuse + specular) + ambient);
     
     color = float4(lighting, 1) * color;
     

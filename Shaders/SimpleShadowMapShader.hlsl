@@ -26,13 +26,16 @@ struct LightData
 {
     float4 direction;
     float4 intensity;
-    Matrix view;
-    Matrix projection;
 };
 
-cbuffer LIGHT_CONST_BUF : register(b2)
+struct CascadeData
 {
-    LightData light;
+    Matrix viewProjection;
+};
+
+cbuffer CASCADE_CONST_BUF : register(b3)
+{
+    CascadeData cascade;
 }
 
 PS_IN VSMain( VS_IN input )
@@ -40,8 +43,7 @@ PS_IN VSMain( VS_IN input )
 	PS_IN output = (PS_IN)0;
     
     float4 pos = mul(float4(input.pos.xyz, 1.0f), world);
-    pos = mul(pos, light.view);
-    output.pos = mul(pos, light.projection);
+    output.pos = mul(pos, cascade.viewProjection);
 
 	return output;
 }
