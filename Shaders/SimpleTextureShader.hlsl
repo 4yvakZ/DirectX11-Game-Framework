@@ -26,7 +26,8 @@ struct PS_IN
 
 cbuffer OBJECT_CONST_BUF : register(b0)
 {
-    Matrix worldViewPos;
+    Matrix view;
+    Matrix projection;
     Matrix world;
     float4 cameraPos;
 }
@@ -85,7 +86,7 @@ PS_IN VSMain( VS_IN input )
     
     
     output.viewPos = input.pos;
-    output.pos = mul(float4(input.pos.xyz, 1.0f), worldViewPos);
+    output.pos = mul(mul(mul(float4(input.pos.xyz, 1.0f), world), view), projection);
     output.color = input.color;
     output.uv = input.uv;
     output.normal = mul(float4(input.normal, 0.0f), world);
@@ -97,8 +98,7 @@ PS_IN VSMain( VS_IN input )
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
-    int layer = getCascadeLayer(abs(input.viewPos.z));
-    //layer = 1;
+    int layer = getCascadeLayer(abs(mul(float4(input.worldPos, 1.0f), view).z));
     
     float3 lightSpacePos = mul(float4(input.worldPos, 1.0f), cascade.viewProjection[layer]);
     
@@ -108,21 +108,20 @@ float4 PSMain( PS_IN input ) : SV_Target
     float pixelDepth = lightSpacePos.z;
     
     float shadow = 0;
-    shadow += ShadowMap.SampleCmpLevelZero(ShadowSampler, float3(shadowTexCoords, layer), pixelDepth);
-    //return shadow;
+    //shadow = ShadowMap.SampleCmpLevelZero(ShadowSampler, float3(shadowTexCoords, layer), pixelDepth);
     
-    /*uint width, height, elem;
+    uint width, height, elem;
     ShadowMap.GetDimensions(width, height, elem);
     float2 pixelSize = float2(1.0f / width, 1.0f / height);
-    for (int x = -2; x < 3; x++)
+    for (int x = -1; x < 2; x++)
     {
-        for (int y = -2; y < 3; y++)
+        for (int y = -1; y < 2; y++)
         {
             float2 pixel = float2(x, y) * pixelSize + shadowTexCoords;
-            shadow += ShadowMap.SampleCmpLevelZero(ShadowSampler, float3(pixel, 0), pixelDepth);
+            shadow += ShadowMap.SampleCmpLevelZero(ShadowSampler, float3(pixel, layer), pixelDepth);
         }
     }
-    shadow /= 25;*/
+    shadow /= 9;
     
     //return shadow;
     
@@ -137,7 +136,18 @@ float4 PSMain( PS_IN input ) : SV_Target
     color = input.color;
 #else
     color = DiffuseMap.Sample(Sampler, input.uv.xy);
-       
+    /*color = float4(0, 0, 0, 0);
+    if (layer == 0)
+        color.x = 1;
+    else if (layer == 1)
+        color.y = 1;
+    else if (layer == 2)
+        color.z = 1;
+    else if (layer == 3)
+    {
+        color.x = 1;
+        color.y = 1;
+    }*/
     
     float3 diffuse = material.diffuse.xyz * max(0, dot(-light.direction.xyz, normal));
     //diffuse = float3(0, 0, 0);

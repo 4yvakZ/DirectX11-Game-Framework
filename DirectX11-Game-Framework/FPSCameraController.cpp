@@ -89,7 +89,7 @@ void FPSCameraController::MouseEventHandler(const InputDevice::MouseMoveEventArg
 
 Vector3 FPSCameraController::GetForwardVector()
 {
-	return Vector3::Transform(Vector3::Forward, Matrix::CreateFromYawPitchRoll(yaw, pitch, 0));
+	return Vector3::Transform(Vector3::Backward, Matrix::CreateFromYawPitchRoll(yaw, pitch, 0));
 }
 
 Vector3 FPSCameraController::GetRightVector()

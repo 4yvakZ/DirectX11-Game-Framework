@@ -135,6 +135,7 @@ void RenderSystem::PrepareFrame()
 	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	shadowMap->Render(Context);
+
 	for (auto& renderComponent : renderComponents) {
 		if (auto fbx = dynamic_cast<RenderComponentFBX*>(renderComponent))
 		{

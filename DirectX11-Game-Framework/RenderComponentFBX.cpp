@@ -166,8 +166,9 @@ void RenderComponentFBX::DrawShadows()
 
 void RenderComponentFBX::Update()
 {
-	constBufferData.world = World;
-	constBufferData.worldViewPosition = Game::GetCamera()->GetWorldViewPositionMatrix(World);
+	constBufferData.world = World;	
+	constBufferData.view = Game::GetCamera()->view;
+	constBufferData.projection = Game::GetCamera()->projection;
 	auto camPos = Game::GetCamera()->position;
 	constBufferData.cameraPos = Vector4(camPos.x, camPos.y, camPos.z, 1);
 	UpdateConstBuffer();

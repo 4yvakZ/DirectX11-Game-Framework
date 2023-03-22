@@ -11,7 +11,8 @@ public:
 
     struct ConstBufferData 
     {
-        Matrix worldViewPosition;
+        Matrix view;
+        Matrix projection;
         Matrix world;
         Vector4 cameraPos;
     };

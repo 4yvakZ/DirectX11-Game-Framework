@@ -21,7 +21,7 @@ public:
 
 private:
 	void CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11Device>& Device);
-	std::vector<Vector4> GetFrustrumCornersWorldSpace(const Matrix& viewProjection);
+	std::vector<Vector4> GetFrustrumCornersWorldSpace(const Matrix& view, const Matrix& projection);
 
 public:
 
@@ -40,6 +40,8 @@ public:
 	ID3D11SamplerState* samplerState;
 
 	Viewport viewport;
+
+	ID3D11RenderTargetView* RenderTarget;
 
 	CascadeData cascadeData;
 	ID3D11Buffer* cascadeBuffer;

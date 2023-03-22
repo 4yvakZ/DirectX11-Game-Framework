@@ -1,5 +1,14 @@
 #pragma pack_matrix( row_major )
 
+
+cbuffer OBJECT_CONST_BUF : register(b0)
+{
+    Matrix view;
+    Matrix projection;
+    Matrix world;
+    float4 cameraPos;
+}
+
 struct VS_IN
 {
     float3 pos : POSITION0;
@@ -17,19 +26,6 @@ struct GS_OUT
 {
     float4 pos : SV_POSITION;
     uint arrInd : SV_RenderTargetArrayIndex;
-};
-
-cbuffer OBJECT_CONST_BUF : register(b0)
-{
-    Matrix worldViewPos;
-    Matrix world;
-    float4 cameraPos;
-}
-
-struct LightData
-{
-    float4 direction;
-    float4 intensity;
 };
 
 struct CascadeData

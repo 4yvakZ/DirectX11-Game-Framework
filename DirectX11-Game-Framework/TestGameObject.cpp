@@ -21,7 +21,7 @@ void TestGameObject::Update(float deltaTime)
 	SetRotation(GetRotation() * Quaternion::CreateFromAxisAngle(Vector3::Up, speed * deltaTime));
 	//SetPosition(GetPosition() + speed * Vector3(0.05, 0.05, 0) * deltaTime);
     FbxRenderComponent->World = GetWorld();
-	renderComponent->constBufferData.worldViewPosition *= Matrix::CreateTranslation(Vector3(0.001, 0.001, 0));
+	renderComponent->constBufferData.world *= Matrix::CreateTranslation(Vector3(0.001, 0.001, 0));
 	//std::cout << renderComponent->offset.x << std::endl;
 
 	GameObject::Update(deltaTime);

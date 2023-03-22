@@ -102,7 +102,8 @@ void LineRenderComponent::Draw()
 
 void LineRenderComponent::Update()
 {
-	constBufferData.worldViewPosition = Game::GetCamera()->GetWorldViewPositionMatrix(World);
+	constBufferData.view = Game::GetCamera()->view;
+	constBufferData.projection = Game::GetCamera()->projection;
 	constBufferData.world = World;
 	UpdateConstBuffer();
 }

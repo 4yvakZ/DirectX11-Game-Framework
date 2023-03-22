@@ -23,7 +23,6 @@ ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, ID3D11DeviceCo
 	Device->CreateBuffer(&cascadeBufDesc, &cascadeBufData, &cascadeBuffer);
 	
 	Context->PSSetConstantBuffers(3, 1, &cascadeBuffer);
-	//Context->VSSetConstantBuffers(3, 1, &cascadeBuffer);
 	Context->GSSetConstantBuffers(3, 1, &cascadeBuffer);
 
 	CreateShaderResources(width, Device);
@@ -47,7 +46,7 @@ void ShadowMap::CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11De
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shaderResourceViewDesc.Texture2DArray.MipLevels = 1;
 	shaderResourceViewDesc.Texture2DArray.MostDetailedMip = 0;
@@ -58,7 +57,7 @@ void ShadowMap::CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11De
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
 	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
 	depthStencilViewDesc.Texture2DArray.MipSlice = 0;
 	depthStencilViewDesc.Texture2DArray.FirstArraySlice = 0;
 	depthStencilViewDesc.Texture2DArray.ArraySize = 4;
@@ -145,9 +144,9 @@ void ShadowMap::CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11De
 	Device->CreateRasterizerState(&rastDesc, &rastState);
 }
 
-std::vector<Vector4> ShadowMap::GetFrustrumCornersWorldSpace(const Matrix& viewProjection)
+std::vector<Vector4> ShadowMap::GetFrustrumCornersWorldSpace(const Matrix& view, const Matrix& projection)
 {
-	const auto inv = viewProjection.Invert();
+	const auto inv = (view * projection).Invert();
 
 	std::vector<Vector4> frustrumCorners;
 	frustrumCorners.reserve(8);
@@ -184,46 +183,70 @@ void ShadowMap::Render(ID3D11DeviceContext* Context)
 {
 	Camera* camera = Game::GetCamera();
 
-	auto corners = GetFrustrumCornersWorldSpace(camera->view * camera->projection);
-
-	Vector3 center = Vector3::Zero;
-	for (const auto& v : corners)
+	constexpr int numOfCascades = 4;
+	for (size_t i = 0; i < numOfCascades; i++)
 	{
-		center += Vector3(v.x, v.y, v.z);
-	}
-	center /= corners.size();
+		Matrix projection;
+		float farPlane = camera->farPlane;
+		float nearPlane = camera->nearPlane; 
+		cascadeData.distances[i] = (farPlane - nearPlane) / numOfCascades * (i + 1) + nearPlane;
+		nearPlane = nearPlane + (farPlane - nearPlane) / numOfCascades * i;
+		if (camera->isPerspectiveProjection)
+		{
+			projection = Matrix::CreatePerspectiveFieldOfView(
+				camera->fovAngle,
+				camera->aspectRatio,
+				nearPlane,
+				cascadeData.distances[i]);
+		}
+		else
+		{
+			projection = Matrix::CreateOrthographic(
+				camera->ortWidth,
+				camera->ortHeight,
+				nearPlane,
+				cascadeData.distances[i]);
+		}
+		auto corners = GetFrustrumCornersWorldSpace(camera->view, projection);
 
-	auto view = Matrix::CreateLookAt(center, center + lightDir, Vector3::Up);
+		Vector3 center = Vector3::Zero;
+		for (const auto& v : corners)
+		{
+			center += Vector3(v.x, v.y, v.z);
+		}
+		center /= corners.size();
+		//std::cout << center.x << " " << center.y << " " << center.z << "\n";
 
-	float minX = std::numeric_limits<float>::max();
-	float maxX = std::numeric_limits<float>::lowest();
-	float minY = std::numeric_limits<float>::max();
-	float maxY = std::numeric_limits<float>::lowest();
-	float minZ = std::numeric_limits<float>::max();
-	float maxZ = std::numeric_limits<float>::lowest();
-	for (const auto& v : corners)
-	{
-		const auto trf = Vector4::Transform(v, view);
-		minX = std::min(minX, trf.x);
-		maxX = std::max(maxX, trf.x);
-		minY = std::min(minY, trf.y);
-		maxY = std::max(maxY, trf.y);
-		minZ = std::min(minZ, trf.z);
-		maxZ = std::max(maxZ, trf.z);
-	}
+		auto view = Matrix::CreateLookAt(center, center + lightDir, Vector3::Up);
 
-	constexpr float zMult = 2.0f;
+		float minX = std::numeric_limits<float>::max();
+		float maxX = std::numeric_limits<float>::lowest();
+		float minY = std::numeric_limits<float>::max();
+		float maxY = std::numeric_limits<float>::lowest();
+		float minZ = std::numeric_limits<float>::max();
+		float maxZ = std::numeric_limits<float>::lowest();
+		for (const auto& v : corners)
+		{
+			auto trf = Vector4::Transform(v, view);
+			minX = std::min(minX, trf.x);
+			maxX = std::max(maxX, trf.x);
+			minY = std::min(minY, trf.y);
+			maxY = std::max(maxY, trf.y);
+			minZ = std::min(minZ, trf.z);
+			maxZ = std::max(maxZ, trf.z);
+		}
 
-	for (size_t i = 1; i < 4; i++)
-	{	
-		cascadeData.viewProjection[i] = view * Matrix::CreateOrthographicOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
+		constexpr float zMult = 10.0f;
+
 		/*std::cout << minX << " " << maxX << " "
 			<< minY << " " << maxY << " "
 			<< minZ << " " << maxZ << "\n";*/
-		cascadeData.distances[i] = maxZ;
+		//std::cout << minZ << " " << maxZ << "\n";
 		minZ = (minZ < 0) ? minZ * zMult : minZ / zMult;
 		maxZ = (maxZ < 0) ? maxZ / zMult : maxZ * zMult;
+		cascadeData.viewProjection[i] = view * Matrix::CreateOrthographicOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
 	}
+
 	
 	///const buffer update
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -241,7 +264,8 @@ void ShadowMap::Render(ID3D11DeviceContext* Context)
 
 	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	Context->OMSetRenderTargets(0, nullptr, DepthView);
+	ID3D11RenderTargetView* nullrtv[] = { nullptr,nullptr,nullptr,nullptr, nullptr,nullptr,nullptr,nullptr };
+	Context->OMSetRenderTargets(8, nullrtv, DepthView);
 	
 	Context->RSSetState(rastState);
 

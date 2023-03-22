@@ -21,21 +21,26 @@ void Camera::Update(float deltaTime)
 
 	int width = Game::GetDisplay()->ClientWidth;
 	int height = Game::GetDisplay()->ClientHeight;
+	aspectRatio = static_cast<float>(width) / height;
+	ortWidth = width / 50;
+	ortHeight = height / 50;
+
 	
 	if (isPerspectiveProjection) {
 		projection = Matrix::CreatePerspectiveFieldOfView(
 			fovAngle,
-			static_cast<float>(width) / height,
-			0.1f,
-			100.0f);
+			aspectRatio,
+			nearPlane,
+			farPlane);
 	}
 	else {
 		projection = Matrix::CreateOrthographic(
-			width / 50,
-			height / 50,
-			0.1,
-			1000);
+			ortWidth,
+			ortHeight,
+			nearPlane,
+			farPlane);
 	}
+	//projection = Matrix::Identity;
 }
 
 Matrix Camera::GetWorldViewPositionMatrix(Matrix World) {
