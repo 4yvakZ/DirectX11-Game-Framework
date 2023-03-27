@@ -159,6 +159,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GridGameObject.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="FPSCameraController.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GridGameObject.cpp" />
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="LineRenderComponent.cpp" />
@@ -203,6 +205,9 @@
     <Natvis Include="Delegates.natvis" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Shaders\GeometryRenderingShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="..\Shaders\MyVeryFirstShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>

@@ -6,6 +6,7 @@
 #include "RenderComponent.h"
 #include "ShadowMap.h"
 #include "RenderComponentFBX.h"
+#include "GBuffer.h"
 
 
 //constexpr Color backgroundColor(0.2f, 0.2f, 0.2f);
@@ -115,11 +116,15 @@ RenderSystem::RenderSystem(DisplayWin *display):
 	CreateLightBuffer();
 
 	CreateShadowMap();
+
+	gBuffer = new GBuffer(Device, Context, viewport);
+	gBuffer->Init();
 }
 
 RenderSystem::~RenderSystem()
 {
 	delete shadowMap;
+	delete gBuffer;
 	lightBuffer->Release();
 	RenderView->Release();
 	backBuffer->Release();
@@ -131,8 +136,19 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::PrepareFrame()
 {
-	Context->ClearRenderTargetView(RenderView, backgroundColor);	
+	Context->ClearRenderTargetView(RenderView, backgroundColor);
 	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	shadowMap->PrepareFrame(Context);
+
+	//gBuffer->positionRTV = RenderView;
+	gBuffer->Render();
+	for (auto& renderComponent : renderComponents) {
+		if (auto fbx = dynamic_cast<RenderComponentFBX*>(renderComponent))
+		{
+			fbx->DrawGeometry();
+		}
+	}
 
 	shadowMap->Render(Context);
 
@@ -143,6 +159,8 @@ void RenderSystem::PrepareFrame()
 		}
 	}
 
+	Context->GSSetShader(nullptr, nullptr, 0);
+	
 	Context->RSSetViewports(1, viewport.Get11());
 	Context->OMSetRenderTargets(1, &RenderView, DepthView);
 

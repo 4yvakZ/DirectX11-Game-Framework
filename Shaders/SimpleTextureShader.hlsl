@@ -136,6 +136,7 @@ float4 PSMain( PS_IN input ) : SV_Target
     color = input.color;
 #else
     color = DiffuseMap.Sample(Sampler, input.uv.xy);
+    //color = float4(input.worldPos, 1.0f);
     /*color = float4(0, 0, 0, 0);
     if (layer == 0)
         color.x = 1;

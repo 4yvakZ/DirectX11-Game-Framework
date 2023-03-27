@@ -146,6 +146,26 @@ void RenderComponentFBX::Draw()
 	render->Context->DrawIndexed(indexes.size(), 0, 0);
 }
 
+
+void RenderComponentFBX::DrawGeometry()
+{
+	RenderSystem* render = Game::GetRenderSystem();
+
+	render->Context->RSSetState(rastState);
+	///Setup AI stage
+	UINT strides[] = { 48 };
+	UINT offsets[] = { 0 };
+
+	render->Context->IASetInputLayout(layout);
+	render->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	render->Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	render->Context->IASetVertexBuffers(0, 1, &vertexBuffer, strides, offsets);
+
+	render->Context->VSSetConstantBuffers(0, 1, &constBuffer);
+
+	render->Context->DrawIndexed(indexes.size(), 0, 0);
+}
+
 void RenderComponentFBX::DrawShadows()
 {
 	RenderSystem* render = Game::GetRenderSystem();
@@ -160,9 +180,11 @@ void RenderComponentFBX::DrawShadows()
 	render->Context->IASetVertexBuffers(0, 1, &vertexBuffer, strides, offsets);
 
 	render->Context->VSSetConstantBuffers(0, 1, &constBuffer);
+	render->Context->PSSetConstantBuffers(0, 1, &constBuffer);
 
 	render->Context->DrawIndexed(indexes.size(), 0, 0);
 }
+
 
 void RenderComponentFBX::Update()
 {

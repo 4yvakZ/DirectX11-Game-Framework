@@ -177,6 +177,20 @@ ShadowMap::~ShadowMap()
 	ShadowView->Release();
 
 	samplerState->Release();
+
+	vertexShaderByteCode->Release();
+	vertexShader->Release();
+
+	geometryShaderByteCode->Release();
+	geometryShader->Release();
+
+	rastState->Release();
+
+	cascadeBuffer->Release();
+}
+
+void ShadowMap::PrepareFrame(ID3D11DeviceContext* Context) {
+	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void ShadowMap::Render(ID3D11DeviceContext* Context)
@@ -262,8 +276,6 @@ void ShadowMap::Render(ID3D11DeviceContext* Context)
 	ID3D11ShaderResourceView* nullsrv[] = { nullptr };
 	Context->PSSetShaderResources(1, 1, nullsrv);
 
-	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 	ID3D11RenderTargetView* nullrtv[] = { nullptr,nullptr,nullptr,nullptr, nullptr,nullptr,nullptr,nullptr };
 	Context->OMSetRenderTargets(8, nullrtv, DepthView);
 	
@@ -279,5 +291,4 @@ void ShadowMap::Bind(ID3D11DeviceContext* Context)
 {
 	Context->PSSetShaderResources(1, 1, &ShadowView);
 	Context->PSSetSamplers(1, 1, &samplerState);
-	Context->GSSetShader(nullptr, nullptr, 0);
 }

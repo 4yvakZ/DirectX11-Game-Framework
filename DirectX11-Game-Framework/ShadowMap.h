@@ -16,6 +16,8 @@ public:
 	ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, ID3D11DeviceContext* Context, int width, Vector4 lightDir);
 	~ShadowMap();
 
+	void PrepareFrame(ID3D11DeviceContext* Context);
+
 	void Render(ID3D11DeviceContext* Context);
 	void Bind(ID3D11DeviceContext* Context);
 
@@ -40,8 +42,6 @@ public:
 	ID3D11SamplerState* samplerState;
 
 	Viewport viewport;
-
-	ID3D11RenderTargetView* RenderTarget;
 
 	CascadeData cascadeData;
 	ID3D11Buffer* cascadeBuffer;

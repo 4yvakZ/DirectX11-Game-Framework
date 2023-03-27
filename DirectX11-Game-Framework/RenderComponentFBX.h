@@ -21,6 +21,7 @@ public:
 	virtual void Initialize() override;
 	virtual void Draw() override;
 	void DrawShadows();
+	void DrawGeometry();
 	virtual void Update() override;
 
 private:

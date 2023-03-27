@@ -7,6 +7,7 @@ using namespace DirectX::SimpleMath;
 class DisplayWin;
 class RenderComponent;
 class ShadowMap;
+class GBuffer;
 
 class GAMEFRAMEWORK_API RenderSystem
 {
@@ -64,5 +65,7 @@ public:
 
 	LightData lightData;
 	ID3D11Buffer* lightBuffer;
+
+	GBuffer* gBuffer;
 };
 

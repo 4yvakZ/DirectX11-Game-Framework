@@ -120,6 +120,9 @@
     <ClInclude Include="ShadowMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -185,6 +188,9 @@
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Delegates.natvis">
@@ -200,5 +206,6 @@
     <FxCompile Include="..\Shaders\MyVeryFirstShader.hlsl" />
     <FxCompile Include="..\Shaders\SimpleTextureShader.hlsl" />
     <FxCompile Include="..\Shaders\SimpleShadowMapShader.hlsl" />
+    <FxCompile Include="..\Shaders\GeometryRenderingShader.hlsl" />
   </ItemGroup>
 </Project>
