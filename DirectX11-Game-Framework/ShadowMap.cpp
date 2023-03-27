@@ -133,13 +133,13 @@ void ShadowMap::CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11De
 
 
 	///rastState initialization
-	CD3D11_RASTERIZER_DESC rastDesc = {};
+	D3D11_RASTERIZER_DESC rastDesc = {};
 	rastDesc.CullMode = D3D11_CULL_FRONT;
-	rastDesc.CullMode = D3D11_CULL_BACK;
+	//rastDesc.CullMode = D3D11_CULL_BACK;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
-	//rastDesc.DepthBias = 0.01;
-	//rastDesc.DepthBiasClamp = 0.05;
-	//rastDesc.SlopeScaledDepthBias = 1;
+	rastDesc.DepthBias = 0.05;
+	rastDesc.DepthBiasClamp = 0.1;
+	rastDesc.SlopeScaledDepthBias = 4;
 
 	Device->CreateRasterizerState(&rastDesc, &rastState);
 }
