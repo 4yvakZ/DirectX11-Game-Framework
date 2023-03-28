@@ -47,5 +47,7 @@ public:
 	ID3D11Buffer* cascadeBuffer;
 
 	Vector4 lightDir;
+
+	
 };
 

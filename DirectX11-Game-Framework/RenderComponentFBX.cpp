@@ -162,6 +162,9 @@ void RenderComponentFBX::DrawGeometry()
 	render->Context->IASetVertexBuffers(0, 1, &vertexBuffer, strides, offsets);
 
 	render->Context->VSSetConstantBuffers(0, 1, &constBuffer);
+	render->Context->PSSetShaderResources(0, 1, &textureView);
+	render->Context->PSSetSamplers(0, 1, &samplerState);
+	render->Context->PSSetConstantBuffers(1, 1, &materialBuffer);
 
 	render->Context->DrawIndexed(indexes.size(), 0, 0);
 }

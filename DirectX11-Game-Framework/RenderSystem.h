@@ -7,18 +7,14 @@ using namespace DirectX::SimpleMath;
 class DisplayWin;
 class RenderComponent;
 class ShadowMap;
+class DirectionalLight;
 class GBuffer;
+
 
 class GAMEFRAMEWORK_API RenderSystem
 {
 
 public:
-	struct LightData
-	{
-		Vector4 direction;
-		Vector4 intensity{ 1.5f, 1.5f, 1.5f, 0.0f };
-	};
-
 	RenderSystem(DisplayWin* display);
 	RenderSystem() = delete;
 
@@ -32,17 +28,15 @@ public:
 
 	void RemoveRenderComponent(RenderComponent* renderComponent);
 
-	void UpdateLightData(LightData newLightData);
-
 protected:
 
 	void CreateBackBuffer();
 
-	void CreateDepthBuffer();
+	void CreateDepthStencilStates();
 
-	void CreateLightBuffer();
+	void CreateLight(Vector4 LightDir);
 
-	void CreateShadowMap();
+	void CreateLightShader();
 
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> Device;
@@ -52,10 +46,16 @@ public:
 	ID3D11Texture2D* backBuffer;
 	ID3D11RenderTargetView* RenderView;
 
-	ID3D11Texture2D* depthBuffer;
-	ID3D11DepthStencilView* DepthView;
+	ID3D11DepthStencilState* depthStencilStateOn;
+	ID3D11DepthStencilState* depthStencilStateOff;
 
-	ShadowMap* shadowMap;
+	ID3D11VertexShader* lightVertexShader;
+	ID3DBlob* lightVertexShaderByteCode;
+	ID3D11PixelShader* lightPixelShader;
+	ID3DBlob* lightPixelShaderByteCode;
+
+	std::vector<ShadowMap*> shadowMaps;
+	std::vector<DirectionalLight*> dirLights;
 
 	Viewport viewport;
 
@@ -63,9 +63,7 @@ public:
 
 	DisplayWin* display;
 
-	LightData lightData;
-	ID3D11Buffer* lightBuffer;
-
-	GBuffer* gBuffer;
+	GBuffer* gBuffer; 
+	ID3D11RasterizerState* rastState;
 };
 

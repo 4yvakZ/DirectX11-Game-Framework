@@ -5,6 +5,7 @@
 #include "DisplayWin.h"
 #include "RenderComponent.h"
 #include "ShadowMap.h"
+#include "DirectionalLight.h"
 #include "RenderComponentFBX.h"
 #include "GBuffer.h"
 
@@ -18,52 +19,75 @@ void RenderSystem::CreateBackBuffer()
 	Device->CreateRenderTargetView(backBuffer, nullptr, &RenderView);
 }
 
-void RenderSystem::CreateDepthBuffer()
+void RenderSystem::CreateDepthStencilStates()
 {
-	D3D11_TEXTURE2D_DESC depthTexDesc = {};
-	depthTexDesc.ArraySize = 1;
-	depthTexDesc.MipLevels = 1;
-	depthTexDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthTexDesc.CPUAccessFlags = 0;
-	depthTexDesc.MiscFlags = 0;
-	depthTexDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthTexDesc.Width = display->ClientWidth;
-	depthTexDesc.Height = display->ClientHeight;
-	depthTexDesc.SampleDesc = { 1, 0 };
+	D3D11_DEPTH_STENCIL_DESC stateDesc = {};
+	stateDesc.DepthEnable = false;
 
+	Device->CreateDepthStencilState(&stateDesc, &depthStencilStateOff);
 
-	Device->CreateTexture2D(&depthTexDesc, nullptr, &depthBuffer);
-	Device->CreateDepthStencilView(depthBuffer, nullptr, &DepthView);
+	stateDesc.StencilEnable = true;
+
+	Device->CreateDepthStencilState(&stateDesc, &depthStencilStateOn);
 }
 
-void RenderSystem::CreateLightBuffer()
+void RenderSystem::CreateLight(Vector4 lightDir)
 {
-	lightData.direction = Vector4(-1, -4, -1, 0);
-	lightData.direction.Normalize();
-
-	///const buffer initialization
-	D3D11_BUFFER_DESC lightBufDesc = {};
-	lightBufDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufDesc.MiscFlags = 0;
-	lightBufDesc.StructureByteStride = 0;
-	lightBufDesc.ByteWidth = sizeof(LightData);
-
-	D3D11_SUBRESOURCE_DATA lightBufData = {};
-	lightBufData.pSysMem = &lightData;
-	lightBufData.SysMemPitch = 0;
-	lightBufData.SysMemSlicePitch = 0;
-
-	Device->CreateBuffer(&lightBufDesc, &lightBufData, &lightBuffer);	
-	Context->PSSetConstantBuffers(2, 1, &lightBuffer);
-	Context->VSSetConstantBuffers(2, 1, &lightBuffer);
+	lightDir.Normalize();
+	auto light = new DirectionalLight(Device, Context);
+	light->lightData.direction = lightDir;
+	light->Init();
+	dirLights.push_back(light);
+	shadowMaps.push_back(new ShadowMap(Device, Context, 2048, lightDir));
 }
 
-void RenderSystem::CreateShadowMap()
+void RenderSystem::CreateLightShader()
 {
-	shadowMap = new ShadowMap(Device, Context, 2048, lightData.direction);
+	ID3DBlob* errorVertexCode = nullptr;
+	auto res = D3DCompileFromFile(L"../Shaders/LightRenderingShader.hlsl",
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"VSMain",
+		"vs_5_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		&lightVertexShaderByteCode,
+		&errorVertexCode);
+	if (FAILED(res)) {
+		// If the shader failed to compile it should have written something to the error message.
+		if (errorVertexCode) {
+			char* compileErrors = (char*)(errorVertexCode->GetBufferPointer());
+
+			std::cout << compileErrors << std::endl;
+		}
+		// If there was  nothing in the error message then it simply could not find the shader file itself.
+		else
+		{
+			std::cout << "Missing Shader File: " << "../Shaders/LightRenderingShader.hlsl" << std::endl;
+		}
+
+		return;
+	}
+
+	Device->CreateVertexShader(
+		lightVertexShaderByteCode->GetBufferPointer(),
+		lightVertexShaderByteCode->GetBufferSize(),
+		nullptr, &lightVertexShader);
+
+	res = D3DCompileFromFile(L"../Shaders/LightRenderingShader.hlsl",
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"PSMain",
+		"ps_5_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		&lightPixelShaderByteCode,
+		&errorVertexCode);
+
+	Device->CreatePixelShader(
+		lightPixelShaderByteCode->GetBufferPointer(),
+		lightPixelShaderByteCode->GetBufferSize(),
+		nullptr, &lightPixelShader);
 }
 
 RenderSystem::RenderSystem(DisplayWin *display):
@@ -109,27 +133,43 @@ RenderSystem::RenderSystem(DisplayWin *display):
 
 	CreateBackBuffer();
 
-	CreateDepthBuffer();
+	CreateDepthStencilStates();
 
 	viewport = Viewport(0.0f, 0.0f, display->ClientWidth, display->ClientHeight);
 
-	CreateLightBuffer();
+	CreateLightShader();
 
-	CreateShadowMap();
+	//CreateLight(Vector4(-1.0f, -4.0f, -1.0f, 0.0f));
+	CreateLight(Vector4(1.0f, -2.0f, 1.0f, 0.0f));
 
 	gBuffer = new GBuffer(Device, Context, viewport);
 	gBuffer->Init();
+
+	D3D11_RASTERIZER_DESC rastDesc = {};
+	rastDesc.CullMode = D3D11_CULL_BACK;
+	rastDesc.FillMode = D3D11_FILL_SOLID;
+
+	Device->CreateRasterizerState(&rastDesc, &rastState);
 }
 
 RenderSystem::~RenderSystem()
 {
-	delete shadowMap;
+	for (auto light : dirLights) {
+		delete light;
+	}
+	dirLights.clear();
+
+	for (auto shadowMap : shadowMaps) {
+		delete shadowMap;
+	}
+	shadowMaps.clear();
+
+	rastState->Release();
 	delete gBuffer;
-	lightBuffer->Release();
 	RenderView->Release();
 	backBuffer->Release();
-	DepthView->Release();
-	depthBuffer->Release();
+	//DepthView->Release();
+	//depthBuffer->Release();
 	SwapChain->Release();
 	Context->Release();
 }
@@ -137,11 +177,32 @@ RenderSystem::~RenderSystem()
 void RenderSystem::PrepareFrame()
 {
 	Context->ClearRenderTargetView(RenderView, backgroundColor);
-	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	//Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	shadowMap->PrepareFrame(Context);
+	gBuffer->PrepareFrame();
 
-	//gBuffer->positionRTV = RenderView;
+	for (auto& shadowMap : shadowMaps) {
+		shadowMap->PrepareFrame(Context);
+	}
+}
+
+
+void RenderSystem::Draw()
+{
+
+	for (auto& shadowMap : shadowMaps) {
+
+		shadowMap->Render(Context);
+
+		for (auto& renderComponent : renderComponents) {
+			if (auto fbx = dynamic_cast<RenderComponentFBX*>(renderComponent))
+			{
+				fbx->DrawShadows();
+			}
+		}
+	}
+
+	Context->GSSetShader(nullptr, nullptr, 0);
 	gBuffer->Render();
 	for (auto& renderComponent : renderComponents) {
 		if (auto fbx = dynamic_cast<RenderComponentFBX*>(renderComponent))
@@ -150,29 +211,33 @@ void RenderSystem::PrepareFrame()
 		}
 	}
 
-	shadowMap->Render(Context);
-
-	for (auto& renderComponent : renderComponents) {
-		if (auto fbx = dynamic_cast<RenderComponentFBX*>(renderComponent))
-		{
-			fbx->DrawShadows();
-		}
-	}
-
-	Context->GSSetShader(nullptr, nullptr, 0);
-	
+	ID3D11RenderTargetView* nullrtv[] = { nullptr,nullptr,nullptr,nullptr, nullptr,nullptr,nullptr,nullptr };
+	Context->OMSetRenderTargets(8, nullrtv, nullptr);
 	Context->RSSetViewports(1, viewport.Get11());
-	Context->OMSetRenderTargets(1, &RenderView, DepthView);
+	Context->OMSetRenderTargets(1, &RenderView, nullptr);
 
-	shadowMap->Bind(Context);
-}
+	Context->OMSetDepthStencilState(depthStencilStateOff, 0);
+
+	Context->VSSetShader(lightVertexShader, nullptr, 0);
+	Context->PSSetShader(lightPixelShader, nullptr, 0);
+
+	gBuffer->Bind();
 
 
-void RenderSystem::Draw()
-{
-	for (auto& renderComponent : renderComponents) {
-		renderComponent->Draw();
+	Context->RSSetState(rastState);
+	Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	
+	for (size_t i = 0; i < dirLights.size() && i < shadowMaps.size(); i++) {
+		shadowMaps[i]->Bind(Context);
+		dirLights[i]->Render();
+		
+		Context->Draw(4, 0);
 	}
+	Context->OMSetDepthStencilState(depthStencilStateOn, 0);
+
+	/*for (auto& renderComponent : renderComponents) {
+			renderComponent->Draw();
+		}*/
 }
 
 void RenderSystem::EndFrame()
@@ -189,12 +254,4 @@ void RenderSystem::RemoveRenderComponent(RenderComponent* renderComponent)
 			return;
 		}
 	}
-}
-
-void RenderSystem::UpdateLightData(LightData newLightData)
-{
-	lightData = newLightData;
-	lightData.direction.Normalize();
-
-	Context->UpdateSubresource(lightBuffer, 0, nullptr, &lightData, 0, 0);
 }

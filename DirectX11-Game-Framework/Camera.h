@@ -14,8 +14,6 @@ public:
 
 	void Update(float deltaTime);
 
-	Matrix GetWorldViewPositionMatrix(Matrix World);
-
 	Vector3 GetForwardVector();
 	Vector3 GetRightVector();
 	Vector3 GetUpVector();

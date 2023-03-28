@@ -20,7 +20,6 @@ struct PS_IN
     float4 color : COLOR0;
     float2 uv : TEXCOORD0;
     float3 normal : NORMAL0;
-    float3 viewPos : POSITION1;
     float3 worldPos : POSITION2;
 };
 
@@ -84,8 +83,6 @@ PS_IN VSMain( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
     
-    
-    output.viewPos = input.pos;
     output.pos = mul(mul(mul(float4(input.pos.xyz, 1.0f), world), view), projection);
     output.color = input.color;
     output.uv = input.uv;
@@ -128,7 +125,7 @@ float4 PSMain( PS_IN input ) : SV_Target
     float3 normal = normalize(input.normal);
     //return float4(normal, 1);
     
-    float3 viewDir = normalize(cameraPos.xyz - mul(float4(input.viewPos.xyz, 1.0f), world).xyz);
+    float3 viewDir = normalize(cameraPos.xyz - input.worldPos);
     
     float4 color;   
 
