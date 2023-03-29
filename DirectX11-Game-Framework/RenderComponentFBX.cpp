@@ -34,7 +34,8 @@ void RenderComponentFBX::Initialize()
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
-		aiProcess_SortByPType
+		aiProcess_SortByPType |
+		aiProcess_FlipWindingOrder
 	);
 
 	// If the import failed, report it

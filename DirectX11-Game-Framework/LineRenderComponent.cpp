@@ -21,7 +21,7 @@ void LineRenderComponent::AddLine(Vector3 coords0, Vector3 coords1, Color color)
 void LineRenderComponent::AddGrid(int gridSize, float cellSize, Color color)
 {
 
-int firstPointIndex = points.size();
+	int firstPointIndex = points.size();
 	int nPoints = gridSize * 2 + 1;
 	float offset = -(nPoints / 2) * cellSize;
 	for (int i = 0; i < nPoints; i++) 

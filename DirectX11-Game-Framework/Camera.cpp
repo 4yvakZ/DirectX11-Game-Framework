@@ -5,7 +5,7 @@
 
 Camera::Camera()
 {
-	position = Vector3(0.0f, 2.0f, -5.0f);
+	position = Vector3(0.0f, 2.0f, 0.0f);
 	target = Vector3(0.0f, 0.0f, 0.0f);
 	up = Vector3::Up;
 }
@@ -17,7 +17,7 @@ void Camera::Update(float deltaTime)
 		controller->Update(deltaTime);
 	}
 
-	view = Matrix::CreateLookAt(position, target, up) * Matrix::CreateScale(Vector3(-1,1,1));
+	view = Matrix::CreateLookAt(position, target, up); //* Matrix::CreateScale(Vector3(-1, 1, 1));
 
 	int width = Game::GetDisplay()->ClientWidth;
 	int height = Game::GetDisplay()->ClientHeight;

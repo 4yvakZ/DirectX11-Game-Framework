@@ -42,11 +42,11 @@ void SphereCameraController::Update(float deltaTime)
 		InputDevice* inputDevice = Game::GetInputDevice();
 		if (inputDevice->IsKeyDown(Keys::A))
 		{
-			armPosition -= cameraSpeed * deltaTime * cameraRightProjected;
+			armPosition += cameraSpeed * deltaTime * cameraRightProjected;
 		}
 		if (inputDevice->IsKeyDown(Keys::D))
 		{
-			armPosition += cameraSpeed * deltaTime * cameraRightProjected;
+			armPosition -= cameraSpeed * deltaTime * cameraRightProjected;
 		}
 		if (inputDevice->IsKeyDown(Keys::W))
 		{
@@ -80,7 +80,7 @@ void SphereCameraController::Update(float deltaTime)
 
 void SphereCameraController::MouseEventHandler(const InputDevice::MouseMoveEventArgs& mouseData, int payload)
 {
-	yaw += mouseData.Offset.x * cameraRotationSpeed;
+	yaw += -mouseData.Offset.x * cameraRotationSpeed;
 	pitch += mouseData.Offset.y * cameraRotationSpeed;
 	if (pitch > DirectX::XM_PIDIV2 - 0.01)
 	{

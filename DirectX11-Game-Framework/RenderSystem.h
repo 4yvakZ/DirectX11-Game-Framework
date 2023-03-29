@@ -32,7 +32,7 @@ protected:
 
 	void CreateBackBuffer();
 
-	void CreateDepthStencilStates();
+	void CreateDepthStencilState();
 
 	void CreateLight(Vector4 LightDir);
 
@@ -46,8 +46,12 @@ public:
 	ID3D11Texture2D* backBuffer;
 	ID3D11RenderTargetView* RenderView;
 
-	ID3D11DepthStencilState* depthStencilStateOn;
+	ID3D11Texture2D* lightTexture;
+	ID3D11ShaderResourceView* lightSRV;
+	ID3D11RenderTargetView* lightRTV;
+
 	ID3D11DepthStencilState* depthStencilStateOff;
+	ID3D11BlendState* blendState;
 
 	ID3D11VertexShader* lightVertexShader;
 	ID3DBlob* lightVertexShaderByteCode;

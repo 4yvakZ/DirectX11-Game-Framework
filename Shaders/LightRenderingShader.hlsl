@@ -84,12 +84,38 @@ float4 PSMain( PS_IN input ) : SV_Target0
     float4 albedo = Albedo.Load(uint3(pixelCoord, 0));
     float4 specularAlpha = Specular.Load(uint3(pixelCoord, 0));
     
+    int layer = getCascadeLayer(abs(mul(worldPos, view).z));
+    
+    float3 lightSpacePos = mul(worldPos, cascade.viewProjection[layer]);
+    
+    float2 shadowTexCoords;
+    shadowTexCoords.x = 0.5f + (lightSpacePos.x * 0.5f);
+    shadowTexCoords.y = 0.5f - (lightSpacePos.y * 0.5f);
+    float pixelDepth = lightSpacePos.z;
+    
+    float shadow = 0;
+    //shadow = ShadowMap.SampleCmpLevelZero(ShadowSampler, float3(shadowTexCoords, layer), pixelDepth);
+    
+    uint mapWidth, mapHeight, elem;
+    ShadowMap.GetDimensions(mapWidth, mapHeight, elem);
+    float2 pixelSize = float2(1.0f / mapWidth, 1.0f / mapHeight);
+    for (int x = -1; x < 2; x++)
+    {
+        for (int y = -1; y < 2; y++)
+        {
+            float2 pixel = float2(x, y) * pixelSize + shadowTexCoords;
+            shadow += ShadowMap.SampleCmpLevelZero(ShadowSampler, float3(pixel, layer), pixelDepth);
+        }
+    }
+    shadow /= 9;
+    
     float3 viewDir = normalize(cameraPos.xyz - worldPos.xyz);
     
-    float3 diffuse = albedo * max(0, dot(-light.direction.xyz, normal));
+    float3 diffuse = max(0, dot(-light.direction.xyz, normal));
     float3 reflection = normalize(reflect(light.direction.xyz, normal));
     float3 specular = specularAlpha.xyz * pow(max(0, dot(reflection, viewDir)), specularAlpha.aaa);
     float3 lighting = light.intensity.xyz * saturate(diffuse + specular);
     
-    return albedo * float4(lighting, 1);
+    //return float4(lighting * shadow, 1);
+    return float4(lighting * shadow, 1) * albedo;
 }

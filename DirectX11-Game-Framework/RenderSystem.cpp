@@ -19,16 +19,12 @@ void RenderSystem::CreateBackBuffer()
 	Device->CreateRenderTargetView(backBuffer, nullptr, &RenderView);
 }
 
-void RenderSystem::CreateDepthStencilStates()
+void RenderSystem::CreateDepthStencilState()
 {
 	D3D11_DEPTH_STENCIL_DESC stateDesc = {};
 	stateDesc.DepthEnable = false;
 
 	Device->CreateDepthStencilState(&stateDesc, &depthStencilStateOff);
-
-	stateDesc.StencilEnable = true;
-
-	Device->CreateDepthStencilState(&stateDesc, &depthStencilStateOn);
 }
 
 void RenderSystem::CreateLight(Vector4 lightDir)
@@ -133,13 +129,13 @@ RenderSystem::RenderSystem(DisplayWin *display):
 
 	CreateBackBuffer();
 
-	CreateDepthStencilStates();
+	CreateDepthStencilState();
 
 	viewport = Viewport(0.0f, 0.0f, display->ClientWidth, display->ClientHeight);
 
 	CreateLightShader();
 
-	//CreateLight(Vector4(-1.0f, -4.0f, -1.0f, 0.0f));
+	CreateLight(Vector4(-1.0f, -4.0f, -1.0f, 0.0f));
 	CreateLight(Vector4(1.0f, -2.0f, 1.0f, 0.0f));
 
 	gBuffer = new GBuffer(Device, Context, viewport);
@@ -150,6 +146,48 @@ RenderSystem::RenderSystem(DisplayWin *display):
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 
 	Device->CreateRasterizerState(&rastDesc, &rastState);
+
+	D3D11_TEXTURE2D_DESC lightTexDesc = {};
+	lightTexDesc.ArraySize = 1;
+	lightTexDesc.MipLevels = 1;
+	lightTexDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	lightTexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	lightTexDesc.CPUAccessFlags = 0;
+	lightTexDesc.MiscFlags = 0;
+	lightTexDesc.Usage = D3D11_USAGE_DEFAULT;
+	lightTexDesc.Width = viewport.width;
+	lightTexDesc.Height = viewport.height;
+	lightTexDesc.SampleDesc = { 1, 0 };
+
+	res = Device->CreateTexture2D(&lightTexDesc, nullptr, &lightTexture);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+
+
+	D3D11_RENDER_TARGET_VIEW_DESC lightRTVDesc = {};
+	lightRTVDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	lightRTVDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	lightRTVDesc.Texture2D.MipSlice = 0;
+
+	res = Device->CreateShaderResourceView(lightTexture, &shaderResourceViewDesc, &lightSRV);
+	res = Device->CreateRenderTargetView(lightTexture, &lightRTVDesc, &lightRTV);
+
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.IndependentBlendEnable = false;
+	blendDesc.RenderTarget[0].BlendEnable = true;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	Device->CreateBlendState(&blendDesc, &blendState);
 }
 
 RenderSystem::~RenderSystem()
@@ -164,12 +202,17 @@ RenderSystem::~RenderSystem()
 	}
 	shadowMaps.clear();
 
+	lightRTV->Release();
+	lightSRV->Release();
+	lightTexture->Release();
+
+	blendState->Release();
+
+	depthStencilStateOff->Release();
 	rastState->Release();
 	delete gBuffer;
 	RenderView->Release();
 	backBuffer->Release();
-	//DepthView->Release();
-	//depthBuffer->Release();
 	SwapChain->Release();
 	Context->Release();
 }
@@ -177,8 +220,7 @@ RenderSystem::~RenderSystem()
 void RenderSystem::PrepareFrame()
 {
 	Context->ClearRenderTargetView(RenderView, backgroundColor);
-	//Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
+	
 	gBuffer->PrepareFrame();
 
 	for (auto& shadowMap : shadowMaps) {
@@ -214,18 +256,24 @@ void RenderSystem::Draw()
 	ID3D11RenderTargetView* nullrtv[] = { nullptr,nullptr,nullptr,nullptr, nullptr,nullptr,nullptr,nullptr };
 	Context->OMSetRenderTargets(8, nullrtv, nullptr);
 	Context->RSSetViewports(1, viewport.Get11());
+
+	//Light Pass
 	Context->OMSetRenderTargets(1, &RenderView, nullptr);
 
-	Context->OMSetDepthStencilState(depthStencilStateOff, 0);
+	Context->OMSetDepthStencilState(depthStencilStateOff, 0); 
+	
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
+
+	Context->OMSetBlendState(blendState, blendFactor, sampleMask);
 
 	Context->VSSetShader(lightVertexShader, nullptr, 0);
 	Context->PSSetShader(lightPixelShader, nullptr, 0);
 
 	gBuffer->Bind();
 
-
 	Context->RSSetState(rastState);
-	Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	
 	for (size_t i = 0; i < dirLights.size() && i < shadowMaps.size(); i++) {
 		shadowMaps[i]->Bind(Context);
@@ -233,11 +281,17 @@ void RenderSystem::Draw()
 		
 		Context->Draw(4, 0);
 	}
-	Context->OMSetDepthStencilState(depthStencilStateOn, 0);
+	Context->OMSetDepthStencilState(nullptr, 0);
+	Context->OMSetBlendState(nullptr, blendFactor, sampleMask);
 
-	/*for (auto& renderComponent : renderComponents) {
+	//End of Light pass
+
+	for (auto& renderComponent : renderComponents) {
+		if (!dynamic_cast<RenderComponentFBX*>(renderComponent))
+		{
 			renderComponent->Draw();
-		}*/
+		}
+	}
 }
 
 void RenderSystem::EndFrame()

@@ -21,9 +21,6 @@ ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> Device, ID3D11DeviceCo
 	cascadeBufData.SysMemSlicePitch = 0;
 
 	Device->CreateBuffer(&cascadeBufDesc, &cascadeBufData, &cascadeBuffer);
-	
-	Context->PSSetConstantBuffers(3, 1, &cascadeBuffer);
-	Context->GSSetConstantBuffers(3, 1, &cascadeBuffer);
 
 	CreateShaderResources(width, Device);
 }
@@ -134,7 +131,7 @@ void ShadowMap::CreateShaderResources(int width, Microsoft::WRL::ComPtr<ID3D11De
 
 	///rastState initialization
 	D3D11_RASTERIZER_DESC rastDesc = {};
-	rastDesc.CullMode = D3D11_CULL_FRONT;
+	rastDesc.CullMode = D3D11_CULL_BACK;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 	rastDesc.DepthBias = 0.05;
 	rastDesc.DepthBiasClamp = 0.1;
@@ -272,6 +269,9 @@ void ShadowMap::Render(ID3D11DeviceContext* Context)
 	Context->Unmap(cascadeBuffer, 0);
 
 
+	Context->PSSetConstantBuffers(3, 1, &cascadeBuffer);
+	Context->GSSetConstantBuffers(3, 1, &cascadeBuffer);
+
 	ID3D11ShaderResourceView* nullsrv[] = { nullptr };
 	Context->PSSetShaderResources(1, 1, nullsrv);
 
@@ -290,4 +290,6 @@ void ShadowMap::Bind(ID3D11DeviceContext* Context)
 {
 	Context->PSSetShaderResources(1, 1, &ShadowView);
 	Context->PSSetSamplers(1, 1, &samplerState);
+	Context->PSSetConstantBuffers(3, 1, &cascadeBuffer);
+	Context->GSSetConstantBuffers(3, 1, &cascadeBuffer);
 }

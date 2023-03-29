@@ -32,11 +32,11 @@ void FPSCameraController::Update(float deltaTime)
 
 		if (inputDevice->IsKeyDown(Keys::A))
 		{
-			cameraPos -= cameraSpeed * deltaTime * cameraRight;
+			cameraPos += cameraSpeed * deltaTime * cameraRight;
 		}
 		if (inputDevice->IsKeyDown(Keys::D))
 		{
-			cameraPos += cameraSpeed * deltaTime * cameraRight;
+			cameraPos -= cameraSpeed * deltaTime * cameraRight;
 		}
 		if (inputDevice->IsKeyDown(Keys::W))
 		{
@@ -64,7 +64,7 @@ void FPSCameraController::Update(float deltaTime)
 
 void FPSCameraController::MouseEventHandler(const InputDevice::MouseMoveEventArgs& mouseData, int payload)
 {
-	yaw += mouseData.Offset.x * cameraRotationSpeed;
+	yaw += -mouseData.Offset.x * cameraRotationSpeed;
 	pitch += mouseData.Offset.y * cameraRotationSpeed * 2;
 	if (pitch > DirectX::XM_PIDIV2 - 0.01)
 	{

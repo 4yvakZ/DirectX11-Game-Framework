@@ -81,11 +81,11 @@ void RollingBall::UpdatePosition(float deltaTime)
 	InputDevice* inputDevice = Game::GetInputDevice();
 	if (inputDevice->IsKeyDown(Keys::A))
 	{
-		deltaPos -= rotationSpeed * radius * deltaTime * right;
+		deltaPos += rotationSpeed * radius * deltaTime * right;
 	}
 	if (inputDevice->IsKeyDown(Keys::D))
 	{
-		deltaPos += rotationSpeed * radius * deltaTime * right;
+		deltaPos -= rotationSpeed * radius * deltaTime * right;
 	}
 	if (inputDevice->IsKeyDown(Keys::W))
 	{
