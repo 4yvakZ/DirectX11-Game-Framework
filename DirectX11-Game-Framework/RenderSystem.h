@@ -9,6 +9,7 @@ class RenderComponent;
 class ShadowMap;
 class DirectionalLight;
 class GBuffer;
+class ParticleSystem;
 
 
 class GAMEFRAMEWORK_API RenderSystem
@@ -69,5 +70,7 @@ public:
 
 	GBuffer* gBuffer; 
 	ID3D11RasterizerState* rastState;
+
+	ParticleSystem* particleSystem;
 };
 

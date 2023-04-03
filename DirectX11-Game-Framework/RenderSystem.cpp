@@ -8,6 +8,7 @@
 #include "DirectionalLight.h"
 #include "RenderComponentFBX.h"
 #include "GBuffer.h"
+#include "ParticleSystem.h"
 
 
 //constexpr Color backgroundColor(0.2f, 0.2f, 0.2f);
@@ -188,10 +189,15 @@ RenderSystem::RenderSystem(DisplayWin *display):
 	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	Device->CreateBlendState(&blendDesc, &blendState);
+
+	particleSystem = new ParticleSystem(Device, Context);
+	particleSystem->Initialize();
 }
 
 RenderSystem::~RenderSystem()
 {
+	delete particleSystem;
+
 	for (auto light : dirLights) {
 		delete light;
 	}
