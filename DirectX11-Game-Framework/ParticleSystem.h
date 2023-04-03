@@ -19,6 +19,10 @@ class ParticleSystem
 		float maxLifetime;
 		float minSpawnVelocity;
 		float maxSpawnVelocity;
+		float minSize;
+		float maxSize;
+		float deltaTime;
+		float blank;
 		Vector4 force;
 		Vector4 minSpawnPos;
 		Vector4 maxSpawnPos;
@@ -31,6 +35,7 @@ class ParticleSystem
 		Vector4 velocity;
 		Vector4 acceleration;
 		float timeUntilDeath;
+		float size;
 	};
 
 public:
