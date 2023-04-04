@@ -85,6 +85,51 @@ void RenderSystem::CreateLightShader()
 		lightPixelShaderByteCode->GetBufferPointer(),
 		lightPixelShaderByteCode->GetBufferSize(),
 		nullptr, &lightPixelShader);
+
+	res = D3DCompileFromFile(L"../Shaders/ColorShader.hlsl",
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"VSMain",
+		"vs_5_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		&colorVertexShaderByteCode,
+		&errorVertexCode);
+	if (FAILED(res)) {
+		// If the shader failed to compile it should have written something to the error message.
+		if (errorVertexCode) {
+			char* compileErrors = (char*)(errorVertexCode->GetBufferPointer());
+
+			std::cout << compileErrors << std::endl;
+		}
+		// If there was  nothing in the error message then it simply could not find the shader file itself.
+		else
+		{
+			std::cout << "Missing Shader File: " << "../Shaders/ColorShader.hlsl" << std::endl;
+		}
+
+		return;
+	}
+
+	Device->CreateVertexShader(
+		colorVertexShaderByteCode->GetBufferPointer(),
+		colorVertexShaderByteCode->GetBufferSize(),
+		nullptr, &colorVertexShader);
+
+	res = D3DCompileFromFile(L"../Shaders/ColorShader.hlsl",
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"PSMain",
+		"ps_5_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		&colorPixelShaderByteCode,
+		&errorVertexCode);
+
+	Device->CreatePixelShader(
+		colorPixelShaderByteCode->GetBufferPointer(),
+		colorPixelShaderByteCode->GetBufferSize(),
+		nullptr, &colorPixelShader);
 }
 
 RenderSystem::RenderSystem(DisplayWin *display):
@@ -137,7 +182,7 @@ RenderSystem::RenderSystem(DisplayWin *display):
 	CreateLightShader();
 
 	CreateLight(Vector4(-1.0f, -4.0f, -1.0f, 0.0f));
-	CreateLight(Vector4(1.0f, -2.0f, 1.0f, 0.0f));
+	CreateLight(Vector4(-1.0f, -2.0f, 1.0f, 0.0f));
 
 	gBuffer = new GBuffer(Device, Context, viewport);
 	gBuffer->Init();
@@ -226,6 +271,7 @@ RenderSystem::~RenderSystem()
 void RenderSystem::PrepareFrame()
 {
 	Context->ClearRenderTargetView(RenderView, backgroundColor);
+	Context->ClearRenderTargetView(lightRTV, Color(0.1, 0.1, 0.1, 1));
 	
 	gBuffer->PrepareFrame();
 
@@ -264,7 +310,7 @@ void RenderSystem::Draw()
 	Context->RSSetViewports(1, viewport.Get11());
 
 	//Light Pass
-	Context->OMSetRenderTargets(1, &RenderView, nullptr);
+	Context->OMSetRenderTargets(1, &lightRTV, nullptr);
 
 	Context->OMSetDepthStencilState(depthStencilStateOff, 0); 
 	
@@ -287,10 +333,22 @@ void RenderSystem::Draw()
 		
 		Context->Draw(4, 0);
 	}
-	Context->OMSetDepthStencilState(nullptr, 0);
 	Context->OMSetBlendState(nullptr, blendFactor, sampleMask);
-
 	//End of Light pass
+
+	Context->OMSetRenderTargets(1, &RenderView, nullptr);
+
+	Context->VSSetShader(colorVertexShader, nullptr, 0);
+	Context->PSSetShader(colorPixelShader, nullptr, 0);
+	Context->PSSetShaderResources(6, 1, &lightSRV);
+
+	Context->Draw(4, 0);
+
+	Context->OMSetDepthStencilState(nullptr, 0);
+	
+	ID3D11ShaderResourceView* nullptrs[] = {nullptr};
+	Context->PSSetShaderResources(6, 1, nullptrs);
+	
 
 	for (auto& renderComponent : renderComponents) {
 		if (!dynamic_cast<RenderComponentFBX*>(renderComponent))

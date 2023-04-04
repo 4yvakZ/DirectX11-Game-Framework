@@ -4,7 +4,6 @@
 Texture2DArray ShadowMap : register(t1);
 Texture2D Position : register(t2);
 Texture2D<float3> Normal : register(t3);
-Texture2D Albedo : register(t4);
 Texture2D Specular : register(t5);
 
 SamplerComparisonState ShadowSampler : register(s1);
@@ -81,7 +80,6 @@ float4 PSMain( PS_IN input ) : SV_Target0
         return float4(0, 0, 0, 1);
     }
     float3 normal = normalize(Normal.Load(uint3(pixelCoord, 0)));
-    float4 albedo = Albedo.Load(uint3(pixelCoord, 0));
     float4 specularAlpha = Specular.Load(uint3(pixelCoord, 0));
     
     int layer = getCascadeLayer(abs(mul(worldPos, view).z));
@@ -117,5 +115,5 @@ float4 PSMain( PS_IN input ) : SV_Target0
     float3 lighting = light.intensity.xyz * saturate(diffuse + specular);
     
     //return float4(lighting * shadow, 1);
-    return float4(lighting * shadow, 1) * albedo;
+    return float4(lighting * shadow, 1);
 }

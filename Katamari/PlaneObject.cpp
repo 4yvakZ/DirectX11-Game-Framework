@@ -4,7 +4,7 @@
 
 PlaneObject::PlaneObject()
 {
-	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/plane.fbx", "../FBX/PNG/Green/texture_08.png");
+	FbxRenderComponent = new RenderComponentFBX("../Shaders/SimpleTextureShader.hlsl", "../FBX/plane.fbx", "../FBX/PNG/Dark/texture_07.png");
 	FbxRenderComponent->scale = 5;
 	components.push_back(FbxRenderComponent);
 }

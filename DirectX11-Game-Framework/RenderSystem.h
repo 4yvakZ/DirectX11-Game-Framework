@@ -59,6 +59,11 @@ public:
 	ID3D11PixelShader* lightPixelShader;
 	ID3DBlob* lightPixelShaderByteCode;
 
+	ID3D11VertexShader* colorVertexShader;
+	ID3DBlob* colorVertexShaderByteCode;
+	ID3D11PixelShader* colorPixelShader;
+	ID3DBlob* colorPixelShaderByteCode;
+
 	std::vector<ShadowMap*> shadowMaps;
 	std::vector<DirectionalLight*> dirLights;
 

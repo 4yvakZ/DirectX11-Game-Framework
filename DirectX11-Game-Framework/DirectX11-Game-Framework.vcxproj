@@ -207,6 +207,9 @@
     <Natvis Include="Delegates.natvis" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Shaders\ColorShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="..\Shaders\GeometryRenderingShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>

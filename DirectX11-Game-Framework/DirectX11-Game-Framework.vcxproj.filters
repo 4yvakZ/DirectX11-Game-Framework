@@ -214,5 +214,6 @@
     <FxCompile Include="..\Shaders\SimpleShadowMapShader.hlsl" />
     <FxCompile Include="..\Shaders\GeometryRenderingShader.hlsl" />
     <FxCompile Include="..\Shaders\LightRenderingShader.hlsl" />
+    <FxCompile Include="..\Shaders\ColorShader.hlsl" />
   </ItemGroup>
 </Project>

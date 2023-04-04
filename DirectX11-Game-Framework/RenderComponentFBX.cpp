@@ -81,7 +81,7 @@ void RenderComponentFBX::Initialize()
 	}
 	else
 	{
-		hr = LoadFromWICFile(fileName.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, image);
+		hr = LoadFromWICFile(fileName.c_str(), DirectX::WIC_FLAGS_DEFAULT_SRGB, nullptr, image);
 	}
 
 	RenderSystem* render = Game::GetRenderSystem();
