@@ -207,13 +207,13 @@
     <None Include="SimpleMath.inl">
       <Filter>Header Files\Libs</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\Shaders\MyVeryFirstShader.hlsl" />
-    <FxCompile Include="..\Shaders\SimpleTextureShader.hlsl" />
-    <FxCompile Include="..\Shaders\SimpleShadowMapShader.hlsl" />
-    <FxCompile Include="..\Shaders\GeometryRenderingShader.hlsl" />
-    <FxCompile Include="..\Shaders\LightRenderingShader.hlsl" />
-    <FxCompile Include="..\Shaders\ColorShader.hlsl" />
+    <None Include="..\Shaders\SortingShader.hlsl" />
+    <None Include="..\Shaders\ColorShader.hlsl" />
+    <None Include="..\Shaders\GeometryRenderingShader.hlsl" />
+    <None Include="..\Shaders\LightRenderingShader.hlsl" />
+    <None Include="..\Shaders\MyVeryFirstShader.hlsl" />
+    <None Include="..\Shaders\SimpleShadowMapShader.hlsl" />
+    <None Include="..\Shaders\SimpleTextureShader.hlsl" />
+    <None Include="..\Shaders\ParticlesShader.hlsl" />
   </ItemGroup>
 </Project>

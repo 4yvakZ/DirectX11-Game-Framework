@@ -13,6 +13,7 @@
 
 //constexpr Color backgroundColor(0.2f, 0.2f, 0.2f);
 constexpr Color backgroundColor(0.f, 0.f, 0.f);
+constexpr Color ambientColor(0.05f, 0.05f, 0.05f);
 
 void RenderSystem::CreateBackBuffer()
 {
@@ -182,7 +183,7 @@ RenderSystem::RenderSystem(DisplayWin *display):
 	CreateLightShader();
 
 	CreateLight(Vector4(-1.0f, -4.0f, -1.0f, 0.0f));
-	CreateLight(Vector4(-1.0f, -2.0f, 1.0f, 0.0f));
+	CreateLight(Vector4(-1.0f, -2.0f, 0.5f, 0.0f));
 
 	gBuffer = new GBuffer(Device, Context, viewport);
 	gBuffer->Init();
@@ -271,7 +272,7 @@ RenderSystem::~RenderSystem()
 void RenderSystem::PrepareFrame()
 {
 	Context->ClearRenderTargetView(RenderView, backgroundColor);
-	Context->ClearRenderTargetView(lightRTV, Color(0.1, 0.1, 0.1, 1));
+	Context->ClearRenderTargetView(lightRTV, ambientColor);
 	
 	gBuffer->PrepareFrame();
 

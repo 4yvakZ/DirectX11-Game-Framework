@@ -32,7 +32,7 @@ public:
 	Vector3 target;
 	Vector3 up;
 
-	float farPlane = 40.0f;
+	float farPlane = 100.0f;
 	float nearPlane = 0.1f;
 	float fovAngle = DirectX::XM_PIDIV2;
 	float aspectRatio;

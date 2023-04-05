@@ -19,10 +19,12 @@ class ParticleSystem
 		float maxLifetime;
 		float minSpawnVelocity;
 		float maxSpawnVelocity;
+
 		float minSize;
 		float maxSize;
 		float deltaTime;
 		float blank;
+
 		Vector4 force;
 		Vector4 minSpawnPos;
 		Vector4 maxSpawnPos;
@@ -38,6 +40,12 @@ class ParticleSystem
 		float size;
 	};
 
+	struct SortingData {
+		UINT index;
+		float depth;
+	};
+
+
 public:
 	ParticleSystem() = delete;
 	ParticleSystem(Microsoft::WRL::ComPtr<ID3D11Device> Device, ID3D11DeviceContext* Context):
@@ -48,6 +56,11 @@ public:
 	~ParticleSystem();
 
 	void Initialize();
+
+protected:
+	void InitResouces();
+	void LoadTexture();
+	void LoadShaders();
 public:
 	int maxNumberOfParticles = 65536;
 	int maxSpawnRate = 100;
@@ -58,5 +71,14 @@ public:
 
 	ID3D11ShaderResourceView* textureView = nullptr;
 	ID3D11SamplerState* samplerState;
+
+	ID3D11Buffer* particlesBuffer;
+	ID3D11UnorderedAccessView* particlesUAV;
+
+	ID3D11Buffer* deadListBuffer;
+	ID3D11UnorderedAccessView* deadListUAV;
+
+	ID3D11Buffer* sortedBuffer;
+	ID3D11UnorderedAccessView* sortedUAV;
 };
 

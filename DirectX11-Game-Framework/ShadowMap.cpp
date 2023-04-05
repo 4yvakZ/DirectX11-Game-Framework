@@ -194,13 +194,14 @@ void ShadowMap::Render(ID3D11DeviceContext* Context)
 	Camera* camera = Game::GetCamera();
 
 	constexpr int numOfCascades = 4;
+	constexpr float fractions[] = { 0, 0.1, 0.2, 0.4, 1.0 };
 	for (size_t i = 0; i < numOfCascades; i++)
 	{
 		Matrix projection;
 		float farPlane = camera->farPlane;
 		float nearPlane = camera->nearPlane; 
-		cascadeData.distances[i] = (farPlane - nearPlane) / numOfCascades * (i + 1) + nearPlane;
-		nearPlane = nearPlane + (farPlane - nearPlane) / numOfCascades * i;
+		cascadeData.distances[i] = (farPlane - nearPlane) * fractions[i + 1] + nearPlane;
+		nearPlane = nearPlane + (farPlane - nearPlane) * fractions[i];
 		if (camera->isPerspectiveProjection)
 		{
 			projection = Matrix::CreatePerspectiveFieldOfView(
