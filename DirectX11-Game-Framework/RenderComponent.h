@@ -21,7 +21,7 @@ public:
     {
         Vector4 ambient = Vector4(0.2f, 0.2f, 0.2f, 0.0f);
         Vector4 diffuse = Vector4(0.5f, 0.5f, 0.5f, 0.0f);
-        Vector4 specularAlpha = Vector4(0.7f, 0.7f, 0.7f, 10.0f);
+        Vector4 specularAlpha = Vector4(0.9f, 0.9f, 0.9f, 20.0f);
     };
 
     struct VertexData 

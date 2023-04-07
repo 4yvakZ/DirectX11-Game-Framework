@@ -3,8 +3,6 @@
 Texture2D Albedo : register(t4);
 Texture2D<float3> Light : register(t6);
 
-SamplerComparisonState ShadowSampler : register(s1);
-
 struct PS_IN
 {
     float4 pos : SV_POSITION;

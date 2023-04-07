@@ -8,6 +8,8 @@
 #include "FPSCameraController.h"
 #include "SphereCameraController.h"
 
+#include "ParticleSystem.h"
+
 #include "GameObject.h"
 
 Game* Game::instance;
@@ -114,6 +116,8 @@ void Game::Initialize()
 	for (auto& object : GameObjects) {
 		object->Initialize();
 	}
+
+	render->particleSystem->Initialize();
 }
 
 
@@ -240,6 +244,8 @@ void Game::UpdateInternal()
 	}
 
 	camera->Update(deltaTime);
+
+	render->particleSystem->Update(deltaTime);
 }
 
 void Game::Draw()

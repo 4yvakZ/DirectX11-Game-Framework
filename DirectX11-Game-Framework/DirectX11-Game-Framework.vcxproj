@@ -233,7 +233,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Shaders\ParticlesShader.hlsl">
+    <None Include="..\Shaders\ParticleShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

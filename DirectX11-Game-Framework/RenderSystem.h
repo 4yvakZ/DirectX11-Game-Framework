@@ -11,6 +11,8 @@ class DirectionalLight;
 class GBuffer;
 class ParticleSystem;
 
+constexpr int kTreadGruopX = 32;
+constexpr int kTreadGruopY = 32;
 
 class GAMEFRAMEWORK_API RenderSystem
 {

@@ -49,6 +49,9 @@
     <Filter Include="Source Files\Camera">
       <UniqueIdentifier>{5e7607ba-d43a-43d2-95a1-93366ae58e61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{09ac19d2-8dcb-44a0-a6d3-febef238bc66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -207,13 +210,29 @@
     <None Include="SimpleMath.inl">
       <Filter>Header Files\Libs</Filter>
     </None>
-    <None Include="..\Shaders\SortingShader.hlsl" />
-    <None Include="..\Shaders\ColorShader.hlsl" />
-    <None Include="..\Shaders\GeometryRenderingShader.hlsl" />
-    <None Include="..\Shaders\LightRenderingShader.hlsl" />
-    <None Include="..\Shaders\MyVeryFirstShader.hlsl" />
-    <None Include="..\Shaders\SimpleShadowMapShader.hlsl" />
-    <None Include="..\Shaders\SimpleTextureShader.hlsl" />
-    <None Include="..\Shaders\ParticlesShader.hlsl" />
+    <None Include="..\Shaders\ColorShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\GeometryRenderingShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\LightRenderingShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\MyVeryFirstShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\ParticleShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\SimpleShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\SimpleTextureShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\SortingShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

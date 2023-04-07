@@ -237,7 +237,6 @@ RenderSystem::RenderSystem(DisplayWin *display):
 	Device->CreateBlendState(&blendDesc, &blendState);
 
 	particleSystem = new ParticleSystem(Device, Context);
-	particleSystem->Initialize();
 }
 
 RenderSystem::~RenderSystem()
@@ -346,7 +345,8 @@ void RenderSystem::Draw()
 	Context->Draw(4, 0);
 
 	Context->OMSetDepthStencilState(nullptr, 0);
-	
+	Context->OMSetRenderTargets(1, &RenderView, gBuffer->depthView);
+
 	ID3D11ShaderResourceView* nullptrs[] = {nullptr};
 	Context->PSSetShaderResources(6, 1, nullptrs);
 	
@@ -357,6 +357,8 @@ void RenderSystem::Draw()
 			renderComponent->Draw();
 		}
 	}
+
+	particleSystem->Render();
 }
 
 void RenderSystem::EndFrame()
