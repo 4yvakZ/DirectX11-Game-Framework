@@ -303,7 +303,7 @@ void RenderSystem::Draw()
 	for (auto& renderComponent : renderComponents) {
 		if (auto fbx = dynamic_cast<RenderComponentFBX*>(renderComponent))
 		{
-			fbx->DrawShadows();
+			fbx->DrawGeometry();
 		}
 	}
 

@@ -160,7 +160,7 @@ void ParticleSystem::RenderHeightMap()
 	pos[0] = Vector4::Transform(pos[0], World);
 	pos[1] = Vector4::Transform(pos[1], World);
 
-	Vector4 center4 = (pos[0]+ pos[1]) / 2;
+	Vector4 center4 = (pos[0] + pos[1]) / 2;
 	Vector3 center = Vector3(center4.x, center4.y, center4.z);
 
 	Vector3 rainDir = Vector3(emitter.force.x, emitter.force.y, emitter.force.z);
