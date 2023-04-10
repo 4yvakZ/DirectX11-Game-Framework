@@ -27,7 +27,7 @@ struct Emitter
 
     uint emitCount;
     uint maxNumberOfParticles;
-    uint blank1;
+    uint numGroups;
     uint blank2;
 
     float4 force;
@@ -69,13 +69,12 @@ SamplerState Sampler : register(s0);
 void EmitCS(uint3 groupID : SV_GroupID,
     uint groupIndex: SV_GroupIndex)
 {
-    uint index = groupID.x * THREAD_IN_GROUP_TOTAL + groupID.y * GROUP_COUNT_Y * THREAD_IN_GROUP_TOTAL + groupIndex;
+    uint index = groupID.x * THREAD_IN_GROUP_TOTAL + groupID.y * emitter.numGroups * THREAD_IN_GROUP_TOTAL + groupIndex;
     
     if (index >= emitter.emitCount)
     {
         return;
     }
-    SortedList[0].depth;
     index = DeadListConsume.Consume();
     
     float3 rand3 = float3(frac(sin(dot(float2(index, emitter.deltaTime), float2(12.9898, 78.233))) * 43758.5453),
@@ -93,15 +92,15 @@ void EmitCS(uint3 groupID : SV_GroupID,
 void SimulateCS(uint3 groupID : SV_GroupID,
     uint groupIndex : SV_GroupIndex)
 {
-    uint index = groupID.x * THREAD_IN_GROUP_TOTAL + groupID.y * GROUP_COUNT_Y * THREAD_IN_GROUP_TOTAL + groupIndex;
+    uint index = groupID.x * THREAD_IN_GROUP_TOTAL + groupID.y * emitter.numGroups * THREAD_IN_GROUP_TOTAL + groupIndex;
    
     if (index >= emitter.maxNumberOfParticles)
     {
         return;
     }
     
-    //SortedList[index].index = index;
-    //SortedList[index].depth = 0.0f;
+    SortedList[index].index = index;
+    SortedList[index].depth = 0.0f;
     
     if (Particles[index].timeUntilDeath <= 0.0f)
     {

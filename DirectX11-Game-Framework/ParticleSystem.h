@@ -1,8 +1,6 @@
 #pragma once
 #include "framework.h"
 
-constexpr UINT THREAD_GROUP_X = 32;
-constexpr UINT THREAD_GROUP_Y = 32;
 constexpr UINT THREAD_GROUP_TOTAL = 1024;
 
 constexpr UINT BITONIC_BLOCK_SIZE = 512;
@@ -31,24 +29,24 @@ class ParticleSystem
 
 #pragma pack(push,4)
 	struct Emitter {
-		float minLifetima = 10;
-		float maxLifetime = 10;
+		float minLifetima = 2;
+		float maxLifetime = 2;
 		float minSpawnVelocity = 0;
 		float maxSpawnVelocity = 0;
 
-		float minSize = 0.05;
-		float maxSize = 0.1;
+		float minSize = 0.01;
+		float maxSize = 0.05;
 		float deltaTime;
 		float blank0;
 
 		UINT emitCount;
 		UINT maxNumberOfParticles; 
-		UINT blank1;
+		UINT numGroups;
 		UINT blank2;
 
-		Vector4 force = Vector4(0, -0.04, 0, 0);
-		Vector4 minSpawnPos = Vector4(-0.5, 0.0, -0.5, 1);
-		Vector4 maxSpawnPos = Vector4(0.5, 0.2, 0.5, 1);
+		Vector4 force = Vector4(0, -9.81, 0, 0);
+		Vector4 minSpawnPos = Vector4(-5, 0.0, -5, 1);
+		Vector4 maxSpawnPos = Vector4(5, 0.2, 5, 1);
 	};
 #pragma pack(pop)
 
@@ -89,6 +87,7 @@ protected:
 	void UpdateConstBuffer();
 	void SetConstants(UINT iLevel, UINT iLevelMask, UINT iWidth, UINT iHeight);
 	void SortParticles();
+	UINT GetDispatchDim(UINT nParticles);
 public:
 	UINT maxNumberOfParticles = 65536;
 	int maxSpawnRate = 100;

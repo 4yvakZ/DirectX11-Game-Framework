@@ -62,10 +62,12 @@ void ParticleSystem::Initialize()
 void ParticleSystem::Update(float deltaTime)
 {
 	Emit(10);
-
+	UINT x = GetDispatchDim(maxNumberOfParticles);
+	UINT y = x;
 	constBufferData.projection = Game::GetCamera()->projection;
 	constBufferData.view = Game::GetCamera()->view;
 	emitter.deltaTime = deltaTime;
+	emitter.numGroups = x;
 	UpdateConstBuffer();
 
 	ID3D11UnorderedAccessView* UAVs[] = { sortedListUAV, particlesUAV, nullptr, deadListUAV };
@@ -75,18 +77,19 @@ void ParticleSystem::Update(float deltaTime)
 	Context->CSSetConstantBuffers(4, 1, &emitterBuffer);
 
 	Context->CSSetShader(simulateShader, nullptr, 0);
-
-	UINT x = THREAD_GROUP_X;
-	UINT y = THREAD_GROUP_Y;
-	UINT z = (maxNumberOfParticles % (x * y) == 0) ? maxNumberOfParticles / (x * y) : maxNumberOfParticles / (x * y) + 1;
+	
+	UINT z = 1;
 
 	Context->Dispatch(x, y, z);
 
-	//SortParticles();
+	SortParticles();
 }
 
 void ParticleSystem::Emit(int nParticles)
 {
+	UINT x = GetDispatchDim(std::min(nParticles, maxSpawnRate));
+	UINT y = x;
+	emitter.numGroups = x;
 	emitter.emitCount = std::min(nParticles, maxSpawnRate);
 	UpdateConstBuffer();
 
@@ -99,9 +102,8 @@ void ParticleSystem::Emit(int nParticles)
 
 	Context->CSSetShader(emitShader, nullptr, 0);
 
-	UINT x = THREAD_GROUP_X;
-	UINT y = THREAD_GROUP_Y;
-	UINT z = (emitter.emitCount % (x*y) == 0) ? emitter.emitCount / (x * y) : emitter.emitCount / (x * y) + 1;
+	//TODO Correct x y z
+	UINT z = 1;
 
 	Context->Dispatch(x, y, z);
 }
@@ -161,9 +163,12 @@ void ParticleSystem::InitResouces()
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC pSRVDesc = {};
 	pSRVDesc.Format = DXGI_FORMAT_UNKNOWN;
-	pSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	/*pSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	pSRVDesc.Buffer.NumElements = maxNumberOfParticles;
-	pSRVDesc.Buffer.ElementWidth = sizeof(SortingData);
+	pSRVDesc.Buffer.ElementWidth = sizeof(SortingData);*/
+	pSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	pSRVDesc.BufferEx.FirstElement = 0;
+	pSRVDesc.BufferEx.NumElements = maxNumberOfParticles;
 
 	Device->CreateShaderResourceView(particlesBuffer, &pSRVDesc, &particlesSRV);
 
@@ -224,9 +229,9 @@ void ParticleSystem::InitResouces()
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC slSRVDesc = {};
 	slSRVDesc.Format = DXGI_FORMAT_UNKNOWN;
-	slSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-	slSRVDesc.Buffer.NumElements = maxNumberOfParticles;
-	slSRVDesc.Buffer.ElementWidth = sizeof(SortingData);
+	slSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	slSRVDesc.BufferEx.FirstElement = 0;
+	slSRVDesc.BufferEx.NumElements = maxNumberOfParticles;
 
 	Device->CreateShaderResourceView(sortedListBuffer, &slSRVDesc, &sortedListSRV);
 	
@@ -575,4 +580,13 @@ void ParticleSystem::SortParticles()
 		Context->CSSetShader(sortShader, nullptr, 0);
 		Context->Dispatch(maxNumberOfParticles / BITONIC_BLOCK_SIZE, 1, 1);
 	}
+}
+
+UINT ParticleSystem::GetDispatchDim(UINT nParticles)
+{
+	int numGroups = (nParticles % THREAD_GROUP_TOTAL != 0) ?
+		((nParticles / THREAD_GROUP_TOTAL) + 1) :
+		(nParticles / THREAD_GROUP_TOTAL);
+	double secondRoot = sqrt((double)numGroups);
+	return std::ceil(secondRoot);
 }
