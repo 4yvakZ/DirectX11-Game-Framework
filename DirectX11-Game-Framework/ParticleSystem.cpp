@@ -71,6 +71,9 @@ void ParticleSystem::Initialize()
 void ParticleSystem::Update(float deltaTime)
 {
 	Emit(10);
+
+	BindHeightMap();
+
 	UINT x = GetDispatchDim(maxNumberOfParticles);
 	UINT y = x;
 	constBufferData.projection = Game::GetCamera()->projection;
@@ -84,12 +87,16 @@ void ParticleSystem::Update(float deltaTime)
 	Context->CSSetUnorderedAccessViews(0, 4, UAVs, counters);
 	Context->CSSetConstantBuffers(0, 1, &constBuffer);
 	Context->CSSetConstantBuffers(4, 1, &emitterBuffer);
+	Context->CSSetConstantBuffers(5, 1, &heightMapBuf);
 
 	Context->CSSetShader(simulateShader, nullptr, 0);
 	
 	UINT z = 1;
 
 	Context->Dispatch(x, y, z);
+
+	ID3D11ShaderResourceView* nullSRV[] = {nullptr};
+	Context->CSSetShaderResources(3, 1, nullSRV);
 
 	SortParticles();
 
@@ -126,7 +133,6 @@ void ParticleSystem::Render()
 	Context->CSSetUnorderedAccessViews(0, 4, UAVs, counters);
 
 	Context->CSSetShader(nullptr, nullptr, 0);
-	//return;
 
 	Context->IASetInputLayout(nullptr);
 	Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -160,13 +166,20 @@ void ParticleSystem::RenderHeightMap()
 	pos[0] = Vector4::Transform(pos[0], World);
 	pos[1] = Vector4::Transform(pos[1], World);
 
-	Vector4 center4 = (pos[0] + pos[1]) / 2;
+	Vector4 center4 = (pos[0] + pos[1]) * 0.5;
 	Vector3 center = Vector3(center4.x, center4.y, center4.z);
+	//center += Vector3(0, 10, 0);
 
 	Vector3 rainDir = Vector3(emitter.force.x, emitter.force.y, emitter.force.z);
 	rainDir.Normalize();
 
-	auto view = Matrix::CreateLookAt(center, center + rainDir, Vector3::Up);
+	Vector3 up = Vector3::Up;
+
+	if (abs(up.Dot(rainDir)) > 0.9) {
+		up = Vector3::Right;
+	}
+
+	auto view = Matrix::CreateLookAt(center, center + rainDir, up);
 
 	std::vector<Vector3> corners;
 	corners.reserve(8);
@@ -192,17 +205,22 @@ void ParticleSystem::RenderHeightMap()
 		maxZ = std::max(maxZ, trf.z);
 	}
 
+	
+
 	constexpr float zMult = 10.0f;
 
 	minZ = (minZ < 0) ? minZ * zMult : minZ / zMult;
 	maxZ = (maxZ < 0) ? maxZ / zMult : maxZ * zMult;
+
+	minZ *= 100;
+	maxZ *= 100;
 	heightMapData.viewProjection = view * Matrix::CreateOrthographicOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
 	auto res = Context->Map(heightMapBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, &heightMapData, sizeof(heightMapBuf));
+	memcpy(mappedResource.pData, &heightMapData, sizeof(HeightMap));
 	Context->Unmap(heightMapBuf, 0);
 
 	Context->VSSetConstantBuffers(5, 1, &heightMapBuf);

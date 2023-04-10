@@ -74,7 +74,7 @@ float4 PSMain( PS_IN input ) : SV_Target0
     Position.GetDimensions(width, height);
     uint2 pixelCoord = uint2(input.tex.x * width, input.tex.y * height);
     //return float4(1, 0, 0, 1);
-    float4 worldPos =  Position.Load(uint3(pixelCoord, 0));
+    float4 worldPos = Position.Load(uint3(pixelCoord, 0));
     if (worldPos.w == 0)
     {
         return float4(0, 0, 0, 1);

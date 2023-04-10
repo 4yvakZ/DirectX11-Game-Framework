@@ -123,14 +123,39 @@ void SimulateCS(uint3 groupID : SV_GroupID,
     
     if (Particles[index].timeUntilDeath <= 0.0f)
     {
-        Particles[index].size = 1;
+        //Particles[index].size = 1;
         DeadListAppend.Append(index);
+        return;
+    }
+    
+
+    
+    float3 heightSpacePos = mul(mul(Particles[index].position, world),heightMap.viewProjection).xyz;
+    float2 heightTexCoords;
+    heightTexCoords.x = 0.5f + (heightSpacePos.x * 0.5f);
+    heightTexCoords.y = 0.5f - (heightSpacePos.y * 0.5f);
+    float pixelDepth = heightSpacePos.z;
+    uint width, height;
+    HeightMapTex.GetDimensions(width, height);
+    
+    if (!HeightMapTex.SampleCmpLevelZero(CmpSampler, heightTexCoords, pixelDepth).x)
+    {
+        float3 rand3 = float3(frac(sin(dot(float2(index, emitter.deltaTime), float2(12.9898, 78.233))) * 43758.5453),
+        frac(sin(dot(float2(index * index, index * emitter.deltaTime), float2(12.9898, 78.233)) * 2.0) * 43758.5453),
+        frac(sin(dot(float2(index, index * emitter.deltaTime), float2(12.9898, 78.233)) * 2.0) * 43758.5453));
+        Particles[index].velocity.y *= -0.5;
+        Particles[index].velocity.x *= rand3.x;
+        Particles[index].velocity.z *= rand3.z;
+        Particles[index].position += Particles[index].velocity * emitter.deltaTime;
+        SortedList.IncrementCounter();
         return;
     }
     
     Particles[index].velocity += emitter.deltaTime * emitter.force;
     Particles[index].position += Particles[index].velocity * emitter.deltaTime;
-    SortedList[index].depth = mul(mul(Particles[index].position, world),view).z;
+    
+    
+    SortedList[index].depth = mul(mul(Particles[index].position, world), view).z;
     
     SortedList.IncrementCounter();
 }
@@ -191,9 +216,12 @@ float4 PSMain( PS_IN input ) : SV_Target0
 {
     if (input.life <= 0)
     {
-        return float4(1, 0, 0, 1);
+        //return float4(1, 0, 0, 1);
     }
-    return Texture.Sample(Sampler, input.tex);
+    float4 color = Texture.Sample(Sampler, input.tex);
+    clip(color.a - 0.001f);
+    
+    return color;
 }
 
 struct VS_IN
@@ -204,7 +232,15 @@ struct VS_IN
     float3 normal : NORMAL0;
 };
 
-float4 HMVSMain(VS_IN input) : SV_Position
+struct VS_OUT
+{
+    float4 pos : SV_Position;
+};
+
+VS_OUT HMVSMain(VS_IN input)
 {  
-    return mul(mul(float4(input.pos.xyz, 1.0f), world), heightMap.viewProjection);
+    VS_OUT output = (VS_OUT) 0;
+    output.pos = mul(mul(float4(input.pos.xyz, 1.0f), world), heightMap.viewProjection);
+    
+    return output;
 }

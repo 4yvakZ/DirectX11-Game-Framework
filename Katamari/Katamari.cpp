@@ -23,7 +23,8 @@ int main()
 
     //testGame->GameObjects.push_back(new GridGameObject());
     testGame->GameObjects.push_back(ball);
-    testGame->GameObjects.push_back(new PlaneObject());
+    PlaneObject* plane = new PlaneObject();
+    testGame->GameObjects.push_back(plane);
 
     StickyObject* cube = new StickyObject("../FBX/cube.fbx");
     cube->SetPosition(Vector3(5, 1, 5));

@@ -155,8 +155,22 @@ RenderSystem::RenderSystem(DisplayWin *display):
 	swapDesc.SampleDesc.Count = 1;
 	swapDesc.SampleDesc.Quality = 0;
 
+	IDXGIFactory1* pFactory;
+	HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&pFactory));
+
+	UINT i = 0;
+	IDXGIAdapter* pAdapter;
+	std::vector <IDXGIAdapter*> vAdapters;
+	while (pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND)
+	{
+		vAdapters.push_back(pAdapter);
+		++i;
+	}
+
 	auto res = D3D11CreateDeviceAndSwapChain(
-		nullptr, //видеокарта (поменять на дискретную на ноуте?)
+		//vAdapters[0],
+		//D3D_DRIVER_TYPE_UNKNOWN,
+		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
 		D3D11_CREATE_DEVICE_DEBUG,
