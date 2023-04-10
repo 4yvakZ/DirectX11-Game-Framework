@@ -6,6 +6,15 @@
 
 ParticleSystem::~ParticleSystem()
 {
+	HMVertexShader->Release();
+	HMVertexShaderByteCode->Release();
+
+	DepthView->Release();
+	heightMap->Release();
+	HeightView->Release();
+
+	HMSamplerState->Release();
+	heightMapBuf->Release();
 
 	indirectBuffer->Release();
 	constBuffer->Release();
@@ -56,7 +65,7 @@ void ParticleSystem::Initialize()
 
 	LoadShaders();
 
-	//Emit(100);
+	InitHeightMap();
 }
 
 void ParticleSystem::Update(float deltaTime)
@@ -83,6 +92,8 @@ void ParticleSystem::Update(float deltaTime)
 	Context->Dispatch(x, y, z);
 
 	SortParticles();
+
+	Context->ClearDepthStencilView(DepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void ParticleSystem::Emit(int nParticles)
@@ -140,6 +151,78 @@ void ParticleSystem::Render()
 	Context->GSSetShader(nullptr, nullptr, 0); 
 	ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr };
 	Context->VSSetShaderResources(1, 2, nullSRVs);
+}
+
+void ParticleSystem::RenderHeightMap()
+{
+	Vector4 pos[2] = { emitter.minSpawnPos, emitter.maxSpawnPos};
+
+	pos[0] = Vector4::Transform(pos[0], World);
+	pos[1] = Vector4::Transform(pos[1], World);
+
+	Vector4 center4 = (pos[0]+ pos[1]) / 2;
+	Vector3 center = Vector3(center4.x, center4.y, center4.z);
+
+	Vector3 rainDir = Vector3(emitter.force.x, emitter.force.y, emitter.force.z);
+	rainDir.Normalize();
+
+	auto view = Matrix::CreateLookAt(center, center + rainDir, Vector3::Up);
+
+	std::vector<Vector3> corners;
+	corners.reserve(8);
+	for (int i = 0; i < 8; i++) {
+		corners.push_back(Vector3(pos[(i & 1)].x, pos[((i & 2) >> 1)].y, pos[((i & 4) >> 2)].z));
+		//std::cout << (i & 1) << " " << ((i & 2) >> 1) << " " << ((i & 4) >> 2) << "\n";
+	}
+
+	float minX = std::numeric_limits<float>::max();
+	float maxX = std::numeric_limits<float>::lowest();
+	float minY = std::numeric_limits<float>::max();
+	float maxY = std::numeric_limits<float>::lowest();
+	float minZ = std::numeric_limits<float>::max();
+	float maxZ = std::numeric_limits<float>::lowest();
+	for (const auto& v : corners)
+	{
+		auto trf = Vector3::Transform(v, view);
+		minX = std::min(minX, trf.x);
+		maxX = std::max(maxX, trf.x);
+		minY = std::min(minY, trf.y);
+		maxY = std::max(maxY, trf.y);
+		minZ = std::min(minZ, trf.z);
+		maxZ = std::max(maxZ, trf.z);
+	}
+
+	constexpr float zMult = 10.0f;
+
+	minZ = (minZ < 0) ? minZ * zMult : minZ / zMult;
+	maxZ = (maxZ < 0) ? maxZ / zMult : maxZ * zMult;
+	heightMapData.viewProjection = view * Matrix::CreateOrthographicOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	auto res = Context->Map(heightMapBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &heightMapData, sizeof(heightMapBuf));
+	Context->Unmap(heightMapBuf, 0);
+
+	Context->VSSetConstantBuffers(5, 1, &heightMapBuf);
+
+	ID3D11ShaderResourceView* nullsrv[] = { nullptr };
+	Context->VSSetShaderResources(3, 1, nullsrv);
+
+	ID3D11RenderTargetView* nullrtv[] = { nullptr,nullptr,nullptr,nullptr, nullptr,nullptr,nullptr,nullptr };
+	Context->OMSetRenderTargets(8, nullrtv, DepthView);
+
+	Context->RSSetViewports(1, viewport.Get11());
+	Context->VSSetShader(HMVertexShader, nullptr, 0);
+	Context->GSSetShader(nullptr, nullptr, 0);
+	Context->PSSetShader(nullptr, nullptr, 0);
+}
+
+void ParticleSystem::BindHeightMap()
+{
+	Context->CSSetShaderResources(3, 1, &HeightView);
+	Context->CSSetSamplers(1, 1, &HMSamplerState);
 }
 
 void ParticleSystem::InitResouces()
@@ -258,6 +341,7 @@ void ParticleSystem::InitResouces()
 	constBufDesc.ByteWidth = sizeof(ConstBufferData);
 
 	constBufferData.world = Matrix::CreateTranslation(Vector3::Up * 4);
+	World = Matrix::CreateTranslation(Vector3::Up * 4);
 
 	D3D11_SUBRESOURCE_DATA constData = {};
 	constData.pSysMem = &constBufferData;
@@ -290,6 +374,109 @@ void ParticleSystem::InitResouces()
 	sortingBufDesc.ByteWidth = sizeof(SortingCB);
 
 	Device->CreateBuffer(&sortingBufDesc, nullptr, &sortingCBuffer);
+}
+
+void ParticleSystem::InitHeightMap(int width)
+{
+	D3D11_TEXTURE2D_DESC hmDesc = {};
+	hmDesc.ArraySize = 1;
+	hmDesc.MipLevels = 1;
+	hmDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	hmDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	hmDesc.CPUAccessFlags = 0;
+	hmDesc.MiscFlags = 0;
+	hmDesc.Usage = D3D11_USAGE_DEFAULT;
+	hmDesc.Width = width;
+	hmDesc.Height = width;
+	hmDesc.SampleDesc = { 1, 0 };
+
+	Device->CreateTexture2D(&hmDesc, nullptr, &heightMap);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+	ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	Device->CreateShaderResourceView(heightMap, &shaderResourceViewDesc, &HeightView);
+	Device->CreateDepthStencilView(heightMap, &depthStencilViewDesc, &DepthView);
+
+	D3D11_SAMPLER_DESC comparisonSamplerDesc;
+	ZeroMemory(&comparisonSamplerDesc, sizeof(D3D11_SAMPLER_DESC));
+	comparisonSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	comparisonSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	comparisonSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	comparisonSamplerDesc.BorderColor[0] = 1.0f;
+	comparisonSamplerDesc.BorderColor[1] = 1.0f;
+	comparisonSamplerDesc.BorderColor[2] = 1.0f;
+	comparisonSamplerDesc.BorderColor[3] = 1.0f;
+	comparisonSamplerDesc.MinLOD = 0.f;
+	comparisonSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	comparisonSamplerDesc.MipLODBias = 0.f;
+	comparisonSamplerDesc.MaxAnisotropy = 0;
+	comparisonSamplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	comparisonSamplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+
+	Device->CreateSamplerState(&comparisonSamplerDesc, &HMSamplerState);
+
+	viewport = Viewport(0.0f, 0.0f, width, width);
+
+	ID3DBlob* errorVertexCode = nullptr;
+	auto res = D3DCompileFromFile(L"../Shaders/ParticleShader.hlsl",
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"HMVSMain",
+		"vs_5_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		&HMVertexShaderByteCode,
+		&errorVertexCode);
+	if (FAILED(res)) {
+		// If the shader failed to compile it should have written something to the error message.
+		if (errorVertexCode) {
+			char* compileErrors = (char*)(errorVertexCode->GetBufferPointer());
+
+			std::cout << compileErrors << std::endl;
+		}
+		// If there was  nothing in the error message then it simply could not find the shader file itself.
+		else
+		{
+			std::cout << "Missing Shader File: " << "../Shaders/ParticleShader.hlsl" << std::endl;
+		}
+
+		return;
+	}
+
+	Device->CreateVertexShader(
+		HMVertexShaderByteCode->GetBufferPointer(),
+		HMVertexShaderByteCode->GetBufferSize(),
+		nullptr, &HMVertexShader);
+
+	///const buffer initialization
+	D3D11_BUFFER_DESC hmBufDesc = {};
+	hmBufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	hmBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	hmBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	hmBufDesc.MiscFlags = 0;
+	hmBufDesc.StructureByteStride = 0;
+	hmBufDesc.ByteWidth = sizeof(HeightMap);
+
+	heightMapData.viewProjection = Matrix::Identity;
+
+	D3D11_SUBRESOURCE_DATA hmBufData = {};
+	hmBufData.pSysMem = &heightMapData;
+	hmBufData.SysMemPitch = 0;
+	hmBufData.SysMemSlicePitch = 0;
+
+	Device->CreateBuffer(&hmBufDesc, &hmBufData, &heightMapBuf);
 }
 
 void ParticleSystem::LoadTexture()
@@ -507,6 +694,7 @@ void ParticleSystem::LoadShaders()
 		transposeShaderByteCode->GetBufferSize(),
 		nullptr, &transposeShader);
 }
+
 
 void ParticleSystem::UpdateConstBuffer() {
 

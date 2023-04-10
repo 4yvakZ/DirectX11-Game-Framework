@@ -40,6 +40,16 @@ cbuffer EMITTER_CONST_BUF : register(b4)
     Emitter emitter;
 }
 
+struct HeightMap
+{
+    Matrix viewProjection;
+};
+
+cbuffer HEIGHT_MAP_CB : register(b5)
+{
+    HeightMap heightMap;
+}
+
 struct Particle
 {
     float4 position;
@@ -62,8 +72,10 @@ AppendStructuredBuffer<uint> DeadListAppend : register(u3);
 Texture2D Texture : register(t0);
 StructuredBuffer<Particle> ParticlesResoures : register(t1);
 StructuredBuffer<SortingData> SortedListResoures : register(t2);
+Texture2D HeightMapTex : register(t3);
 
 SamplerState Sampler : register(s0);
+SamplerComparisonState CmpSampler : register(s1);
 
 [numthreads(THREAD_GROUP_X, THREAD_GROUP_Y, 1)]
 void EmitCS(uint3 groupID : SV_GroupID,
@@ -182,4 +194,17 @@ float4 PSMain( PS_IN input ) : SV_Target0
         return float4(1, 0, 0, 1);
     }
     return Texture.Sample(Sampler, input.tex);
+}
+
+struct VS_IN
+{
+    float3 pos : POSITION0;
+    float4 color : COLOR0;
+    float2 uv : TEXCOORD0;
+    float3 normal : NORMAL0;
+};
+
+float4 HMVSMain(VS_IN input) : SV_Position
+{  
+    return mul(mul(float4(input.pos.xyz, 1.0f), world), heightMap.viewProjection);
 }

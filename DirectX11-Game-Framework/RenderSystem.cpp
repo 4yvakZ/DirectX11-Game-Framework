@@ -297,6 +297,16 @@ void RenderSystem::Draw()
 	}
 
 	Context->GSSetShader(nullptr, nullptr, 0);
+
+	particleSystem->RenderHeightMap();
+
+	for (auto& renderComponent : renderComponents) {
+		if (auto fbx = dynamic_cast<RenderComponentFBX*>(renderComponent))
+		{
+			fbx->DrawShadows();
+		}
+	}
+
 	gBuffer->Render();
 	for (auto& renderComponent : renderComponents) {
 		if (auto fbx = dynamic_cast<RenderComponentFBX*>(renderComponent))

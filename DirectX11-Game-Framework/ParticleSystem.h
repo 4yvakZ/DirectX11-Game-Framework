@@ -44,7 +44,7 @@ class ParticleSystem
 		UINT numGroups;
 		UINT blank2;
 
-		Vector4 force = Vector4(0, -9.81, 0, 0);
+		Vector4 force = Vector4(5, -9.81, 0, 0);
 		Vector4 minSpawnPos = Vector4(-5, 0.0, -5, 1);
 		Vector4 maxSpawnPos = Vector4(5, 0.2, 5, 1);
 	};
@@ -63,6 +63,10 @@ class ParticleSystem
 		float depth;
 	};
 
+	struct HeightMap
+	{
+		Matrix viewProjection;
+	};
 
 public:
 	ParticleSystem() = delete;
@@ -79,9 +83,12 @@ public:
 	void Update(float deltaTime);
 	void Emit(int nParticles);
 	void Render();
+	void RenderHeightMap();
+	void BindHeightMap();
 
 protected:
 	void InitResouces();
+	void InitHeightMap(int width = 2048);
 	void LoadTexture();
 	void LoadShaders();
 	void UpdateConstBuffer();
@@ -97,6 +104,21 @@ public:
 
 	Microsoft::WRL::ComPtr<ID3D11Device> Device;
 	ID3D11DeviceContext* Context;
+
+	///HeightMap stuff
+	ID3D11VertexShader* HMVertexShader;
+	ID3DBlob* HMVertexShaderByteCode;
+
+
+	ID3D11DepthStencilView* DepthView;
+	ID3D11Texture2D* heightMap;
+	ID3D11ShaderResourceView* HeightView;
+
+	ID3D11SamplerState* HMSamplerState;
+	HeightMap heightMapData;
+	ID3D11Buffer* heightMapBuf;
+
+	Viewport viewport;
 
 	///Shader Resources
 	ConstBufferData constBufferData;
