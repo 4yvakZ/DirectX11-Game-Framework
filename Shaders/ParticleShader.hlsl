@@ -56,6 +56,7 @@ struct Particle
     float4 velocity;
     float timeUntilDeath;
     float size;
+    float4 color;
 };
 
 struct SortingData
@@ -95,9 +96,10 @@ void EmitCS(uint3 groupID : SV_GroupID,
     float rand1 = frac(rand3.x + rand3.y + rand3.z);
     
     Particles[index].position = float4(((emitter.maxSpawnPos - emitter.minSpawnPos).xyz * rand3), 0.0f) + emitter.minSpawnPos;
-    Particles[index].size = (emitter.maxSize - emitter.minSize) * rand1 + emitter.minSize;
+    Particles[index].size = (emitter.maxSize - emitter.minSize) * rand3.x + emitter.minSize;
     Particles[index].timeUntilDeath = (emitter.maxLifetime - emitter.minLifetima) * rand1 + emitter.minLifetima;
     Particles[index].velocity = (emitter.maxSpawnVelocity - emitter.minSpawnVelocity) * rand1 + emitter.minSpawnVelocity;
+    Particles[index].color = float4(rand3, 1);
 }
 
 [numthreads(THREAD_GROUP_X, THREAD_GROUP_Y, 1)]
@@ -112,7 +114,7 @@ void SimulateCS(uint3 groupID : SV_GroupID,
     }
     
     SortedList[index].index = index;
-    SortedList[index].depth = 0.0f;
+    SortedList[index].depth = 100000.0f;
     
     if (Particles[index].timeUntilDeath <= 0.0f)
     {
@@ -123,37 +125,32 @@ void SimulateCS(uint3 groupID : SV_GroupID,
     
     if (Particles[index].timeUntilDeath <= 0.0f)
     {
-        //Particles[index].size = 1;
+        Particles[index].size = 1;
         DeadListAppend.Append(index);
         return;
     }
-    
-
     
     float3 heightSpacePos = mul(mul(Particles[index].position, world),heightMap.viewProjection).xyz;
     float2 heightTexCoords;
     heightTexCoords.x = 0.5f + (heightSpacePos.x * 0.5f);
     heightTexCoords.y = 0.5f - (heightSpacePos.y * 0.5f);
-    float pixelDepth = heightSpacePos.z;
+    float pixelDepth = heightSpacePos.z + 0.001f;
     uint width, height;
     HeightMapTex.GetDimensions(width, height);
     
+   
     if (!HeightMapTex.SampleCmpLevelZero(CmpSampler, heightTexCoords, pixelDepth).x)
     {
         float3 rand3 = float3(frac(sin(dot(float2(index, emitter.deltaTime), float2(12.9898, 78.233))) * 43758.5453),
         frac(sin(dot(float2(index * index, index * emitter.deltaTime), float2(12.9898, 78.233)) * 2.0) * 43758.5453),
         frac(sin(dot(float2(index, index * emitter.deltaTime), float2(12.9898, 78.233)) * 2.0) * 43758.5453));
         Particles[index].velocity.y *= -0.5;
-        Particles[index].velocity.x *= rand3.x;
-        Particles[index].velocity.z *= rand3.z;
-        Particles[index].position += Particles[index].velocity * emitter.deltaTime;
-        SortedList.IncrementCounter();
-        return;
+        Particles[index].velocity.x = (0.5 - rand3.x) ;
+        Particles[index].velocity.z = (0.5 - rand3.z) ;       
     }
     
     Particles[index].velocity += emitter.deltaTime * emitter.force;
     Particles[index].position += Particles[index].velocity * emitter.deltaTime;
-    
     
     SortedList[index].depth = mul(mul(Particles[index].position, world), view).z;
     
@@ -165,6 +162,7 @@ struct PS_IN
     float4 pos : SV_POSITION;
     float2 tex : TEXCOORD0;
     float life : LIFE;
+    float4 color : COLOR;
 };
 
 struct GS_IN
@@ -172,6 +170,7 @@ struct GS_IN
     float4 viewPos : POSITION0;
     float size : SIZE;
     float life : LIFE;
+    float4 color : COLOR;
 };
 
 
@@ -182,6 +181,7 @@ GS_IN VSMain( uint id: SV_VertexID )
     output.viewPos = mul(mul(ParticlesResoures[SortedListResoures[id].index].position, world), view);
     output.size = ParticlesResoures[SortedListResoures[id].index].size;
     output.life = ParticlesResoures[SortedListResoures[id].index].timeUntilDeath;
+    output.color = ParticlesResoures[SortedListResoures[id].index].color;
 	return output;
 }
 
@@ -200,6 +200,7 @@ void GSMain(point GS_IN input[1], inout TriangleStream<PS_IN> stream)
     PS_IN output = (PS_IN) 0;
     output.pos = input[0].viewPos;
     output.life = input[0].life;
+    output.color = input[0].color;
     
     //const float size = 0.1f; // размер конченого квадрата 
     const float size = input[0].size;
@@ -216,10 +217,11 @@ float4 PSMain( PS_IN input ) : SV_Target0
 {
     if (input.life <= 0)
     {
-        //return float4(1, 0, 0, 1);
+        return float4(1, 0, 0, 1);
     }
     float4 color = Texture.Sample(Sampler, input.tex);
-    clip(color.a - 0.001f);
+    clip(color.a - 0.0001f);
+    color = float4(input.color.xyz, color.a);
     
     return color;
 }

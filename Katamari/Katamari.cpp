@@ -26,6 +26,11 @@ int main()
     PlaneObject* plane = new PlaneObject();
     testGame->GameObjects.push_back(plane);
 
+    StickyObject* table = new StickyObject("../FBX/Table/Table.fbx", "../FBX/Table/Table.png");
+    table->SetPosition(Vector3(0, 0, 0));
+    table->radius = 1.3;
+    testGame->GameObjects.push_back(table);
+
     StickyObject* cube = new StickyObject("../FBX/cube.fbx");
     cube->SetPosition(Vector3(5, 1, 5));
     cube->SetScale(1);

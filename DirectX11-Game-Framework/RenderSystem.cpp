@@ -381,8 +381,9 @@ void RenderSystem::Draw()
 			renderComponent->Draw();
 		}
 	}
-
+	Context->OMSetBlendState(blendState, blendFactor, sampleMask);
 	particleSystem->Render();
+	Context->OMSetBlendState(nullptr, blendFactor, sampleMask);
 }
 
 void RenderSystem::EndFrame()

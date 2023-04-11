@@ -44,9 +44,12 @@ class ParticleSystem
 		UINT numGroups;
 		UINT blank2;
 
-		Vector4 force = Vector4(5, -9.81, 0, 0);
+		Vector4 force = Vector4(1, -9.81, 0, 0);
 		Vector4 minSpawnPos = Vector4(-10, 0.0, -10, 1);
 		Vector4 maxSpawnPos = Vector4(10, 0.2, 10, 1);
+		//Vector4 force = Vector4(0, -.1, 0, 0);
+		//Vector4 minSpawnPos = Vector4(-0.5, 0.0, -0.5, 1);
+		//Vector4 maxSpawnPos = Vector4(0.5, 0.2, 0.5, 1);
 	};
 #pragma pack(pop)
 
@@ -56,6 +59,7 @@ class ParticleSystem
 		Vector4 velocity;
 		float timeUntilDeath;
 		float size;
+		Vector4 color;
 	};
 
 	struct SortingData {

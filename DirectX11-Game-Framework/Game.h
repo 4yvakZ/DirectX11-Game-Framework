@@ -87,6 +87,8 @@ private:
 
 	bool wasProjectionKeyDown = false;
 	bool wasCameraControllerKeyDown = false;
+	bool wasParticlesKeyDown = false;
+	bool particlesFlag = true;
 };
 
 

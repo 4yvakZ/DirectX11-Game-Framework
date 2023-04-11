@@ -243,9 +243,32 @@ void Game::UpdateInternal()
 		wasCameraControllerKeyDown = false;
 	}
 
+	
 	camera->Update(deltaTime);
 
-	render->particleSystem->Update(deltaTime);
+
+	if (inputDevice->IsKeyDown(Keys::D3))
+	{
+		if (!wasParticlesKeyDown)
+		{
+			wasParticlesKeyDown = true;
+			particlesFlag = !particlesFlag;
+		}
+	}
+	else
+	{
+		wasParticlesKeyDown = false;
+	}
+	if (particlesFlag) 
+	{
+		render->particleSystem->Emit(100); 
+		render->particleSystem->Update(deltaTime);
+	}
+	else
+	{
+		render->particleSystem->Update(0);
+	}
+	
 }
 
 void Game::Draw()

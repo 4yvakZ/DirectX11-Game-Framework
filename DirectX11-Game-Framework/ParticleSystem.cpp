@@ -70,7 +70,6 @@ void ParticleSystem::Initialize()
 
 void ParticleSystem::Update(float deltaTime)
 {
-	Emit(10);
 
 	BindHeightMap();
 
@@ -197,10 +196,10 @@ void ParticleSystem::RenderHeightMap()
 	for (const auto& v : corners)
 	{
 		auto trf = Vector3::Transform(v, view);
-		minX = std::min(minX, trf.x);
-		maxX = std::max(maxX, trf.x);
-		minY = std::min(minY, trf.y);
-		maxY = std::max(maxY, trf.y);
+		minX = std::min(minX, trf.x) * 1.2;
+		maxX = std::max(maxX, trf.x) * 1.2;
+		minY = std::min(minY, trf.y) * 1.2;
+		maxY = std::max(maxY, trf.y) * 1.2;
 		minZ = std::min(minZ, trf.z);
 		maxZ = std::max(maxZ, trf.z);
 	}
@@ -212,8 +211,8 @@ void ParticleSystem::RenderHeightMap()
 	minZ = (minZ < 0) ? minZ * zMult : minZ / zMult;
 	maxZ = (maxZ < 0) ? maxZ / zMult : maxZ * zMult;
 
-	minZ *= 100;
-	maxZ *= 100;
+	minZ = 0.1;
+	maxZ = 100;
 	heightMapData.viewProjection = view * Matrix::CreateOrthographicOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
